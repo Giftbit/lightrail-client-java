@@ -28,7 +28,7 @@ public class GiftValueTest {
 
         GiftValue giftValue = GiftValue.retrieve(giftValueParams);
 
-        assertEquals(Float.parseFloat(properties.getProperty("happyPath.code.value")), giftValue.getCurrentValue(), 0f);
+        assertEquals(Integer.parseInt(properties.getProperty("happyPath.code.value")), giftValue.getCurrentValue());
         assertEquals(properties.getProperty("happyPath.code.currency"), giftValue.getCurrency());
     }
 

@@ -17,11 +17,11 @@ public class LightrailParameters {
     public static String PENDING = "pending";
 
 
-    public static void requireParameters (List<String> requiredParams, Map<String, Object> givenParams) throws BadParameterException {
+    public static void requireParameters(List<String> requiredParams, Map<String, Object> givenParams) throws BadParameterException {
         if (Lightrail.apiKey == null)
             throw new BadParameterException("API Key is not set. You can set the API key as follows: 'Lightrail.apiKey=...'");
         for (String paramName : requiredParams) {
-            if (! givenParams.containsKey(paramName) || givenParams.get(paramName) == null)
+            if (!givenParams.containsKey(paramName) || givenParams.get(paramName) == null)
                 throw new BadParameterException(String.format("Missing Parameter: %s.", paramName));
         }
 

@@ -27,7 +27,7 @@ public class GiftChargeTest {
         giftChargeParams.put("userSuppliedId", "hah0000000001");
 
         GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
-        assertEquals(((Double) giftChargeParams.get("amount")).floatValue(), giftCharge.getAmount(),0f);
+        assertEquals(((Double) giftChargeParams.get("amount")).intValue(), giftCharge.getAmount());
         assertEquals(giftChargeParams.get("userSuppliedId"), giftCharge.getUserSuppliedId());
         System.out.println();
     }

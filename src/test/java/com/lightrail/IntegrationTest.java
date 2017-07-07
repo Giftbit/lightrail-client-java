@@ -56,7 +56,7 @@ public class IntegrationTest {
             System.out.println(String.format("charging gift code %s%s.", orderCurrency, giftCodeValue));
             Map<String, Object> giftChargeParams = new HashMap<>();
             giftChargeParams.put("code", giftCode);
-            giftChargeParams.put("amount", giftCodeValue);
+            giftChargeParams.put("amount", giftCodeShare);
             giftChargeParams.put("currency", orderCurrency);
             giftChargeParams.put("capture", false);
             GiftCharge giftCharge = GiftCharge.create(giftChargeParams);

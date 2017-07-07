@@ -3,7 +3,7 @@ package com.lightrail.model.api;
 
 import java.util.List;
 
-@JsonObjectRoot ("balance")
+@JsonObjectRoot("balance")
 public class CodeBalance {
     ValueStore principal;
     List<ValueStore> attached;
