@@ -17,6 +17,9 @@ public class CheckoutWithGiftCode {
     String giftCode;
     String stripeToken;
 
+    GiftCharge giftCharge;
+    Charge stripeCharge;
+
     public CheckoutWithGiftCode() {
     }
 
@@ -37,7 +40,7 @@ public class CheckoutWithGiftCode {
         return this;
     }
 
-    private int determineGiftCodeShare() throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException {
+    private int determineGiftCodeShare() throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, AuthorizationException {
         Map<String, Object> giftValueParams = new HashMap<>();
         giftValueParams.put(Constants.LightrailParameters.CODE, giftCode);
         giftValueParams.put(Constants.LightrailParameters.CURRENCY, orderCurrency);
@@ -46,9 +49,9 @@ public class CheckoutWithGiftCode {
         return Math.min(orderTotal, giftCodeValue);
     }
 
-    public boolean needsCreditCardPayment() throws GiftCodeNotActiveException, IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException {
+    public boolean needsCreditCardPayment() throws GiftCodeNotActiveException, IOException, CurrencyMismatchException, AuthorizationException {
         int giftCodeShare = determineGiftCodeShare();
-        return (giftCodeShare == orderTotal);
+        return (giftCodeShare < orderTotal);
     }
 
     public PaymentSummary getPaymentSummary() throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException {
@@ -63,6 +66,9 @@ public class CheckoutWithGiftCode {
     }
 
     private Map<String, Object> getStripeParams(int amount, String currency) {
+        if (stripeToken == null)
+            throw new BadParameterException("Need credit card payment information to handle this order.");
+
         Map<String, Object> stripeParam = new HashMap<>();
         stripeParam.put("amount", amount);
         stripeParam.put("currency", currency);
@@ -70,7 +76,7 @@ public class CheckoutWithGiftCode {
         return stripeParam;
     }
 
-    public PaymentSummary checkout() throws BadParameterException, CurrencyMismatchException, GiftCodeNotActiveException, IOException, CardException, APIException, AuthenticationException, InvalidRequestException, APIConnectionException, InsufficientValueException, AuthorizationException {
+    public PaymentSummary checkout() throws CurrencyMismatchException, GiftCodeNotActiveException, IOException, InsufficientValueException, AuthorizationException, ThirdPartyPaymentException {
         int giftCodeShare = determineGiftCodeShare();
         int creditCardShare = orderTotal - giftCodeShare;
 
@@ -83,16 +89,20 @@ public class CheckoutWithGiftCode {
             GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
         } else if (giftCodeShare > 0) { //the gift code can pay some and the remainder goes on the credit card
             giftChargeParams.put(Constants.LightrailParameters.CAPTURE, false);
-            GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+            giftCharge = GiftCharge.create(giftChargeParams);
             try {
-                Charge charge = Charge.create(getStripeParams(creditCardShare, orderCurrency));
-                giftCharge.capture();
+                stripeCharge = Charge.create(getStripeParams(creditCardShare, orderCurrency));
             } catch (Exception e) {
-                e.printStackTrace();
                 giftCharge.cancel();
+                throw new ThirdPartyPaymentException(e);
             }
+            giftCharge.capture();
         } else { //entire order charged on credit card
-            Charge charge = Charge.create(getStripeParams(creditCardShare, orderCurrency));
+            try {
+                stripeCharge = Charge.create(getStripeParams(creditCardShare, orderCurrency));
+            } catch (Exception e) {
+                throw new ThirdPartyPaymentException(e);
+            }
         }
 
         return new PaymentSummary(orderCurrency, giftCodeShare, creditCardShare);
