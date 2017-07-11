@@ -1,7 +1,10 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.CurrencyMismatchException;
+import com.lightrail.exceptions.GiftCodeNotActiveException;
 import com.lightrail.exceptions.InsufficientValueException;
+import com.lightrail.helpers.Constants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
 import org.junit.Test;
@@ -69,5 +72,24 @@ public class GiftChargeTest {
         assertEquals(chargeAmount, giftCharge.getAmount());
         assertEquals(properties.getProperty("happyPath.code.cardId"), giftCharge.getCardId());
     }
+
+    @Test
+    public void GiftChargeInsufficientValueCase() throws IOException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException {
+        Properties properties = TestParams.getProperties();
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
+        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+        int giftCodeValue = giftValue.getCurrentValue();
+
+        Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
+        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, giftCodeValue + 1);
+        try {
+            GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+        } catch (Exception e) {
+            assertEquals(InsufficientValueException.class.getName(), e.getClass().getName());
+        }
+    }
+
 
 }

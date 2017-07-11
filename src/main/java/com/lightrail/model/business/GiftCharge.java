@@ -23,37 +23,41 @@ public class GiftCharge extends GiftTransaction {
         return 0 - transactionResponse.getValue();
     }
 
-    public GiftCharge capture() throws IOException, InsufficientValueException, AuthorizationException {
+    public GiftCharge capture() throws IOException, AuthorizationException {
         return capture(new HashMap<String, Object>());
     }
 
-    public GiftCharge capture(Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException {
+    public GiftCharge capture(Map<String, Object> transactionParams) throws IOException, AuthorizationException {
         if (!transactionParams.containsKey(Constants.LightrailParameters.USER_SUPPLIED_ID))
             transactionParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, UUID.randomUUID().toString());
-
-        Transaction captureTransaction = APICore.finalizeTransaction(getCardId(),
-                getTransactionId(),
-                Constants.LightrailAPI.Transactions.CAPTURE,
-                transactionParams);
-        history.add(captureTransaction);
-
+        try {
+            Transaction captureTransaction = APICore.finalizeTransaction(getCardId(),
+                    getTransactionId(),
+                    Constants.LightrailAPI.Transactions.CAPTURE,
+                    transactionParams);
+            history.add(captureTransaction);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
         return this;
     }
 
-    public GiftCharge cancel() throws IOException, InsufficientValueException, AuthorizationException {
+    public GiftCharge cancel() throws IOException, AuthorizationException {
         return cancel(new HashMap<String, Object>());
     }
 
-    public GiftCharge cancel(Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException {
+    public GiftCharge cancel(Map<String, Object> transactionParams) throws IOException, AuthorizationException {
         if (!transactionParams.containsKey(Constants.LightrailParameters.USER_SUPPLIED_ID))
             transactionParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, UUID.randomUUID().toString());
-
-        Transaction cancelTransaction = APICore.finalizeTransaction(getCardId(),
-                getTransactionId(),
-                Constants.LightrailAPI.Transactions.VOID,
-                transactionParams);
-        history.add(cancelTransaction);
-
+        try {
+            Transaction cancelTransaction = APICore.finalizeTransaction(getCardId(),
+                    getTransactionId(),
+                    Constants.LightrailAPI.Transactions.VOID,
+                    transactionParams);
+            history.add(cancelTransaction);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
         return this;
     }
 

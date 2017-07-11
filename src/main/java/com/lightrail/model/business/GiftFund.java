@@ -23,7 +23,7 @@ public class GiftFund extends GiftTransaction {
         return transactionResponse.getValue();
     }
 
-    public static GiftFund create(Map<String, Object> giftFundParams) throws BadParameterException, IOException, InsufficientValueException, AuthorizationException {
+    public static GiftFund create(Map<String, Object> giftFundParams) throws BadParameterException, IOException, AuthorizationException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.CARD_ID,
                 Constants.LightrailParameters.AMOUNT,
@@ -33,8 +33,12 @@ public class GiftFund extends GiftTransaction {
         String cardId = (String) giftFundParams.get(Constants.LightrailParameters.CARD_ID);
         if (!giftFundParams.containsKey(Constants.LightrailParameters.USER_SUPPLIED_ID))
             giftFundParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, UUID.randomUUID().toString());
-
-        Transaction cardTransaction = APICore.postTransactionOnCard(cardId, traslateToLightrail(giftFundParams));
+        Transaction cardTransaction;
+        try {
+            cardTransaction = APICore.postTransactionOnCard(cardId, traslateToLightrail(giftFundParams));
+        } catch (InsufficientValueException e) {
+            throw new RuntimeException(e);
+        }
         return new GiftFund(cardTransaction);
     }
 

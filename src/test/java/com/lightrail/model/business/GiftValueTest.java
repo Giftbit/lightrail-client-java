@@ -25,6 +25,37 @@ public class GiftValueTest {
     }
 
     @Test
+    public void NoAuthorizationCase() throws IOException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException {
+        Lightrail.apiKey = "";
+
+        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
+        try {
+            GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+        } catch (Exception e) {
+            assertEquals(AuthorizationException.class.getName(), e.getClass().getName());
+        }
+    }
+
+    @Test
+    public void CurrencyMismatchCase() throws IOException, AuthorizationException, GiftCodeNotActiveException {
+        Properties properties = TestParams.getProperties();
+
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
+        try {
+            String wrongCurrency = "CAD";
+            if ("CAD".equals(properties.getProperty("happyPath.code.currency")))
+                wrongCurrency = "USD";
+
+            giftValueParams.put("currency", wrongCurrency);
+            GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+        } catch (Exception e) {
+            assertEquals(CurrencyMismatchException.class.getName(), e.getClass().getName());
+        }
+    }
+
+    @Test
     public void GiftValueRetrieveMissingParametersTest() throws IOException, CurrencyMismatchException {
         Properties properties = TestParams.getProperties();
 

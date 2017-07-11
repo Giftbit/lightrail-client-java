@@ -61,7 +61,7 @@ public class APICore {
         return responseString;
     }
 
-    private static void handleErrors (int responseCode, String responseString) throws AuthorizationException, InsufficientValueException, IOException {
+    private static void handleErrors(int responseCode, String responseString) throws AuthorizationException, InsufficientValueException, IOException {
         APIError error = parseFromJson(responseString, APIError.class);
         switch (responseCode) {
             case 401:
@@ -82,10 +82,14 @@ public class APICore {
     }
 
     private static <T> T parseFromJson(String jsonString, Class<T> classOfT) {
-        String jsonRootName = classOfT.getAnnotation(JsonObjectRoot.class).value();
         JsonElement jsonElement = new Gson().fromJson(jsonString, JsonElement.class);
-        if (jsonRootName != null && !"".equals(jsonRootName)) {
-            jsonElement = jsonElement.getAsJsonObject().get(jsonRootName);
+
+        JsonObjectRoot jsonRootAnnotation = classOfT.getAnnotation(JsonObjectRoot.class);
+        if (jsonRootAnnotation != null) {
+            String jsonRootName = jsonRootAnnotation.value();
+            if (!"".equals(jsonRootName)) {
+                jsonElement = jsonElement.getAsJsonObject().get(jsonRootName);
+            }
         }
 
         return new Gson().fromJson(jsonElement, classOfT);

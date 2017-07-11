@@ -48,7 +48,7 @@ public class GiftValue {
         this.codeBalanceResponse = codeBalance;
     }
 
-    public static GiftValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, InsufficientValueException, AuthorizationException {
+    public static GiftValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.CODE,
                 Constants.LightrailParameters.CURRENCY
@@ -59,7 +59,13 @@ public class GiftValue {
         String requestedCurrency = (String) giftValueParams.get(Constants.LightrailParameters.CURRENCY);
 
 
-        CodeBalance codeBalance = APICore.balanceCheck(requestedCode);
+        CodeBalance codeBalance;
+        try {
+            codeBalance = APICore.balanceCheck(requestedCode);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
+
         String codeCurrency = codeBalance.getCurrency();
         if (!Objects.equals(codeCurrency, requestedCurrency))
             throw new CurrencyMismatchException(String.format("Currency mismatch. Seeking %s value on a %s gift code.",
