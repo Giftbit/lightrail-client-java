@@ -1,8 +1,6 @@
 package com.lightrail.model.business;
 
-import com.lightrail.exceptions.CurrencyMismatchException;
-import com.lightrail.exceptions.GiftCodeNotActiveException;
-import com.lightrail.exceptions.BadParameterException;
+import com.lightrail.exceptions.*;
 import com.lightrail.model.api.CodeBalance;
 import com.lightrail.model.api.ValueStore;
 import com.lightrail.helpers.*;
@@ -20,6 +18,10 @@ public class GiftValue {
 
     public String getCurrency() {
         return codeBalanceResponse.getCurrency();
+    }
+
+    public String getTimeStamp() {
+        return codeBalanceResponse.getBalanceDate();
     }
 
     public int getCurrentValue() throws GiftCodeNotActiveException {
@@ -46,22 +48,22 @@ public class GiftValue {
         this.codeBalanceResponse = codeBalance;
     }
 
-    public static GiftValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException {
-        LightrailParameters.requireParameters(Arrays.asList(
-                LightrailParameters.CODE,
-                LightrailParameters.CURRENCY
+    public static GiftValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, InsufficientValueException, AuthorizationException {
+        Constants.LightrailParameters.requireParameters(Arrays.asList(
+                Constants.LightrailParameters.CODE,
+                Constants.LightrailParameters.CURRENCY
                 ),
                 giftValueParams);
 
-        String requestedCode = (String) giftValueParams.get(LightrailParameters.CODE);
-        String requestedCurrency = (String) giftValueParams.get(LightrailParameters.CURRENCY);
+        String requestedCode = (String) giftValueParams.get(Constants.LightrailParameters.CODE);
+        String requestedCurrency = (String) giftValueParams.get(Constants.LightrailParameters.CURRENCY);
 
 
         CodeBalance codeBalance = APICore.balanceCheck(requestedCode);
         String codeCurrency = codeBalance.getCurrency();
         if (!Objects.equals(codeCurrency, requestedCurrency))
             throw new CurrencyMismatchException(String.format("Currency mismatch. Seeking %s value on a %s gift code.",
-                    giftValueParams.get(LightrailParameters.CURRENCY),
+                    giftValueParams.get(Constants.LightrailParameters.CURRENCY),
                     codeCurrency));
         return new GiftValue(codeBalance);
     }

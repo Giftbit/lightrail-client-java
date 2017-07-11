@@ -8,6 +8,8 @@ public class CodeBalance {
     ValueStore principal;
     List<ValueStore> attached;
     String currency;
+    String balanceDate;
+
 
     public List<ValueStore> getAttached() {
         return attached;
@@ -20,4 +22,9 @@ public class CodeBalance {
     public ValueStore getPrincipal() {
         return principal;
     }
+
+    public String getBalanceDate() {
+        return balanceDate;
+    }
+
 }

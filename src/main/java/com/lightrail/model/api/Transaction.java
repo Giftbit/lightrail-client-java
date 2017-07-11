@@ -9,6 +9,7 @@ public class Transaction {
     String currency;
     String codeLastFour;
     String giftbitUserId;
+    String dateCreated;
 
     public String getTransactionId() {
         return transactionId;
@@ -36,5 +37,9 @@ public class Transaction {
 
     public String getGiftbitUserId() {
         return giftbitUserId;
+    }
+
+    public String getDateCreated() {
+        return dateCreated;
     }
 }

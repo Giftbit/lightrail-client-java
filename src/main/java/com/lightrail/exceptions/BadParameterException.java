@@ -1,6 +1,6 @@
 package com.lightrail.exceptions;
 
-public class BadParameterException extends Exception{
+public class BadParameterException extends RuntimeException{
     public BadParameterException(String message) {
         super(message);
     }

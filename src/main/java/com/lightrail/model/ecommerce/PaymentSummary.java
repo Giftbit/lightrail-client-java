@@ -9,10 +9,10 @@ public class PaymentSummary {
 
     class PaymentSummaryLine {
         String title;
-        float amount;
+        int amount;
     }
 
-    List<PaymentSummaryLine> summaryLineItems = new ArrayList<>();
+    Map<String, PaymentSummaryLine> summaryLineItems = new HashMap<>();
     String currency;
 
     public PaymentSummary(String currency, int giftCodeAmount, int creditCardAmount) {
@@ -28,24 +28,35 @@ public class PaymentSummary {
 
     public void addGiftCodeAmount(int giftCodeAmount) {
         PaymentSummaryLine paymentSummaryLine = new PaymentSummaryLine();
+
         paymentSummaryLine.title = String.format(Constants.LightrailEcommerce.PaymentSummary.GIFT_CODE_SHARE);
-        paymentSummaryLine.amount = com.lightrail.helpers.Currency.minorToMajor(giftCodeAmount, currency);
-        summaryLineItems.add(paymentSummaryLine);
+        paymentSummaryLine.amount = giftCodeAmount;
+        summaryLineItems.put(Constants.LightrailEcommerce.PaymentSummary.GIFT_CODE_SHARE, paymentSummaryLine);
     }
 
     public void addCreditCardAmount(int creditCardAmount) {
         PaymentSummaryLine paymentSummaryLine = new PaymentSummaryLine();
+
         paymentSummaryLine.title = String.format(Constants.LightrailEcommerce.PaymentSummary.CREDIT_CARD_SHARE);
-        paymentSummaryLine.amount = com.lightrail.helpers.Currency.minorToMajor(creditCardAmount, currency);
-        summaryLineItems.add(paymentSummaryLine);
+        paymentSummaryLine.amount = creditCardAmount;
+        summaryLineItems.put(Constants.LightrailEcommerce.PaymentSummary.CREDIT_CARD_SHARE, paymentSummaryLine);
     }
+
+    public int getGiftCodeAmount() {
+        return summaryLineItems.get(Constants.LightrailEcommerce.PaymentSummary.GIFT_CODE_SHARE).amount;
+    }
+
+    public int getCreditCardAmount() {
+        return summaryLineItems.get(Constants.LightrailEcommerce.PaymentSummary.CREDIT_CARD_SHARE).amount;
+    }
+
 
     public String toString() {
         StringBuffer orderSummaryOutputBuffer = new StringBuffer();
-        for (PaymentSummaryLine summaryItem : summaryLineItems) {
-            orderSummaryOutputBuffer.append(summaryItem.title).append("\t:")
+        for (String summaryItemKey : summaryLineItems.keySet()) {
+            orderSummaryOutputBuffer.append(summaryLineItems.get(summaryItemKey).title).append("\t:")
                     .append(Currency.getInstance(currency).getSymbol())
-                    .append(String.valueOf(summaryItem.amount)).append("\n");
+                    .append(String.valueOf(summaryLineItems.get(summaryItemKey).amount)).append("\n");
         }
         return orderSummaryOutputBuffer.toString();
     }

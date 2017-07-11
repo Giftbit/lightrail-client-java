@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-/**
- * Created by mohammad on 2017-07-04.
- */
 public class Currency {
     static Map<String, Integer> majorToMinorRatioMap = new HashMap<>();
 

@@ -2,8 +2,11 @@ package com.lightrail.net;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
+import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.Constants;
 import com.lightrail.model.Lightrail;
+import com.lightrail.model.api.APIError;
 import com.lightrail.model.api.CodeBalance;
 import com.lightrail.model.api.Transaction;
 import com.lightrail.model.api.JsonObjectRoot;
@@ -14,14 +17,11 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 
-import static com.lightrail.model.Lightrail.*;
-
 
 public class APICore {
 
-
-    private static String getRawAPIResponse(String urlSuffix, String requestMethod, String body) throws IOException {
-        URL requestURL = new URL(Lightrail.apiBaseURL + urlSuffix);
+    private static String getRawAPIResponse(String urlSuffix, String requestMethod, String body) throws AuthorizationException, IOException, InsufficientValueException {
+        URL requestURL = new URL(Constants.LightrailAPI.apiBaseURL + urlSuffix);
         HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
         httpsURLConnection.setRequestProperty(
                 Constants.LightrailAPI.AUTHORIZATION_HEADER_NAME,
@@ -38,21 +38,47 @@ public class APICore {
         }
         int responseCode = httpsURLConnection.getResponseCode();
 
-        if (responseCode != 200)
-            throw new IOException("Server responded with " + responseCode);
+        InputStream responseInputStream;
+        if (httpsURLConnection.getResponseCode() < HttpsURLConnection.HTTP_BAD_REQUEST) {
+            responseInputStream = httpsURLConnection.getInputStream();
+        } else {
+            responseInputStream = httpsURLConnection.getErrorStream();
+        }
 
-        BufferedReader responseReader =
-                new BufferedReader(new InputStreamReader(httpsURLConnection.getInputStream(), StandardCharsets.UTF_8));
+        BufferedReader responseReader = new BufferedReader(new InputStreamReader(responseInputStream, StandardCharsets.UTF_8));
         StringBuilder responseStringBuffer = new StringBuilder();
         String inputLine;
         while ((inputLine = responseReader.readLine()) != null)
             responseStringBuffer.append(inputLine).append('\n');
         responseReader.close();
-        return responseStringBuffer.toString();
+
+        String responseString = responseStringBuffer.toString();
+
+        if (responseCode > 200) {
+            handleErrors(responseCode, responseString);
+        }
+
+        return responseString;
     }
 
-    public static String ping() throws IOException {
-        return getRawAPIResponse(PING_ENDPOINT, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
+    private static void handleErrors (int responseCode, String responseString) throws AuthorizationException, InsufficientValueException, IOException {
+        APIError error = parseFromJson(responseString, APIError.class);
+        switch (responseCode) {
+            case 401:
+            case 403:
+                throw new AuthorizationException("Authorization error: " + responseCode + "\n" + responseString);
+            case 400:
+                if (error.getMessage() != null && responseString.contains("Insufficient Value")) {
+                    throw new InsufficientValueException();
+                }
+            default:
+                throw new IOException(String.format("Server responded with %d : %s", responseCode, error.getMessage()));
+        }
+
+    }
+
+    public static String ping() throws IOException, InsufficientValueException, AuthorizationException {
+        return getRawAPIResponse(Constants.LightrailAPI.PING_ENDPOINT, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
     }
 
     private static <T> T parseFromJson(String jsonString, Class<T> classOfT) {
@@ -65,20 +91,27 @@ public class APICore {
         return new Gson().fromJson(jsonElement, classOfT);
     }
 
-    public static CodeBalance balanceCheck(String code) throws IOException {
-        String rawAPIResponse = getRawAPIResponse(String.format(CODES_BALANCE_DETAILS_ENDPOINT, code), Constants.LightrailAPI.REQUEST_METHOD_GET, null);
+    public static CodeBalance balanceCheck(String code) throws IOException, InsufficientValueException, AuthorizationException {
+        String rawAPIResponse = getRawAPIResponse(String.format(Constants.LightrailAPI.CODES_BALANCE_DETAILS_ENDPOINT, code), Constants.LightrailAPI.REQUEST_METHOD_GET, null);
         return parseFromJson(rawAPIResponse, CodeBalance.class);
     }
 
-    public static Transaction postTransactionOnCode(String code, Map<String, Object> transactionParams) throws IOException {
-        String urlSuffix = String.format(CODES_TRANSACTION_ENDPOINT, code);
+    public static Transaction postTransactionOnCode(String code, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException {
+        String urlSuffix = String.format(Constants.LightrailAPI.CODES_TRANSACTION_ENDPOINT, code);
         String bodyJsonString = new Gson().toJson(transactionParams);
         String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
         return parseFromJson(rawAPIResponse, Transaction.class);
     }
 
-    public static Transaction finalizeTransaction (String cardId, String transactionId, String finalizationType, Map<String, Object> transactionParams) throws IOException {
-        String urlSuffix = String.format(FINALIZE_TRANSACTION_ENDPOINT, cardId, transactionId, finalizationType);
+    public static Transaction finalizeTransaction(String cardId, String transactionId, String finalizationType, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException {
+        String urlSuffix = String.format(Constants.LightrailAPI.FINALIZE_TRANSACTION_ENDPOINT, cardId, transactionId, finalizationType);
+        String bodyJsonString = new Gson().toJson((transactionParams));
+        String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
+        return parseFromJson(rawAPIResponse, Transaction.class);
+    }
+
+    public static Transaction postTransactionOnCard(String cardId, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException {
+        String urlSuffix = String.format(Constants.LightrailAPI.FUND_CARD_ENDPOINT, cardId);
         String bodyJsonString = new Gson().toJson((transactionParams));
         String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
         return parseFromJson(rawAPIResponse, Transaction.class);
