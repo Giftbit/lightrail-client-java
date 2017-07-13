@@ -1,6 +1,8 @@
 package com.lightrail.model.ecommerce;
 
 import com.lightrail.helpers.*;
+import com.lightrail.model.business.GiftCharge;
+import com.stripe.model.Charge;
 
 import java.util.*;
 import java.util.Currency;
@@ -17,8 +19,8 @@ public class PaymentSummary {
 
     public PaymentSummary(String currency, int giftCodeAmount, int creditCardAmount) {
         this.currency = currency;
-        addGiftCodeAmount(giftCodeAmount);
-        addCreditCardAmount(creditCardAmount);
+        addGiftCodeAmount(giftCodeAmount, "");
+        addCreditCardAmount(creditCardAmount, "");
 
     }
 
@@ -26,18 +28,18 @@ public class PaymentSummary {
         this.currency = currency;
     }
 
-    public void addGiftCodeAmount(int giftCodeAmount) {
+    public void addGiftCodeAmount(int giftCodeAmount, String comment) {
         PaymentSummaryLine paymentSummaryLine = new PaymentSummaryLine();
 
-        paymentSummaryLine.title = String.format(Constants.LightrailEcommerce.PaymentSummary.GIFT_CODE_SHARE);
+        paymentSummaryLine.title = comment;
         paymentSummaryLine.amount = giftCodeAmount;
         summaryLineItems.put(Constants.LightrailEcommerce.PaymentSummary.GIFT_CODE_SHARE, paymentSummaryLine);
     }
 
-    public void addCreditCardAmount(int creditCardAmount) {
+    public void addCreditCardAmount(int creditCardAmount, String comment) {
         PaymentSummaryLine paymentSummaryLine = new PaymentSummaryLine();
 
-        paymentSummaryLine.title = String.format(Constants.LightrailEcommerce.PaymentSummary.CREDIT_CARD_SHARE);
+        paymentSummaryLine.title = comment;
         paymentSummaryLine.amount = creditCardAmount;
         summaryLineItems.put(Constants.LightrailEcommerce.PaymentSummary.CREDIT_CARD_SHARE, paymentSummaryLine);
     }
@@ -49,7 +51,6 @@ public class PaymentSummary {
     public int getCreditCardAmount() {
         return summaryLineItems.get(Constants.LightrailEcommerce.PaymentSummary.CREDIT_CARD_SHARE).amount;
     }
-
 
     public String toString() {
         StringBuffer orderSummaryOutputBuffer = new StringBuffer();

@@ -1,24 +1,32 @@
 package com.lightrail.model.ecommerce;
 
 import com.lightrail.exceptions.*;
-import com.lightrail.helpers.Currency;
+import com.lightrail.helpers.Constants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
 import com.lightrail.model.business.GiftFund;
 import com.lightrail.model.business.GiftValue;
 import com.stripe.Stripe;
-import com.stripe.exception.*;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ThreadLocalRandom;
 
 import static org.junit.Assert.assertEquals;
 
 public class CheckoutWithGiftCodeTest {
 
-    private CheckoutWithGiftCode checkoutAndRefundTheGiftCode (int orderTotal, boolean dontAddStripe) throws IOException, AuthorizationException, GiftCodeNotActiveException, CurrencyMismatchException, InsufficientValueException, ThirdPartyPaymentException {
+    public static GiftFund returnFundsToCode(int amount) throws IOException, AuthorizationException {
+        Map<String, Object> giftFundParams = TestParams.readCardParamsFromProperties();
+        giftFundParams.put(Constants.StripeParameters.AMOUNT, amount);
+
+        return GiftFund.create(giftFundParams);
+    }
+
+    private CheckoutWithGiftCode createCheckoutObject(int orderTotal, boolean addGiftCode, boolean addStripe)
+            throws IOException, AuthorizationException, GiftCodeNotActiveException, CurrencyMismatchException, InsufficientValueException, ThirdPartyPaymentException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -26,21 +34,19 @@ public class CheckoutWithGiftCodeTest {
 
         String orderCurrency = properties.getProperty("happyPath.code.currency");
 
-        CheckoutWithGiftCode checkoutWithGiftCode = new CheckoutWithGiftCode()
-                .setOrderTotal(orderTotal, orderCurrency)
-                .useGiftCode(properties.getProperty("happyPath.code"));
-
-        if (!dontAddStripe && checkoutWithGiftCode.needsCreditCardPayment()) {
-            checkoutWithGiftCode.useStripeToken(properties.getProperty("stripe.demoToken"));
+        CheckoutWithGiftCode checkoutWithGiftCode = new CheckoutWithGiftCode(orderTotal, orderCurrency);
+        if (addGiftCode) {
+            checkoutWithGiftCode.useGiftCode(properties.getProperty("happyPath.code"));
         }
+        if (addStripe) {
+            int randomNum = ThreadLocalRandom.current().nextInt(0, 2);
+            //System.out.println("rand: " + randomNum);
+            if (randomNum > 0)
+                checkoutWithGiftCode.useStripeToken(properties.getProperty("stripe.demoToken"));
+            else
+                checkoutWithGiftCode.useStripeCustomer(properties.getProperty("stripe.demoCustomer"));
 
-        PaymentSummary paymentSummary = checkoutWithGiftCode.checkout();
-        int giftCodeShare = paymentSummary.getGiftCodeAmount();
-
-        Map<String, Object> giftFundParams = TestParams.readCardParamsFromProperties();
-        giftFundParams.put("amount", giftCodeShare);
-
-        GiftFund giftCharge = GiftFund.create(giftFundParams);
+        }
         return checkoutWithGiftCode;
     }
 
@@ -48,24 +54,21 @@ public class CheckoutWithGiftCodeTest {
     public void checkoutWithGiftCodeHappyPathWalkThroughTest() throws IOException, GiftCodeNotActiveException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, ThirdPartyPaymentException {
         Properties properties = TestParams.getProperties();
 
-        CheckoutWithGiftCode checkoutWithGiftCode = checkoutAndRefundTheGiftCode(7645, false);
-        int giftCodeShare = checkoutWithGiftCode.getPaymentSummary().getGiftCodeAmount();
+        CheckoutWithGiftCode checkoutWithGiftCode = createCheckoutObject(7645, true, true);
+        int giftCodeShare = checkoutWithGiftCode.checkout().getGiftCodeAmount();
+        returnFundsToCode(giftCodeShare);
 
-        checkoutWithGiftCode = new CheckoutWithGiftCode()
-                .setOrderTotal(7645, "USD")
-                .useGiftCode(properties.getProperty("happyPath.code"))
-                .useStripeToken(properties.getProperty("stripe.demoToken"));
+        checkoutWithGiftCode = createCheckoutObject(7645, true, true);
 
-        PaymentSummary paymentSummary = checkoutWithGiftCode.getPaymentSummary();
+        PaymentSummary paymentSummary = checkoutWithGiftCode.checkout();
         int newGiftCodeShare = paymentSummary.getGiftCodeAmount();
         assertEquals(giftCodeShare, newGiftCodeShare);
+        returnFundsToCode(giftCodeShare);
     }
 
     @Test
-    public void checkoutWithGiftCodeOnlyTest () throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
+    public void checkoutWithGiftCodeOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
         Properties properties = TestParams.getProperties();
-        String orderCurrency = properties.getProperty("happyPath.code.currency");
-        String giftCode = properties.getProperty("happyPath.code");
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -73,16 +76,17 @@ public class CheckoutWithGiftCodeTest {
         GiftValue giftValue = GiftValue.retrieve(giftValueParams);
 
         int orderTotal = giftValue.getCurrentValue() - 1;
-        CheckoutWithGiftCode checkoutWithGiftCode = checkoutAndRefundTheGiftCode(orderTotal, false);
-        PaymentSummary paymentSummary = checkoutWithGiftCode.getPaymentSummary();
+        CheckoutWithGiftCode checkoutWithGiftCode = createCheckoutObject(orderTotal, true, false);
+
+        PaymentSummary paymentSummary = checkoutWithGiftCode.checkout();
         assertEquals(0, paymentSummary.getCreditCardAmount());
+
+        returnFundsToCode(paymentSummary.getGiftCodeAmount());
     }
 
     @Test
-    public void checkoutWithoutCreditCardInfoWhenNeededTest () throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
+    public void checkoutWithoutCreditCardInfoWhenNeededTest() throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
         Properties properties = TestParams.getProperties();
-        String orderCurrency = properties.getProperty("happyPath.code.currency");
-        String giftCode = properties.getProperty("happyPath.code");
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -91,39 +95,76 @@ public class CheckoutWithGiftCodeTest {
 
         int orderTotal = giftValue.getCurrentValue() + 1;
         try {
-            CheckoutWithGiftCode checkoutWithGiftCode = checkoutAndRefundTheGiftCode(orderTotal, true);
+            createCheckoutObject(orderTotal, true, false).checkout();
         } catch (Exception e) {
             assertEquals(e.getCause().getClass().getName(), BadParameterException.class.getName());
         }
     }
 
     @Test
-    public void checkoutWithGiftCodeNoNeedForCreditCardTest () throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException {
+    public void checkoutWithGiftCodeNeedsCreditCardTest() throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
         Properties properties = TestParams.getProperties();
-        String orderCurrency = properties.getProperty("happyPath.code.currency");
-        String giftCode = properties.getProperty("happyPath.code");
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
-        Stripe.apiKey = properties.getProperty("stripe.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
         GiftValue giftValue = GiftValue.retrieve(giftValueParams);
 
         int orderTotal = giftValue.getCurrentValue() - 1;
 
-        CheckoutWithGiftCode checkoutWithGiftCode = new CheckoutWithGiftCode()
-                .setOrderTotal(orderTotal, orderCurrency)
-                .useGiftCode(giftCode);
+        CheckoutWithGiftCode checkoutWithGiftCode = createCheckoutObject(orderTotal, true, false);
 
-        assert (! checkoutWithGiftCode.needsCreditCardPayment());
+        assert (!checkoutWithGiftCode.needsCreditCardPayment());
 
         int newOrderTotal = giftValue.getCurrentValue() + 1;
-        checkoutWithGiftCode = new CheckoutWithGiftCode()
-                .setOrderTotal(newOrderTotal, orderCurrency)
-                .useGiftCode(giftCode);
-
+        checkoutWithGiftCode = createCheckoutObject(newOrderTotal, true, false);
         assert (checkoutWithGiftCode.needsCreditCardPayment());
+    }
 
+    @Test
+    public void checkoutWithoutGiftCode() throws IOException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
+        Properties properties = TestParams.getProperties();
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        String orderCurrency = properties.getProperty("happyPath.code.currency");
+
+        CheckoutWithGiftCode checkoutWithGiftCode = new CheckoutWithGiftCode(100, orderCurrency);
+        try {
+            checkoutWithGiftCode.checkout();
+        } catch (Exception e) {
+            assertEquals(e.getCause().getClass().getName(), BadParameterException.class.getName());
+        }
+        Stripe.apiKey = properties.getProperty("stripe.testApiKey");
+        checkoutWithGiftCode = createCheckoutObject(100, false, true);
+        PaymentSummary paymentSummary = checkoutWithGiftCode.checkout();
+        assertEquals(0, paymentSummary.getGiftCodeAmount());
+    }
+
+    @Test
+    public void checkoutWithZeroedGiftCode() throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
+        Properties properties = TestParams.getProperties();
+
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
+        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+        int originalGiftValue = giftValue.getCurrentValue();
+
+        CheckoutWithGiftCode checkoutWithGiftCode = createCheckoutObject(originalGiftValue, true, false);
+        checkoutWithGiftCode.checkout();
+
+        giftValue = GiftValue.retrieve(giftValueParams);
+        assertEquals(0, giftValue.getCurrentValue());
+
+        checkoutWithGiftCode = createCheckoutObject(100, true, false);
+
+        try {
+            checkoutWithGiftCode.checkout();
+        } catch (Exception e) {
+            assertEquals(e.getClass().getName(), InsufficientValueException.class.getName());
+        }
+
+        returnFundsToCode(originalGiftValue);
     }
 
     public void checkoutWithGiftCodeSample() throws IOException, GiftCodeNotActiveException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, ThirdPartyPaymentException {
@@ -133,8 +174,7 @@ public class CheckoutWithGiftCodeTest {
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
         Stripe.apiKey = properties.getProperty("stripe.testApiKey");
 
-        CheckoutWithGiftCode checkoutWithGiftCode = new CheckoutWithGiftCode()
-                .setOrderTotal(7645, "USD")
+        CheckoutWithGiftCode checkoutWithGiftCode = new CheckoutWithGiftCode(7645, "USD")
                 .useGiftCode(properties.getProperty("happyPath.code"))
                 .useStripeToken(properties.getProperty("stripe.demoToken"));
         PaymentSummary paymentSummary = checkoutWithGiftCode.getPaymentSummary();

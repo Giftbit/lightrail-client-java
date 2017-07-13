@@ -12,15 +12,16 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class CheckoutWithGiftCode {
-    int orderTotal;
-    String orderCurrency;
-    String giftCode;
-    String stripeToken;
+    private int orderTotal;
+    private String orderCurrency;
+    private String giftCode = null;
+    private String stripeToken = null;
+    private String stripeCustomer = null;
 
-    GiftCharge giftCharge;
-    Charge stripeCharge;
+    StripeGiftHybridCharge stripeGiftHybridChargeObject = null;
 
-    public CheckoutWithGiftCode() {
+    public CheckoutWithGiftCode(int orderTotal, String orderCurrency) {
+        setOrderTotal(orderTotal, orderCurrency);
     }
 
     public CheckoutWithGiftCode useGiftCode(String giftCode) {
@@ -33,6 +34,10 @@ public class CheckoutWithGiftCode {
         return this;
     }
 
+    public CheckoutWithGiftCode useStripeCustomer (String stripeCustomer) {
+        this.stripeCustomer = stripeCustomer;
+        return this;
+    }
 
     public CheckoutWithGiftCode setOrderTotal(int orderTotal, String orderCurrency) {
         this.orderTotal = orderTotal;
@@ -40,79 +45,46 @@ public class CheckoutWithGiftCode {
         return this;
     }
 
-    private int determineGiftCodeShare() throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, AuthorizationException {
-        Map<String, Object> giftValueParams = new HashMap<>();
-        giftValueParams.put(Constants.LightrailParameters.CODE, giftCode);
-        giftValueParams.put(Constants.LightrailParameters.CURRENCY, orderCurrency);
-        int giftCodeValue = GiftValue.retrieve(giftValueParams).getCurrentValue();
-
-        return Math.min(orderTotal, giftCodeValue);
-    }
-
-    public boolean needsCreditCardPayment() throws GiftCodeNotActiveException, IOException, CurrencyMismatchException, AuthorizationException {
-        int giftCodeShare = determineGiftCodeShare();
-        return (giftCodeShare < orderTotal);
+    public boolean needsCreditCardPayment() throws GiftCodeNotActiveException, IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException {
+        PaymentSummary paymentSummary = StripeGiftHybridCharge.simulate(getChargeParams());
+        return paymentSummary.getCreditCardAmount() >0;
     }
 
     public PaymentSummary getPaymentSummary() throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException {
-        int giftCodeShare = determineGiftCodeShare();
-        int creditCardShare = orderTotal - giftCodeShare;
-
-        PaymentSummary paymentSummary = new PaymentSummary(orderCurrency);
-        paymentSummary.addGiftCodeAmount(giftCodeShare);
-        paymentSummary.addCreditCardAmount(creditCardShare);
-
-        return paymentSummary;
+        if (stripeGiftHybridChargeObject != null) {
+            return stripeGiftHybridChargeObject.getPaymentSummary();
+        } else {
+            return StripeGiftHybridCharge.simulate(getChargeParams());
+        }
     }
 
-    private Map<String, Object> getStripeParams(int amount, String currency) {
-        if (stripeToken == null)
-            throw new BadParameterException("Need credit card payment information to handle this order.");
-
-        Map<String, Object> stripeParam = new HashMap<>();
-        stripeParam.put("amount", amount);
-        stripeParam.put("currency", currency);
-        stripeParam.put("source", stripeToken);
-        return stripeParam;
-    }
-
-    public PaymentSummary checkout() throws CurrencyMismatchException, GiftCodeNotActiveException, IOException, InsufficientValueException, AuthorizationException, ThirdPartyPaymentException {
-        int giftCodeShare = determineGiftCodeShare();
-        int creditCardShare = orderTotal - giftCodeShare;
-
-        Map<String, Object> giftChargeParams = new HashMap<>();
-        giftChargeParams.put(Constants.LightrailParameters.CODE, giftCode);
-        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, giftCodeShare);
-        giftChargeParams.put(Constants.LightrailParameters.CURRENCY, orderCurrency);
-
-        if (creditCardShare == 0) { // the gift code can pay for the full order
-            GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
-        } else if (giftCodeShare > 0) { //the gift code can pay some and the remainder goes on the credit card
-            giftChargeParams.put(Constants.LightrailParameters.CAPTURE, false);
-            giftCharge = GiftCharge.create(giftChargeParams);
-            try {
-                stripeCharge = Charge.create(getStripeParams(creditCardShare, orderCurrency));
-            } catch (Exception e) {
-                giftCharge.cancel();
-                throw new ThirdPartyPaymentException(e);
-            }
-            giftCharge.capture();
-        } else { //entire order charged on credit card
-            try {
-                stripeCharge = Charge.create(getStripeParams(creditCardShare, orderCurrency));
-            } catch (Exception e) {
-                throw new ThirdPartyPaymentException(e);
-            }
+    private Map<String, Object> getChargeParams() {
+        Map<String, Object> chargeParams = new HashMap<>();
+        chargeParams.put(Constants.LightrailParameters.AMOUNT, orderTotal);
+        chargeParams.put(Constants.LightrailParameters.CURRENCY, orderCurrency);
+        if (giftCode != null) {
+            chargeParams.put(Constants.LightrailParameters.CODE, giftCode);
+        }
+        if (stripeToken != null) {
+            chargeParams.put(Constants.StripeParameters.TOKEN, stripeToken);
+        }
+        if (stripeCustomer != null) {
+            chargeParams.put(Constants.StripeParameters.CUSTOMER, stripeCustomer);
         }
 
-        return new PaymentSummary(orderCurrency, giftCodeShare, creditCardShare);
+        return chargeParams;
+    }
+
+    public PaymentSummary checkout() throws ThirdPartyPaymentException, InsufficientValueException, GiftCodeNotActiveException, CurrencyMismatchException, AuthorizationException, IOException {
+        stripeGiftHybridChargeObject = StripeGiftHybridCharge.create(getChargeParams());
+        return stripeGiftHybridChargeObject.getPaymentSummary();
     }
 
     public String getOrderCurrency() {
         return orderCurrency;
     }
 
-    public float getOrderTotal() {
+    public int getOrderTotal() {
         return orderTotal;
     }
 }

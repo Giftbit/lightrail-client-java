@@ -42,7 +42,13 @@ public final class Constants {
             public static final String CREDIT_CARD_SHARE = "Credit card";
         }
     }
+    public static class StripeParameters {
+        public static String AMOUNT = "amount";
+        public static String CURRENCY = "currency";
+        public static String TOKEN = "source";
+        public static String CUSTOMER = "customer";
 
+    }
     public static class LightrailParameters {
 
         public static String CURRENCY = "currency";
@@ -54,7 +60,6 @@ public final class Constants {
         public static String PENDING = "pending";
         public static String CARD_ID = "cardId";
 
-
         public static void requireParameters(List<String> requiredParams, Map<String, Object> givenParams) throws BadParameterException {
             if (Lightrail.apiKey == null)
                 throw new BadParameterException("API Key is not set. You can set the API key as follows: 'Lightrail.apiKey=...'");
@@ -62,7 +67,6 @@ public final class Constants {
                 if (!givenParams.containsKey(paramName) || givenParams.get(paramName) == null)
                     throw new BadParameterException(String.format("Missing Parameter: %s.", paramName));
             }
-
         }
     }
 }

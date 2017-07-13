@@ -93,7 +93,6 @@ public class GiftCharge extends GiftTransaction {
         if (!giftChargeParams.containsKey(Constants.LightrailParameters.CAPTURE))
             giftChargeParams.put(Constants.LightrailParameters.CAPTURE, true);
 
-
         Transaction codeTransaction = APICore.postTransactionOnCode(code, traslateToLightrail(giftChargeParams));
 
         return new GiftCharge(codeTransaction);

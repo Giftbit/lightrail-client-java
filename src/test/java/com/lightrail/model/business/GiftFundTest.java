@@ -20,7 +20,7 @@ public class GiftFundTest {
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        int fundAmount = 101;
+        int fundAmount = 500;
 
         Map<String, Object> giftChargeParams = TestParams.readCardParamsFromProperties();
         giftChargeParams.put("amount", fundAmount);
