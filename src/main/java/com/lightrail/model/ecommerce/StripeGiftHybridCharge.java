@@ -61,24 +61,28 @@ public class StripeGiftHybridCharge {
         return stripeParam;
     }
 
-    private static int adjustForMinimumStripeTransactionValue(int transactionAmount, int currentGiftCodeShare, int totalGiftCodeValue) throws InsufficientValueException {
+    private static int adjustForMinimumStripeTransactionValue(int transactionAmount, int currentGiftCodeShare) throws InsufficientValueException {
         int newGiftCodeShare = currentGiftCodeShare;
         int stripeShare = transactionAmount - currentGiftCodeShare;
-        if (stripeShare < Constants.LightrailEcommerce.STRIPE_MINIMUM_TRANSACTION_VALUE) {
+        if (stripeShare>0 && stripeShare < Constants.LightrailEcommerce.STRIPE_MINIMUM_TRANSACTION_VALUE) {
             int differential = Constants.LightrailEcommerce.STRIPE_MINIMUM_TRANSACTION_VALUE - stripeShare;
-            newGiftCodeShare = differential + currentGiftCodeShare;
-            if (newGiftCodeShare > totalGiftCodeValue)
+            newGiftCodeShare = currentGiftCodeShare - differential;
+            if (newGiftCodeShare < 0)
                 throw new InsufficientValueException("This gift code value is too small for this transaction.");
         }
 
         return newGiftCodeShare;
     }
 
-    private static int determineGiftCodeShare(Map<String, Object> chargeParams) throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    private static int determineGiftCodeShare(Map<String, Object> chargeParams) throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, AuthorizationException, InsufficientValueException, BadParameterException, CouldNotFindObjectException {
         int transactionAmount = (Integer) chargeParams.get(Constants.LightrailParameters.AMOUNT);
         int giftCodeShare = 0;
-
-        GiftCharge giftCharge = retrieveGiftCharge(chargeParams);
+        GiftCharge giftCharge = null;
+        try {
+            giftCharge = retrieveGiftCharge(chargeParams);
+        } catch (BadParameterException e) {
+        } catch (CouldNotFindObjectException e) {
+        }
 
         if (giftCharge == null) {
             Object giftCodeObject = chargeParams.get(Constants.LightrailParameters.CODE);
@@ -91,7 +95,7 @@ public class StripeGiftHybridCharge {
                 if (giftCodeValue == 0)
                     throw new InsufficientValueException("The gift code does not have any available value.");
                 giftCodeShare = Math.min(transactionAmount, giftCodeValue);
-                giftCodeShare = adjustForMinimumStripeTransactionValue(transactionAmount, giftCodeShare, giftCodeValue);
+                giftCodeShare = adjustForMinimumStripeTransactionValue(transactionAmount, giftCodeShare);
             }
         } else {
             giftCodeShare = giftCharge.getAmount();
@@ -116,12 +120,8 @@ public class StripeGiftHybridCharge {
                 creditCardShare);
     }
 
-    private static GiftCharge retrieveGiftCharge(Map<String, Object> chargeParams) throws AuthorizationException, IOException {
-        try {
-            return GiftCharge.retrieve(chargeParams);
-        } catch (CouldNotFindObjectException e) {
-            return null;
-        }
+    private static GiftCharge retrieveGiftCharge(Map<String, Object> chargeParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
+        return GiftCharge.retrieve(chargeParams);
     }
 
     public static StripeGiftHybridCharge create(Map<String, Object> chargeParams) throws InsufficientValueException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, IOException, ThirdPartyPaymentException, CouldNotFindObjectException {

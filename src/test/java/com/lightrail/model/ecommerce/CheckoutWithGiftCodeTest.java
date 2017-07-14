@@ -18,12 +18,25 @@ import static org.junit.Assert.assertEquals;
 
 public class CheckoutWithGiftCodeTest {
 
-    public static GiftFund returnFundsToCode(int amount) throws IOException, AuthorizationException, CouldNotFindObjectException {
+    private GiftFund returnFundsToCode(int amount) throws IOException, AuthorizationException, CouldNotFindObjectException {
         Map<String, Object> giftFundParams = TestParams.readCardParamsFromProperties();
         giftFundParams.put(Constants.StripeParameters.AMOUNT, amount);
 
         return GiftFund.create(giftFundParams);
     }
+
+    private int getGiftCodeValue() throws IOException, AuthorizationException, CouldNotFindObjectException, CurrencyMismatchException, GiftCodeNotActiveException {
+        Properties properties = TestParams.getProperties();
+
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
+        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+
+        return giftValue.getCurrentValue();
+    }
+
+
 
     private CheckoutWithGiftCode createCheckoutObject(int orderTotal, boolean addGiftCode, boolean addStripe)
             throws IOException, AuthorizationException, GiftCodeNotActiveException, CurrencyMismatchException, InsufficientValueException, ThirdPartyPaymentException {
@@ -71,11 +84,8 @@ public class CheckoutWithGiftCodeTest {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
-
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
-
-        int orderTotal = giftValue.getCurrentValue() - 1;
+        int giftCodeValue = getGiftCodeValue();
+        int orderTotal = giftCodeValue - 1;
         CheckoutWithGiftCode checkoutWithGiftCode = createCheckoutObject(orderTotal, true, false);
 
         PaymentSummary paymentSummary = checkoutWithGiftCode.checkout();
@@ -90,10 +100,9 @@ public class CheckoutWithGiftCodeTest {
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+        int giftCodeValue = getGiftCodeValue();
 
-        int orderTotal = giftValue.getCurrentValue() + 1;
+        int orderTotal = giftCodeValue + 1;
         try {
             createCheckoutObject(orderTotal, true, false).checkout();
         } catch (Exception e) {
@@ -107,16 +116,15 @@ public class CheckoutWithGiftCodeTest {
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+        int giftCodeValue = getGiftCodeValue();
 
-        int orderTotal = giftValue.getCurrentValue() - 1;
+        int orderTotal = giftCodeValue - 1;
 
         CheckoutWithGiftCode checkoutWithGiftCode = createCheckoutObject(orderTotal, true, false);
 
         assert (!checkoutWithGiftCode.needsCreditCardPayment());
 
-        int newOrderTotal = giftValue.getCurrentValue() + 1;
+        int newOrderTotal = giftCodeValue + 1;
         checkoutWithGiftCode = createCheckoutObject(newOrderTotal, true, false);
         assert (checkoutWithGiftCode.needsCreditCardPayment());
     }
@@ -146,15 +154,13 @@ public class CheckoutWithGiftCodeTest {
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
-        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
-        int originalGiftValue = giftValue.getCurrentValue();
+        int originalGiftValue = getGiftCodeValue();
 
         CheckoutWithGiftCode checkoutWithGiftCode = createCheckoutObject(originalGiftValue, true, false);
         checkoutWithGiftCode.checkout();
 
-        giftValue = GiftValue.retrieve(giftValueParams);
-        assertEquals(0, giftValue.getCurrentValue());
+        int newGiftValue = getGiftCodeValue();
+        assertEquals(0, newGiftValue);
 
         checkoutWithGiftCode = createCheckoutObject(100, true, false);
 

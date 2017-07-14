@@ -3,6 +3,7 @@ package com.lightrail.net;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.Constants;
@@ -61,18 +62,23 @@ public class APICore {
 
     private static void handleErrors(int responseCode, String responseString) throws AuthorizationException, InsufficientValueException, IOException, CouldNotFindObjectException {
         APIError error = parseFromJson(responseString, APIError.class);
+        String errorMessage = responseString;
+        if (error != null && error.getMessage() != null)
+            errorMessage = error.getMessage();
         switch (responseCode) {
             case 401:
             case 403:
-                throw new AuthorizationException("Authorization error: " + responseCode + "\n" + responseString);
+                throw new AuthorizationException(String.format("Authorization error (%d): %s ", responseCode, errorMessage));
+            case 404:
+                throw new CouldNotFindObjectException(errorMessage);
+            case 409:
+                throw new BadParameterException(String.format("Idempotency error (%d): %s", responseCode, errorMessage));
             case 400:
-                if (error.getMessage() != null && responseString.contains("Insufficient Value")) {
+                if (errorMessage.contains("Insufficient Value")) {
                     throw new InsufficientValueException();
                 }
-            case 404:
-                throw new CouldNotFindObjectException (responseString);
             default:
-                throw new IOException(String.format("Server responded with %d : %s", responseCode, error.getMessage()));
+                throw new IOException(String.format("Server responded with %d : %s", responseCode, errorMessage));
         }
 
     }
@@ -124,7 +130,7 @@ public class APICore {
         return parseFromJson(rawAPIResponse, Transaction.class);
     }
 
-    public static Transaction retrieveTransactionByCodeAndUserSuppliedId (String code, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
+    public static Transaction retrieveTransactionByCodeAndUserSuppliedId(String code, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
         String urlSuffix = String.format(
                 Constants.LightrailAPI.RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID_ENDPOINT,
                 code, userSuppliedId);
