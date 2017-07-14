@@ -1,9 +1,6 @@
 package com.lightrail.model.business;
 
-import com.lightrail.exceptions.AuthorizationException;
-import com.lightrail.exceptions.CurrencyMismatchException;
-import com.lightrail.exceptions.GiftCodeNotActiveException;
-import com.lightrail.exceptions.InsufficientValueException;
+import com.lightrail.exceptions.*;
 import com.lightrail.helpers.Constants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
@@ -18,14 +15,14 @@ import static org.junit.Assert.assertEquals;
 public class GiftChargeTest {
 
     @Test
-    public void GiftChargeCapturedCreateHappyPath () throws IOException, InsufficientValueException, AuthorizationException {
+    public void GiftChargeCapturedCreateHappyPath () throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         int chargeAmount = 101;
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
-        giftChargeParams.put("amount", chargeAmount);
+        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
 
         GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
 
@@ -34,15 +31,15 @@ public class GiftChargeTest {
     }
 
     @Test
-    public void GiftChargeAuthCancelHappyPath () throws IOException, InsufficientValueException, AuthorizationException {
+    public void GiftChargeAuthCancelHappyPath () throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         int chargeAmount = 101;
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
-        giftChargeParams.put("amount", chargeAmount);
-        giftChargeParams.put("capture", false);
+        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
+        giftChargeParams.put(Constants.LightrailParameters.CAPTURE, false);
 
         GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
         assertEquals(chargeAmount, giftCharge.getAmount());
@@ -54,15 +51,15 @@ public class GiftChargeTest {
     }
 
     @Test
-    public void GiftChargeAuthCaptureHappyPath () throws IOException, InsufficientValueException, AuthorizationException {
+    public void GiftChargeAuthCaptureHappyPath () throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         int chargeAmount = 101;
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
-        giftChargeParams.put("amount", chargeAmount);
-        giftChargeParams.put("capture", false);
+        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
+        giftChargeParams.put(Constants.LightrailParameters.CAPTURE, false);
 
         GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
         assertEquals(chargeAmount, giftCharge.getAmount());
@@ -74,7 +71,7 @@ public class GiftChargeTest {
     }
 
     @Test
-    public void GiftChargeInsufficientValueCase() throws IOException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException {
+    public void GiftChargeInsufficientValueTest() throws IOException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -91,5 +88,25 @@ public class GiftChargeTest {
         }
     }
 
+    @Test
+    public void GiftChargeIdempotencyTest () throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        Properties properties = TestParams.getProperties();
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
+        int chargeAmount = 11;
+
+        Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
+        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
+
+        GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+        String idempotencyKey = giftCharge.getIdempotencyKey();
+        String firstTransactionId = giftCharge.getTransactionId();
+
+        giftChargeParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
+        giftCharge = GiftCharge.create(giftChargeParams);
+
+        String secondTransactionId = giftCharge.getTransactionId();
+
+        assertEquals(firstTransactionId, secondTransactionId);
+    }
 }

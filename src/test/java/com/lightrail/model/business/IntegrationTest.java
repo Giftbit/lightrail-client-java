@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 public class IntegrationTest {
 
     @Test
-    public void GiftValueChargeCancelTest () throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException {
+    public void GiftValueChargeCancelTest () throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -43,7 +43,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void GiftValueFundTest () throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException {
+    public void GiftValueFundTest () throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -62,7 +62,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void GiftValueChargeCaptureFundTest () throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException {
+    public void GiftValueChargeCaptureFundTest () throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -92,7 +92,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void GiftValueChargeFundTest () throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException {
+    public void GiftValueChargeFundTest () throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -121,7 +121,7 @@ public class IntegrationTest {
         assertEquals(giftCodeValue, newGiftCodeValue);
     }
 
-    public void CheckoutWalkThroughSample () throws IOException, CurrencyMismatchException, BadParameterException, GiftCodeNotActiveException, CardException, APIException, AuthenticationException, InvalidRequestException, APIConnectionException, InsufficientValueException, AuthorizationException {
+    public void CheckoutWalkThroughSample () throws IOException, CurrencyMismatchException, BadParameterException, GiftCodeNotActiveException, CardException, APIException, AuthenticationException, InvalidRequestException, APIConnectionException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         //this is your order

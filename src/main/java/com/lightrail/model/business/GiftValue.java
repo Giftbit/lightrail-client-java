@@ -48,7 +48,7 @@ public class GiftValue {
         this.codeBalanceResponse = codeBalance;
     }
 
-    public static GiftValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException {
+    public static GiftValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.CODE,
                 Constants.LightrailParameters.CURRENCY

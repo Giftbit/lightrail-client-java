@@ -1,5 +1,7 @@
 package com.lightrail.model.api;
 
+import java.util.Map;
+
 @JsonObjectRoot("transaction")
 public class Transaction {
     String transactionId;
@@ -10,6 +12,7 @@ public class Transaction {
     String codeLastFour;
     String giftbitUserId;
     String dateCreated;
+    Map<String, Object> metadata;
 
     public String getTransactionId() {
         return transactionId;
@@ -42,4 +45,6 @@ public class Transaction {
     public String getDateCreated() {
         return dateCreated;
     }
+
+    public Map<String, Object> getMetadata() {return metadata;}
 }

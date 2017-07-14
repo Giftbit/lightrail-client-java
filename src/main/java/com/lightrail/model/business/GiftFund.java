@@ -2,6 +2,7 @@ package com.lightrail.model.business;
 
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.BadParameterException;
+import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.Constants;
 import com.lightrail.model.api.Transaction;
@@ -23,7 +24,7 @@ public class GiftFund extends GiftTransaction {
         return transactionResponse.getValue();
     }
 
-    public static GiftFund create(Map<String, Object> giftFundParams) throws BadParameterException, IOException, AuthorizationException {
+    public static GiftFund create(Map<String, Object> giftFundParams) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.CARD_ID,
                 Constants.LightrailParameters.AMOUNT,

@@ -45,12 +45,12 @@ public class CheckoutWithGiftCode {
         return this;
     }
 
-    public boolean needsCreditCardPayment() throws GiftCodeNotActiveException, IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException {
+    public boolean needsCreditCardPayment() throws GiftCodeNotActiveException, IOException, CurrencyMismatchException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         PaymentSummary paymentSummary = StripeGiftHybridCharge.simulate(getChargeParams());
         return paymentSummary.getCreditCardAmount() >0;
     }
 
-    public PaymentSummary getPaymentSummary() throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException {
+    public PaymentSummary getPaymentSummary() throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         if (stripeGiftHybridChargeObject != null) {
             return stripeGiftHybridChargeObject.getPaymentSummary();
         } else {
@@ -75,7 +75,7 @@ public class CheckoutWithGiftCode {
         return chargeParams;
     }
 
-    public PaymentSummary checkout() throws ThirdPartyPaymentException, InsufficientValueException, GiftCodeNotActiveException, CurrencyMismatchException, AuthorizationException, IOException {
+    public PaymentSummary checkout() throws ThirdPartyPaymentException, InsufficientValueException, GiftCodeNotActiveException, CurrencyMismatchException, AuthorizationException, IOException, CouldNotFindObjectException {
         stripeGiftHybridChargeObject = StripeGiftHybridCharge.create(getChargeParams());
         return stripeGiftHybridChargeObject.getPaymentSummary();
     }

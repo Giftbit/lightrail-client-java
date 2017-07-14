@@ -19,7 +19,7 @@ import static org.junit.Assert.assertEquals;
 
 public class StripeGiftHybridChargeTest {
 
-    public static GiftFund returnFundsToCode(int amount) throws IOException, AuthorizationException {
+    public static GiftFund returnFundsToCode(int amount) throws IOException, AuthorizationException, CouldNotFindObjectException {
         Map<String, Object> giftFundParams = TestParams.readCardParamsFromProperties();
         giftFundParams.put(Constants.StripeParameters.AMOUNT, amount);
 
@@ -27,7 +27,7 @@ public class StripeGiftHybridChargeTest {
     }
 
     @Test
-    public void hybridChargeHappyPathTest() throws IOException, ThirdPartyPaymentException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException {
+    public void hybridChargeHappyPathTest() throws IOException, ThirdPartyPaymentException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -54,7 +54,7 @@ public class StripeGiftHybridChargeTest {
     }
 
     @Test
-    public void hybridChargeGiftCodeOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
+    public void hybridChargeGiftCodeOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -76,7 +76,7 @@ public class StripeGiftHybridChargeTest {
     }
 
     @Test
-    public void hybridChargeCreditCardOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
+    public void hybridChargeCreditCardOnlyTest() throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -96,9 +96,8 @@ public class StripeGiftHybridChargeTest {
     }
 
     @Test
-    public void hybridChargeGiftCodeOnlyButNotEnough () throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException {
+    public void hybridChargeGiftCodeOnlyButNotEnough () throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
-
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
@@ -117,4 +116,68 @@ public class StripeGiftHybridChargeTest {
             assertEquals(e.getCause().getClass().getName(), BadParameterException.class.getName());
         }
     }
+
+    @Test
+    public void hybridChargeMetadataTest () throws IOException, CouldNotFindObjectException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException {
+        Properties properties = TestParams.getProperties();
+
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+        Stripe.apiKey = properties.getProperty("stripe.testApiKey");
+
+        Integer transactionAmount = 563;
+
+        Map<String, Object> hybridChargeParams = TestParams.readCodeParamsFromProperties();
+        hybridChargeParams.put(Constants.StripeParameters.AMOUNT, transactionAmount);
+        hybridChargeParams.put(Constants.StripeParameters.TOKEN, properties.getProperty("stripe.demoToken"));
+
+        StripeGiftHybridCharge stripeGiftHybridCharge = StripeGiftHybridCharge.create(hybridChargeParams);
+
+        PaymentSummary paymentSummary = stripeGiftHybridCharge.getPaymentSummary();
+        int giftCodeShare = paymentSummary.getGiftCodeAmount();
+        int creditCardShare = paymentSummary.getCreditCardAmount();
+
+        Integer total = ((Double)stripeGiftHybridCharge.getGiftCharge().getMetadata().get(Constants.LightrailEcommerce.HYBRID_TRANSACTION_TOTAL_METADATA_KEY)).intValue();
+        assertEquals(transactionAmount, total);
+
+        returnFundsToCode(giftCodeShare);
+
+    }
+
+
+    @Test
+    public void hybridChargeIdempotencyTest () throws IOException, CurrencyMismatchException, AuthorizationException, GiftCodeNotActiveException, InsufficientValueException, ThirdPartyPaymentException, CouldNotFindObjectException {
+        Properties properties = TestParams.getProperties();
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+        Stripe.apiKey = properties.getProperty("stripe.testApiKey");
+
+        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
+        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+
+        int amountToGoOnCreditCard = 400;
+        int transactionAmount = giftValue.getCurrentValue() + amountToGoOnCreditCard;
+
+        Map<String, Object> hybridChargeParams = TestParams.readCodeParamsFromProperties();
+        hybridChargeParams.put(Constants.StripeParameters.CUSTOMER, properties.getProperty("stripe.demoCustomer"));
+        hybridChargeParams.put(Constants.StripeParameters.AMOUNT, transactionAmount);
+
+        StripeGiftHybridCharge stripeGiftHybridCharge = StripeGiftHybridCharge.create(hybridChargeParams);
+
+        String idempotencyKey = stripeGiftHybridCharge.getIdempotencyKey();
+
+        String firstGiftTransactionId = stripeGiftHybridCharge.getGiftTransactionId();
+        String firstStripeTransactionId = stripeGiftHybridCharge.getStripeTransactionId();
+
+        hybridChargeParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
+
+        stripeGiftHybridCharge = StripeGiftHybridCharge.create(hybridChargeParams);
+
+        String secondGiftTransactionId = stripeGiftHybridCharge.getGiftTransactionId();
+        String secondStripeTransactionId = stripeGiftHybridCharge.getStripeTransactionId();
+
+        assertEquals(firstGiftTransactionId, secondGiftTransactionId);
+        assertEquals(firstStripeTransactionId, secondStripeTransactionId);
+
+        returnFundsToCode(stripeGiftHybridCharge.getGiftCharge().getAmount());
+    }
+
 }

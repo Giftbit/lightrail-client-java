@@ -3,13 +3,11 @@ package com.lightrail.net;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.Constants;
 import com.lightrail.model.Lightrail;
-import com.lightrail.model.api.APIError;
-import com.lightrail.model.api.CodeBalance;
-import com.lightrail.model.api.Transaction;
-import com.lightrail.model.api.JsonObjectRoot;
+import com.lightrail.model.api.*;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -20,7 +18,7 @@ import java.util.Map;
 
 public class APICore {
 
-    private static String getRawAPIResponse(String urlSuffix, String requestMethod, String body) throws AuthorizationException, IOException, InsufficientValueException {
+    private static String getRawAPIResponse(String urlSuffix, String requestMethod, String body) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
         URL requestURL = new URL(Constants.LightrailAPI.apiBaseURL + urlSuffix);
         HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
         httpsURLConnection.setRequestProperty(
@@ -61,7 +59,7 @@ public class APICore {
         return responseString;
     }
 
-    private static void handleErrors(int responseCode, String responseString) throws AuthorizationException, InsufficientValueException, IOException {
+    private static void handleErrors(int responseCode, String responseString) throws AuthorizationException, InsufficientValueException, IOException, CouldNotFindObjectException {
         APIError error = parseFromJson(responseString, APIError.class);
         switch (responseCode) {
             case 401:
@@ -71,13 +69,15 @@ public class APICore {
                 if (error.getMessage() != null && responseString.contains("Insufficient Value")) {
                     throw new InsufficientValueException();
                 }
+            case 404:
+                throw new CouldNotFindObjectException (responseString);
             default:
                 throw new IOException(String.format("Server responded with %d : %s", responseCode, error.getMessage()));
         }
 
     }
 
-    public static String ping() throws IOException, InsufficientValueException, AuthorizationException {
+    public static String ping() throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         return getRawAPIResponse(Constants.LightrailAPI.PING_ENDPOINT, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
     }
 
@@ -95,29 +95,40 @@ public class APICore {
         return new Gson().fromJson(jsonElement, classOfT);
     }
 
-    public static CodeBalance balanceCheck(String code) throws IOException, InsufficientValueException, AuthorizationException {
+    public static CodeBalance balanceCheck(String code) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         String rawAPIResponse = getRawAPIResponse(String.format(Constants.LightrailAPI.CODES_BALANCE_DETAILS_ENDPOINT, code), Constants.LightrailAPI.REQUEST_METHOD_GET, null);
         return parseFromJson(rawAPIResponse, CodeBalance.class);
     }
 
-    public static Transaction postTransactionOnCode(String code, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException {
+    public static Transaction postTransactionOnCode(String code, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         String urlSuffix = String.format(Constants.LightrailAPI.CODES_TRANSACTION_ENDPOINT, code);
         String bodyJsonString = new Gson().toJson(transactionParams);
         String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
         return parseFromJson(rawAPIResponse, Transaction.class);
     }
 
-    public static Transaction finalizeTransaction(String cardId, String transactionId, String finalizationType, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException {
+    public static Transaction finalizeTransaction(String cardId,
+                                                  String transactionId,
+                                                  String finalizationType,
+                                                  Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         String urlSuffix = String.format(Constants.LightrailAPI.FINALIZE_TRANSACTION_ENDPOINT, cardId, transactionId, finalizationType);
         String bodyJsonString = new Gson().toJson((transactionParams));
         String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
         return parseFromJson(rawAPIResponse, Transaction.class);
     }
 
-    public static Transaction postTransactionOnCard(String cardId, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException {
+    public static Transaction postTransactionOnCard(String cardId, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         String urlSuffix = String.format(Constants.LightrailAPI.FUND_CARD_ENDPOINT, cardId);
         String bodyJsonString = new Gson().toJson((transactionParams));
         String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
         return parseFromJson(rawAPIResponse, Transaction.class);
+    }
+
+    public static Transaction retrieveTransactionByCodeAndUserSuppliedId (String code, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
+        String urlSuffix = String.format(
+                Constants.LightrailAPI.RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID_ENDPOINT,
+                code, userSuppliedId);
+        String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
+        return parseFromJson(rawAPIResponse, TransactionSearchResult.class).getOneTransaction();
     }
 }

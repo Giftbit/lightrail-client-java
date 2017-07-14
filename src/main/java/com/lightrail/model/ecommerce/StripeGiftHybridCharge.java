@@ -5,11 +5,13 @@ import com.lightrail.helpers.Constants;
 import com.lightrail.model.business.GiftCharge;
 import com.lightrail.model.business.GiftValue;
 import com.stripe.model.Charge;
+import com.stripe.net.RequestOptions;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class StripeGiftHybridCharge {
 
@@ -37,6 +39,10 @@ public class StripeGiftHybridCharge {
         this.paymentSummary = paymentSummary;
     }
 
+    public String getIdempotencyKey() {
+        return giftCharge.getIdempotencyKey();
+    }
+
     private static Map<String, Object> getStripeParams(int amount, Map<String, Object> chargeParams) {
         Object stripeToken = chargeParams.get(Constants.StripeParameters.TOKEN);
         Object stripeCustomerId = chargeParams.get(Constants.StripeParameters.CUSTOMER);
@@ -55,26 +61,48 @@ public class StripeGiftHybridCharge {
         return stripeParam;
     }
 
-    private static int determineGiftCodeShare(Map<String, Object> chargeParams) throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, AuthorizationException, InsufficientValueException {
-        int transactionAmount = (Integer) chargeParams.get(Constants.LightrailParameters.AMOUNT);
+    private static int adjustForMinimumStripeTransactionValue(int transactionAmount, int currentGiftCodeShare, int totalGiftCodeValue) throws InsufficientValueException {
+        int newGiftCodeShare = currentGiftCodeShare;
+        int stripeShare = transactionAmount - currentGiftCodeShare;
+        if (stripeShare < Constants.LightrailEcommerce.STRIPE_MINIMUM_TRANSACTION_VALUE) {
+            int differential = Constants.LightrailEcommerce.STRIPE_MINIMUM_TRANSACTION_VALUE - stripeShare;
+            newGiftCodeShare = differential + currentGiftCodeShare;
+            if (newGiftCodeShare > totalGiftCodeValue)
+                throw new InsufficientValueException("This gift code value is too small for this transaction.");
+        }
 
+        return newGiftCodeShare;
+    }
+
+    private static int determineGiftCodeShare(Map<String, Object> chargeParams) throws BadParameterException, IOException, CurrencyMismatchException, GiftCodeNotActiveException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+        int transactionAmount = (Integer) chargeParams.get(Constants.LightrailParameters.AMOUNT);
         int giftCodeShare = 0;
 
-        Object giftCodeObject = chargeParams.get(Constants.LightrailParameters.CODE);
-        if (giftCodeObject != null) {
-            String giftCode = (String) giftCodeObject;
-            Map<String, Object> giftValueParams = new HashMap<>();
-            giftValueParams.put(Constants.LightrailParameters.CODE, giftCode);
-            giftValueParams.put(Constants.LightrailParameters.CURRENCY, chargeParams.get(Constants.LightrailParameters.CURRENCY));
-            int giftCodeValue = GiftValue.retrieve(giftValueParams).getCurrentValue();
-            if (giftCodeValue == 0)
-                throw new InsufficientValueException("The gift code does not have any available value.");
-            giftCodeShare = Math.min(transactionAmount, giftCodeValue);
+        GiftCharge giftCharge = retrieveGiftCharge(chargeParams);
+
+        if (giftCharge == null) {
+            Object giftCodeObject = chargeParams.get(Constants.LightrailParameters.CODE);
+            if (giftCodeObject != null) {
+                String giftCode = (String) giftCodeObject;
+                Map<String, Object> giftValueParams = new HashMap<>();
+                giftValueParams.put(Constants.LightrailParameters.CODE, giftCode);
+                giftValueParams.put(Constants.LightrailParameters.CURRENCY, chargeParams.get(Constants.LightrailParameters.CURRENCY));
+                int giftCodeValue = GiftValue.retrieve(giftValueParams).getCurrentValue();
+                if (giftCodeValue == 0)
+                    throw new InsufficientValueException("The gift code does not have any available value.");
+                giftCodeShare = Math.min(transactionAmount, giftCodeValue);
+                giftCodeShare = adjustForMinimumStripeTransactionValue(transactionAmount, giftCodeShare, giftCodeValue);
+            }
+        } else {
+            giftCodeShare = giftCharge.getAmount();
+            Integer originaltransactionAmount = ((Double) giftCharge.getMetadata().get(Constants.LightrailEcommerce.HYBRID_TRANSACTION_TOTAL_METADATA_KEY)).intValue();
+            if (transactionAmount != originaltransactionAmount)
+                throw new BadParameterException("Idempotency Error. The parameters do not match the original transaction.");
         }
         return giftCodeShare;
     }
 
-    public static PaymentSummary simulate(Map<String, Object> chargeParams) throws AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, IOException {
+    public static PaymentSummary simulate(Map<String, Object> chargeParams) throws AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, IOException, CouldNotFindObjectException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.AMOUNT,
                 Constants.LightrailParameters.CURRENCY
@@ -88,11 +116,25 @@ public class StripeGiftHybridCharge {
                 creditCardShare);
     }
 
-    public static StripeGiftHybridCharge create(Map<String, Object> chargeParams) throws InsufficientValueException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, IOException, ThirdPartyPaymentException {
+    private static GiftCharge retrieveGiftCharge(Map<String, Object> chargeParams) throws AuthorizationException, IOException {
+        try {
+            return GiftCharge.retrieve(chargeParams);
+        } catch (CouldNotFindObjectException e) {
+            return null;
+        }
+    }
+
+    public static StripeGiftHybridCharge create(Map<String, Object> chargeParams) throws InsufficientValueException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, IOException, ThirdPartyPaymentException, CouldNotFindObjectException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.AMOUNT,
                 Constants.LightrailParameters.CURRENCY
         ), chargeParams);
+
+        String idempotencyKey = (String) chargeParams.get(Constants.LightrailParameters.USER_SUPPLIED_ID);
+        if (idempotencyKey == null) {
+            idempotencyKey = UUID.randomUUID().toString();
+            chargeParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
+        }
 
         GiftCharge giftCharge = null;
         Charge stripeCharge = null;
@@ -108,6 +150,11 @@ public class StripeGiftHybridCharge {
             giftChargeParams.put(Constants.LightrailParameters.CODE, chargeParams.get(Constants.LightrailParameters.CODE));
             giftChargeParams.put(Constants.LightrailParameters.AMOUNT, giftCodeShare);
             giftChargeParams.put(Constants.LightrailParameters.CURRENCY, transactionCurrency);
+            giftChargeParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
+
+            Map<String, Object> giftChargeMetadata = new HashMap<>();
+            giftChargeMetadata.put(Constants.LightrailEcommerce.HYBRID_TRANSACTION_TOTAL_METADATA_KEY, transactionAmount);
+            giftChargeParams.put(Constants.LightrailParameters.METADATA, giftChargeMetadata);
 
             if (creditCardShare == 0) { //everything on giftcode
                 giftCharge = GiftCharge.create(giftChargeParams);
@@ -115,7 +162,10 @@ public class StripeGiftHybridCharge {
                 giftChargeParams.put(Constants.LightrailParameters.CAPTURE, false);
                 giftCharge = GiftCharge.create(giftChargeParams);
                 try {
-                    stripeCharge = Charge.create(getStripeParams(creditCardShare, chargeParams));
+                    RequestOptions stripeRequestOptions = RequestOptions.builder()
+                            .setIdempotencyKey(idempotencyKey)
+                            .build();
+                    stripeCharge = Charge.create(getStripeParams(creditCardShare, chargeParams), stripeRequestOptions);
                 } catch (Exception e) {
                     giftCharge.cancel();
                     throw new ThirdPartyPaymentException(e);
@@ -129,18 +179,18 @@ public class StripeGiftHybridCharge {
                 throw new ThirdPartyPaymentException(e);
             }
         }
-
         PaymentSummary paymentSummary = new PaymentSummary(transactionCurrency, giftCodeShare, creditCardShare);
         return new StripeGiftHybridCharge(giftCharge, stripeCharge, paymentSummary);
     }
+
     public String getGiftTransactionId() {
-        String giftCodeTransactionId =  null;
+        String giftCodeTransactionId = null;
         if (giftCharge != null)
             giftCodeTransactionId = giftCharge.getTransactionId();
         return giftCodeTransactionId;
     }
 
-    public String getStripeTransactionId () {
+    public String getStripeTransactionId() {
         String stripeTransactionId = null;
         if (stripeCharge != null)
             stripeTransactionId = stripeCharge.getId();

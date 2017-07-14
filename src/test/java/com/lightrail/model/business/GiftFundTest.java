@@ -1,6 +1,7 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
@@ -15,7 +16,7 @@ import static org.junit.Assert.assertEquals;
 public class GiftFundTest {
 
     @Test
-    public void GiftFundHappyPathTest () throws IOException, InsufficientValueException, AuthorizationException {
+    public void GiftFundHappyPathTest () throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");

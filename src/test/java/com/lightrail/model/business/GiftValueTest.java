@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class GiftValueTest {
 
     @Test
-    public void GifValueRetrieveHappyPath() throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException {
+    public void GifValueRetrieveHappyPath() throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
