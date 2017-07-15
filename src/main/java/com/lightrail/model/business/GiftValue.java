@@ -7,10 +7,7 @@ import com.lightrail.helpers.*;
 import com.lightrail.net.APICore;
 
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 public class GiftValue {
 
@@ -48,11 +45,15 @@ public class GiftValue {
         this.codeBalanceResponse = codeBalance;
     }
 
+    public static GiftValue retrieve(String code) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
+        Map<String, Object> giftValueParams = new HashMap<>();
+        giftValueParams.put(Constants.LightrailParameters.CODE, code);
+        return retrieve (giftValueParams);
+    }
+
     public static GiftValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
-                Constants.LightrailParameters.CODE,
-                Constants.LightrailParameters.CURRENCY
-                ),
+                Constants.LightrailParameters.CODE),
                 giftValueParams);
 
         String requestedCode = (String) giftValueParams.get(Constants.LightrailParameters.CODE);
@@ -67,7 +68,7 @@ public class GiftValue {
         }
 
         String codeCurrency = codeBalance.getCurrency();
-        if (!Objects.equals(codeCurrency, requestedCurrency))
+        if (requestedCurrency != null & !Objects.equals(codeCurrency, requestedCurrency))
             throw new CurrencyMismatchException(String.format("Currency mismatch. Seeking %s value on a %s gift code.",
                     giftValueParams.get(Constants.LightrailParameters.CURRENCY),
                     codeCurrency));

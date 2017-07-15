@@ -19,6 +19,14 @@ public class GiftValueTest {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+        GiftValue giftValue = GiftValue.retrieve(properties.getProperty("happyPath.code"));
+    }
+
+    @Test
+    public void GifValueWithCurrencyRetrieveHappyPath() throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        Properties properties = TestParams.getProperties();
+
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
         GiftValue giftValue = GiftValue.retrieve(giftValueParams);

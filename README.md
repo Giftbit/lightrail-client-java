@@ -1,17 +1,77 @@
-# Lightrail E-Commerce Library (java)
+# Lightrail Client Library
 
-Lightrail is a modern platform for digital account credits, gift cards, promotions, and points.
-(To learn more, visit [Lightrail](https://www.lightrail.com/)).
-Lightrail E-Commerce Library provides a client library for developers to easily integrate their 
-e-commerce applications with the Lightrail API. 
+Lightrail is a modern platform for digital account credits, gift cards, promotions, and points. (To learn more, visit [Lightrail](https://www.lightrail.com/)). Lightrail Client Library is a library for developers to easily connect with the Lightrail API using Java.
 
 ## Features ##
-- Gift code balance check, charge on gift code, and fund a gift card.
-- Easy order checkout using a gift code and possibly a credit card.
-- Easy and intuitive integration with [Stripe](https://stripe.com/) including a 
-consistent interface familiar to Stripe developers.
+
+The following features are supported in this version:
+
+- Gift code balance check. 
+- Charge a gift code.
+- Fund a gift card.
 
 ## Usage ##
+
+### Gift Code Balance Check ###
+For checking the balance of a gift code, simply call `GiftCode.retrieve()`. You can get the 
+current balance of the gift code as well as some other information such as its currency from 
+the returned object:
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+GiftValue giftValueObject = GiftValue.retrieve("<GIFT CODE>");
+int giftValue = giftValue.getCurrentValue();
+String giftCurrency = giftValue.getCurrency();
+```
+You can also pass on an expected currency to the the `retrieve()` call to ensure the gift code has the right currency. This call will end in a `CurrencyMismatchException` if the expected currency does not match the gift code currency.
+
+```Java
+Lightrail.apiKey = "<your lightrail API key>";
+Map<String, Object> giftValueParams = new HashMap<>();
+   giftValueParams.put("code", "<GIFT CODE>");
+   giftValueParams.put("currency", "USD");
+GiftValue giftValueObject = GiftValue.retrieve("<GIFT CODE>");
+int giftValue = giftValue.getCurrentValue();
+```
+
+### Charging a Gift Code
+
+In order to charge a gift code, call `GiftCharge.create()`. The minimum required patamers are:
+
+- the gift code,
+- the amount to charge in the smallest curency unit, e.g. cents, and
+- the currency.
+
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+Map<String, Object> giftChargeParams = new HashMap<>();
+   giftChargeParams.put("code", "<GIFT CODE>");
+   giftChargeParams.put("currency", "USD");
+   giftChargeParams.put("amount", 735);
+
+GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+```
+
+Notet that Lightrail does not support currency exchange and the currency for the transaction must match the currency of the gift code.
+
+### Auth-Capture on a Gift Code
+
+By passing the additional parameter `capture=false` when charging a gift code, you can direct Lightrail to treat it as a pre-authorized pending transaction. You can later call `capture()` or `cancel()` on the resulting `GiftCharge` object to either collect the pending charge or void it.
+
+```Java
+Lightrail.apiKey = "<your lightrail API key>";
+Map<String, Object> giftChargeParams = new HashMap<>();
+   giftChargeParams.put("code", "<GIFT CODE>");
+   giftChargeParams.put("currency", "USD");
+   giftChargeParams.put("amount", 735);
+   giftChargeParams.put("capture", false);
+
+GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+//later on
+giftCharge.capture();
+//or
+giftCharge.cancel();
+```
+
 
 
 ## Installation ##
@@ -20,7 +80,7 @@ You can add this library as a dependency in your `maven` `POM` file as:
 ```xml
 <dependency>
   <groupId>com.lightrail</groupId>
-  <artifactId>lightrail-java</artifactId>
+  <artifactId>lightrail-client</artifactId>
   <version>1.0.0</version>
 </dependency>
 ```
@@ -35,32 +95,28 @@ Note that this will skip the unit tests. In order to run the tests, you will nee
 following parameters in the property file `_test-config.property`. A template 
 is provided in `test-config-template.properties`:
 - `lightrail.testApiKey`: the API key for Lightrail. You can find your test API key in your account at 
-[lightrail.com](lightrail.com). 
+  [lightrail.com](lightrail.com). 
 - `happyPath.code`: a gift code with at least $5 value.
 - `happyPath.code.cardId`: the card ID corresponding to the above gift code.
 - `happyPath.code.currency`: the currency for this code, preferably `USD`.
-- `stripe.testApiKey`: your test API key for Stripe.
-- `stripe.demoToken`: a sample test token for Stripe, e.g. `tok_visa`.
-- `stripe.demoCustomer`: a sample Stripe customer ID. To learn how to create a demo customer using your 
-API key and a demo token, check out Stripe documentation.  
 
 ## Requirements ## 
 This library requires `Java 1.7` or later.
 
 ## Dependencies ##
 
-This library has two dependencies as the following. If your project already depends on a different version of any of these libraries, 
-make sure the versions are compatible. We will be committed to updating these dependencies to the latest version at each 
-release.
+The only dependency of this library is `gson`. 
 ```xml
 <dependency>
-  <groupId>com.stripe</groupId>
-  <artifactId>stripe-java</artifactId>
-  <version>5.6.0</version>
+  <groupId>com.google.code.gson</groupId>
+  <artifactId>gson</artifactId>
+  <version>2.2.4</version>
 </dependency>
 ```
-Note that the Stripe library in turn depends on 
-The following dependecy is also necessary for running the unit tests but is not needed otherwise.
+If your project already depends on a different version, make sure the versions 
+are compatible. We will ensure to periodically update the dependency to the latest version.
+
+The following dependecy is also necessary only for running the unit tests.
 ```xml
 <dependency>
   <groupId>junit</groupId>
@@ -73,5 +129,4 @@ The following dependecy is also necessary for running the unit tests but is not 
 
 ### 1.0.0 ###
 - Basic API functions: Gift code balance check, charge on gift code, and fund a gift card.
-- `CheckoutWithGiftCode` class for easy order checkout alongside `Stripe`.
 
