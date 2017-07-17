@@ -1,6 +1,6 @@
 # Lightrail Client Library
 
-Lightrail is a modern platform for digital account credits, gift cards, promotions, and points. (To learn more, visit [Lightrail](https://www.lightrail.com/)). Lightrail Client Library is a library for developers to easily connect with the Lightrail API using Java.
+Lightrail is a modern platform for digital account credits, gift cards, promotions, and points (To learn more, visit [Lightrail](https://www.lightrail.com/)). Lightrail Client Library is a basic library for developers to easily connect with the Lightrail API using Java. If you are looking for specific use cases or other languages, check out [related projects](#related-projects). 
 
 ## Features ##
 
@@ -9,6 +9,8 @@ The following features are supported in this version:
 - Gift code balance check. 
 - Charge a gift code.
 - Fund a gift card.
+
+Note that the Lightrail API supports many other features and we are working on covering them in this library. For a complete list of Lightrail API features check out [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 ## Usage ##
 
@@ -72,9 +74,24 @@ giftCharge.capture();
 giftCharge.cancel();
 ```
 
+### Funding a Gift Card
 
+In order to fund a gift card you need pass gift card ID as a parameter and create `GiftFund` object. Note that Lightrail API does not permit funding a gift code directly and you can only fund the corresponding gift card.
+
+```java
+Map<String, Object> giftFundParams = new HashMap<String, Object>();
+        giftFundParams.put("cardId", "<card ID>");
+        giftFundParams.put("currency", "USD");
+        giftFundParams.put("amount", 735);
+GiftFund giftCharge = GiftFund.create(giftFundParams);
+```
+
+## Related Projects
+
+- [Lightrail-Stripe integration]()
 
 ## Installation ##
+
 ### Maven
 You can add this library as a dependency in your `maven` `POM` file as:
 ```xml
@@ -92,11 +109,11 @@ environment, you can simply download or clone the source and invoke:
 $ mvn clean package -DskipTests
 ```
 Note that this will skip the unit tests. In order to run the tests, you will need to set the 
-following parameters in the property file `_test-config.property`. A template 
+following parameters in a property file names `_test-config.property`. A template 
 is provided in `test-config-template.properties`:
 - `lightrail.testApiKey`: the API key for Lightrail. You can find your test API key in your account at 
   [lightrail.com](lightrail.com). 
-- `happyPath.code`: a gift code with at least $5 value.
+- `happyPath.code`: a test gift code with at least $5 value.
 - `happyPath.code.cardId`: the card ID corresponding to the above gift code.
 - `happyPath.code.currency`: the currency for this code, preferably `USD`.
 
@@ -116,7 +133,7 @@ The only dependency of this library is `gson`.
 If your project already depends on a different version, make sure the versions 
 are compatible. We will ensure to periodically update the dependency to the latest version.
 
-The following dependecy is also necessary only for running the unit tests.
+The following dependecy is also necessary if you want to run the unit tests.
 ```xml
 <dependency>
   <groupId>junit</groupId>

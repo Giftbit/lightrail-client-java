@@ -23,10 +23,10 @@ public class GiftFundTest {
 
         int fundAmount = 500;
 
-        Map<String, Object> giftChargeParams = TestParams.readCardParamsFromProperties();
-        giftChargeParams.put("amount", fundAmount);
+        Map<String, Object> giftFundParams = TestParams.readCardParamsFromProperties();
+        giftFundParams.put("amount", fundAmount);
 
-        GiftFund giftCharge = GiftFund.create(giftChargeParams);
+        GiftFund giftCharge = GiftFund.create(giftFundParams);
         assertEquals(giftCharge.getAmount(), fundAmount);
     }
 }
