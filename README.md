@@ -83,7 +83,7 @@ Map<String, Object> giftFundParams = new HashMap<String, Object>();
         giftFundParams.put("cardId", "<card ID>");
         giftFundParams.put("currency", "USD");
         giftFundParams.put("amount", 735);
-GiftFund giftCharge = GiftFund.create(giftFundParams);
+GiftFund giftFund = GiftFund.create(giftFundParams);
 ```
 
 ## Related Projects
