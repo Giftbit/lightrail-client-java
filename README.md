@@ -20,9 +20,9 @@ current balance of the gift code as well as some other information such as its c
 the returned object:
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
-GiftValue giftValueObject = GiftValue.retrieve("<GIFT CODE>");
-int giftValue = giftValue.getCurrentValue();
-String giftCurrency = giftValue.getCurrency();
+GiftValue giftValue = GiftValue.retrieve("<GIFT CODE>");
+int value = giftValue.getCurrentValue();
+String currency = giftValue.getCurrency();
 ```
 You can also pass on an expected currency to the the `retrieve()` call to ensure the gift code has the right currency. This call will end in a `CurrencyMismatchException` if the expected currency does not match the gift code currency.
 
@@ -31,8 +31,8 @@ Lightrail.apiKey = "<your lightrail API key>";
 Map<String, Object> giftValueParams = new HashMap<>();
    giftValueParams.put("code", "<GIFT CODE>");
    giftValueParams.put("currency", "USD");
-GiftValue giftValueObject = GiftValue.retrieve(giftValueParams);
-int giftValue = giftValue.getCurrentValue();
+GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+int value = giftValue.getCurrentValue();
 ```
 
 ### Charging a Gift Code
