@@ -31,7 +31,7 @@ Lightrail.apiKey = "<your lightrail API key>";
 Map<String, Object> giftValueParams = new HashMap<>();
    giftValueParams.put("code", "<GIFT CODE>");
    giftValueParams.put("currency", "USD");
-GiftValue giftValueObject = GiftValue.retrieve("<GIFT CODE>");
+GiftValue giftValueObject = GiftValue.retrieve(giftValueParams);
 int giftValue = giftValue.getCurrentValue();
 ```
 
@@ -88,7 +88,7 @@ GiftFund giftCharge = GiftFund.create(giftFundParams);
 
 ## Related Projects
 
-- [Lightrail-Stripe integration]()
+- [Lightrail-Stripe Integration](https://github.com/Giftbit/lightrail-stripe-java)
 
 ## Installation ##
 

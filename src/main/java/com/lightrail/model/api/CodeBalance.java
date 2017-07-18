@@ -10,7 +10,6 @@ public class CodeBalance {
     String currency;
     String balanceDate;
 
-
     public List<ValueStore> getAttached() {
         return attached;
     }
@@ -26,5 +25,4 @@ public class CodeBalance {
     public String getBalanceDate() {
         return balanceDate;
     }
-
 }
