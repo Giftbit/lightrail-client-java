@@ -1,6 +1,6 @@
 # Lightrail Client Library
 
-Lightrail is a modern platform for digital account credits, gift cards, promotions, and points (To learn more, visit [Lightrail](https://www.lightrail.com/)). Lightrail Client Library is a basic library for developers to easily connect with the Lightrail API using Java. If you are looking for specific use cases or other languages, check out [related projects](#related-projects). 
+Lightrail is a modern platform for digital account credits, gift cards, promotions, and points (to learn more, visit [Lightrail](https://www.lightrail.com/)). Lightrail Client Library is a basic library for developers to easily connect with the Lightrail API using Java. If you are looking for specific use cases or other languages, check out [related projects](#related-projects). 
 
 ## Features ##
 
@@ -10,21 +10,21 @@ The following features are supported in this version:
 - Charge a gift code.
 - Fund a gift card.
 
-Note that the Lightrail API supports many other features and we are working on covering them in this library. For a complete list of Lightrail API features check out [Lightrail API documentation](https://www.lightrail.com/docs/).
+Note that the Lightrail API supports many other features and we are working on covering them in this library. For a complete list of Lightrail API features check out the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 ## Usage ##
 
 ### Gift Code Balance Check ###
 For checking the balance of a gift code, simply call `GiftCode.retrieve()`. You can get the 
-current balance of the gift code as well as some other information such as its currency from 
-the returned object:
+current balance of the gift code from the returned object as well as some other information,
+such as its currency:
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
 GiftValue giftValue = GiftValue.retrieve("<GIFT CODE>");
 int value = giftValue.getCurrentValue();
 String currency = giftValue.getCurrency();
 ```
-You can also pass on an expected currency to the the `retrieve()` call to ensure the gift code has the right currency. This call will end in a `CurrencyMismatchException` if the expected currency does not match the gift code currency.
+You can also pass on an expected currency to the `retrieve()` call to ensure the gift code has the right currency. This call will end in a `CurrencyMismatchException` if the expected currency does not match the gift code currency.
 
 ```Java
 Lightrail.apiKey = "<your lightrail API key>";
@@ -37,10 +37,10 @@ int value = giftValue.getCurrentValue();
 
 ### Charging a Gift Code
 
-In order to charge a gift code, call `GiftCharge.create()`. The minimum required patamers are:
+In order to charge a gift code, call `GiftCharge.create()`. The minimum required parameters are:
 
 - the gift code,
-- the amount to charge in the smallest curency unit, e.g. cents, and
+- the amount to charge in the smallest currency unit, e.g. cents, and
 - the currency.
 
 ```java
@@ -53,7 +53,7 @@ Map<String, Object> giftChargeParams = new HashMap<>();
 GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
 ```
 
-Notet that Lightrail does not support currency exchange and the currency for the transaction must match the currency of the gift code.
+Note that Lightrail does not support currency exchange and the currency for the transaction must match the currency of the gift code.
 
 ### Auth-Capture on a Gift Code
 
@@ -76,7 +76,7 @@ giftCharge.cancel();
 
 ### Funding a Gift Card
 
-In order to fund a gift card you need pass gift card ID as a parameter and create `GiftFund` object. Note that Lightrail API does not permit funding a gift code directly and you can only fund the corresponding gift card.
+In order to fund a gift card you need pass the gift card ID as a parameter and create a `GiftFund` object. Note that the Lightrail API does not permit funding a gift code directly and you can only fund the corresponding gift card (see the [API documentation](https://www.lightrail.com/docs/) for an explanation of cards and codes).
 
 ```java
 Map<String, Object> giftFundParams = new HashMap<String, Object>();
@@ -131,9 +131,9 @@ The only dependency of this library is `gson`.
 </dependency>
 ```
 If your project already depends on a different version, make sure the versions 
-are compatible. We will ensure to periodically update the dependency to the latest version.
+are compatible. We will periodically update the dependency to the latest version.
 
-The following dependecy is also necessary if you want to run the unit tests.
+The following dependency is also necessary if you want to run the unit tests.
 ```xml
 <dependency>
   <groupId>junit</groupId>
@@ -145,5 +145,5 @@ The following dependecy is also necessary if you want to run the unit tests.
 ## Changelog ## 
 
 ### 1.0.0 ###
-- Basic API functions: Gift code balance check, charge on gift code, and fund a gift card.
+- Basic API functions: gift code balance check, charge a gift code, and fund a gift card.
 
