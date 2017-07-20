@@ -71,7 +71,7 @@ public class GiftCharge extends GiftTransaction {
         return this;
     }
 
-    private static Map<String, Object> traslateToLightrail(Map<String, Object> giftChargeParams) {
+    private static Map<String, Object> translateToLightrail(Map<String, Object> giftChargeParams) {
         Map<String, Object> translatedParams = new HashMap<>();
         for (String paramName : giftChargeParams.keySet()) {
             if (Constants.LightrailParameters.CAPTURE.equals(paramName)) {
@@ -85,6 +85,15 @@ public class GiftCharge extends GiftTransaction {
             }
         }
         return translatedParams;
+    }
+
+    public static GiftCharge create(String code, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        Map<String, Object> giftChargeParams = new HashMap<>();
+        giftChargeParams.put(Constants.LightrailParameters.CODE, code);
+        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, amount);
+        giftChargeParams.put(Constants.LightrailParameters.CURRENCY, currency);
+        giftChargeParams.put(Constants.LightrailParameters.CAPTURE, capture);
+        return create(giftChargeParams);
     }
 
     public static GiftCharge create(Map<String, Object> giftChargeParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
@@ -105,7 +114,7 @@ public class GiftCharge extends GiftTransaction {
         if (!giftChargeParams.containsKey(Constants.LightrailParameters.CAPTURE))
             giftChargeParams.put(Constants.LightrailParameters.CAPTURE, true);
 
-        Transaction codeTransaction = APICore.postTransactionOnCode(code, traslateToLightrail(giftChargeParams));
+        Transaction codeTransaction = APICore.postTransactionOnCode(code, translateToLightrail(giftChargeParams));
 
         return new GiftCharge(codeTransaction);
     }
@@ -117,7 +126,6 @@ public class GiftCharge extends GiftTransaction {
         else
             return null;
     }
-
 
     public static GiftCharge retrieve(Map<String, Object> giftChargeParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
         String code = (String) giftChargeParams.get(Constants.LightrailParameters.CODE);

@@ -24,6 +24,14 @@ public class GiftFund extends GiftTransaction {
         return transactionResponse.getValue();
     }
 
+    public static GiftFund create(String cardId, int amount, String currency) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
+        Map<String, Object> giftFundParams = new HashMap<>();
+        giftFundParams.put(Constants.LightrailParameters.CARD_ID, cardId);
+        giftFundParams.put(Constants.LightrailParameters.AMOUNT, amount);
+        giftFundParams.put(Constants.LightrailParameters.CURRENCY, currency);
+        return create(giftFundParams);
+    }
+
     public static GiftFund create(Map<String, Object> giftFundParams) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.CARD_ID,
@@ -36,15 +44,14 @@ public class GiftFund extends GiftTransaction {
             giftFundParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, UUID.randomUUID().toString());
         Transaction cardTransaction;
         try {
-            cardTransaction = APICore.postTransactionOnCard(cardId, traslateToLightrail(giftFundParams));
+            cardTransaction = APICore.postTransactionOnCard(cardId, translateToLightrail(giftFundParams));
         } catch (InsufficientValueException e) {
             throw new RuntimeException(e);
         }
         return new GiftFund(cardTransaction);
     }
 
-
-    private static Map<String, Object> traslateToLightrail(Map<String, Object> giftChargeParams) {
+    private static Map<String, Object> translateToLightrail(Map<String, Object> giftChargeParams) {
         Map<String, Object> translatedParams = new HashMap<>();
         for (String paramName : giftChargeParams.keySet()) {
             if (Constants.LightrailParameters.AMOUNT.equals(paramName)) {
@@ -56,5 +63,4 @@ public class GiftFund extends GiftTransaction {
         }
         return translatedParams;
     }
-
 }
