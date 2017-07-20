@@ -98,7 +98,7 @@ You can add this library as a dependency in your `maven` `POM` file as:
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-client</artifactId>
-  <version>1.0.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
@@ -144,6 +144,6 @@ The following dependency is also necessary if you want to run the unit tests.
 ```
 ## Changelog ## 
 
-### 1.0.0 ###
+### 1.0.1 ###
 - Basic API functions: gift code balance check, charge a gift code, and fund a gift card.
 
