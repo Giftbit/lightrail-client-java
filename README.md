@@ -103,7 +103,7 @@ In order to fund a gift card you need pass the gift card ID as a parameter and c
 ```Java
 Lightrail.apiKey = "<your lightrail API key>";
 Map<String, Object> giftFundParams = new HashMap<String, Object>();
-        giftFundParams.put("cardId", "<card ID>");
+        giftFundParams.put("cardId", "<CARD ID>");
         giftFundParams.put("currency", "USD");
         giftFundParams.put("amount", 735);
 GiftFund giftFund = GiftFund.create(giftFundParams);
@@ -113,7 +113,7 @@ Or more concisely:
 
 ```Java
 Lightrail.apiKey = "<your lightrail API key>";
-GiftFund giftFund = GiftFund.create("<card ID>", 735, "USD");
+GiftFund giftFund = GiftFund.create("<CARD ID>", 735, "USD");
 ```
 
 
