@@ -1,3 +1,5 @@
+
+
 # Lightrail Client Library
 
 Lightrail is a modern platform for digital account credits, gift cards, promotions, and points (to learn more, visit [Lightrail](https://www.lightrail.com/)). Lightrail Client Library is a basic library for developers to easily connect with the Lightrail API using Java. If you are looking for specific use cases or other languages, check out [related projects](#related-projects). 
@@ -18,7 +20,7 @@ Note that the Lightrail API supports many other features and we are working on c
 For checking the balance of a gift code, simply call `GiftCode.retrieve()`. You can get the 
 current balance of the gift code from the returned object as well as some other information,
 such as its currency:
-```java
+```Java
 Lightrail.apiKey = "<your lightrail API key>";
 GiftValue giftValue = GiftValue.retrieve("<GIFT CODE>");
 int value = giftValue.getCurrentValue();
@@ -43,14 +45,22 @@ In order to charge a gift code, call `GiftCharge.create()`. The minimum required
 - the amount to charge in the smallest currency unit, e.g. cents, and
 - the currency.
 
-```java
+```Java
 Lightrail.apiKey = "<your lightrail API key>";
 Map<String, Object> giftChargeParams = new HashMap<>();
    giftChargeParams.put("code", "<GIFT CODE>");
-   giftChargeParams.put("currency", "USD");
    giftChargeParams.put("amount", 735);
+   giftChargeParams.put("currency", "USD");
 
 GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+```
+
+Or more concisely:
+
+```Java
+Lightrail.apiKey = "<your lightrail API key>";
+GiftCharge giftCharge = GiftCharge.create("<GIFT CODE>", 735, "USD");
+String transactionId = giftCharge.getTransactionId();
 ```
 
 Note that Lightrail does not support currency exchange and the currency for the transaction must match the currency of the gift code.
@@ -63,8 +73,8 @@ By passing the additional parameter `capture=false` when charging a gift code, y
 Lightrail.apiKey = "<your lightrail API key>";
 Map<String, Object> giftChargeParams = new HashMap<>();
    giftChargeParams.put("code", "<GIFT CODE>");
-   giftChargeParams.put("currency", "USD");
    giftChargeParams.put("amount", 735);
+   giftChargeParams.put("currency", "USD");
    giftChargeParams.put("capture", false);
 
 GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
@@ -74,17 +84,39 @@ giftCharge.capture();
 giftCharge.cancel();
 ```
 
+Or more concisely:
+
+```Java
+Lightrail.apiKey = "<your lightrail API key>";
+GiftCharge giftCharge = GiftCharge.create("<GIFT CODE>", 735, "USD");
+//later on
+giftCharge.capture();
+//or
+giftCharge.cancel();
+```
+
+
 ### Funding a Gift Card
 
 In order to fund a gift card you need pass the gift card ID as a parameter and create a `GiftFund` object. Note that the Lightrail API does not permit funding a gift code directly and you can only fund the corresponding gift card (see the [API documentation](https://www.lightrail.com/docs/) for an explanation of cards and codes).
 
-```java
+```Java
+Lightrail.apiKey = "<your lightrail API key>";
 Map<String, Object> giftFundParams = new HashMap<String, Object>();
-        giftFundParams.put("cardId", "<card ID>");
+        giftFundParams.put("cardId", "<CARD ID>");
         giftFundParams.put("currency", "USD");
         giftFundParams.put("amount", 735);
 GiftFund giftFund = GiftFund.create(giftFundParams);
 ```
+
+Or more concisely:
+
+```Java
+Lightrail.apiKey = "<your lightrail API key>";
+GiftFund giftFund = GiftFund.create("<CARD ID>", 735, "USD");
+```
+
+
 
 ## Related Projects
 
@@ -144,6 +176,11 @@ The following dependency is also necessary if you want to run the unit tests.
 ```
 ## Changelog ## 
 
+### 1.0.2
+
+- Minor improvements to the interface for creating gift charge and gift fund.
+
 ### 1.0.1 ###
+
 - Basic API functions: gift code balance check, charge a gift code, and fund a gift card.
 
