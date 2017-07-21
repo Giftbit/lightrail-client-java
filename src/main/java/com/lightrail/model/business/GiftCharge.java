@@ -87,6 +87,10 @@ public class GiftCharge extends GiftTransaction {
         return translatedParams;
     }
 
+    public static GiftCharge create(String code, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        return create(code, amount, currency, true);
+    }
+
     public static GiftCharge create(String code, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         Map<String, Object> giftChargeParams = new HashMap<>();
         giftChargeParams.put(Constants.LightrailParameters.CODE, code);

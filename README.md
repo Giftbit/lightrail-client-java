@@ -88,7 +88,7 @@ Or more concisely:
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
-GiftCharge giftCharge = GiftCharge.create("<GIFT CODE>", 735, "USD");
+GiftCharge giftCharge = GiftCharge.create("<GIFT CODE>", 735, "USD", false);
 //later on
 giftCharge.capture();
 //or
