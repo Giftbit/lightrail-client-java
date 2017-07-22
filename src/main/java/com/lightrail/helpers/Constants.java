@@ -14,8 +14,15 @@ public final class Constants {
         public static final String CODES_BALANCE_DETAILS_ENDPOINT = "codes/%s/balance/details";
         public static final String CODES_TRANSACTION_ENDPOINT = "codes/%s/transactions";
         public static final String FINALIZE_TRANSACTION_ENDPOINT = "cards/%s/transactions/%s/%s";
-        public static final String FUND_CARD_ENDPOINT = "cards/%s/code/transactions";
         public static final String RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID_ENDPOINT = "codes/%s/transactions?userSuppliedId=%s";
+
+        public static final String CREATE_CONTACT_ENDPOINT = "contacts";
+        public static final String RETRIEVE_CONTACT_ENDPOINT = "contacts/%s";
+
+        public static final String FUND_CARD_ENDPOINT = "cards/%s/code/transactions";
+        public static final String CREATE_CARD_ENDPOINT = "cards";
+        public static final String RETRIEVE_CARD_ENDPOINT = "cards/%s";
+
 
         public static final String AUTHORIZATION_HEADER_NAME = "Authorization";
         public static final String AUTHORIZATION_TOKEN_TYPE = "Bearer";
@@ -25,6 +32,7 @@ public final class Constants {
 
         public static final String REQUEST_METHOD_GET = "GET";
         public static final String REQUEST_METHOD_POST = "POST";
+        public static final String REQUEST_METHOD_DELETE = "DELETE";
 
 
         public final class CodeBalanceCheck {
@@ -32,27 +40,11 @@ public final class Constants {
         }
 
         public final class Transactions {
-            public static final String CAPTURE="capture";
-            public static final String VOID="void";
+            public static final String CAPTURE = "capture";
+            public static final String VOID = "void";
         }
     }
 
-    public static final class LightrailEcommerce {
-        public static final String HYBRID_TRANSACTION_TOTAL_METADATA_KEY = "_hybrid_transaction_total";
-        public static final int STRIPE_MINIMUM_TRANSACTION_VALUE = 50;
-
-
-        public static final class PaymentSummary {
-            public static final String GIFT_CODE_SHARE = "Gift code";
-            public static final String CREDIT_CARD_SHARE = "Credit card";
-        }
-    }
-    public static class StripeParameters {
-        public static final String AMOUNT = "amount";
-        public static final String CURRENCY = "currency";
-        public static final String TOKEN = "source";
-        public static final String CUSTOMER = "customer";
-    }
     public static class LightrailParameters {
 
         public static final String CURRENCY = "currency";
@@ -64,6 +56,14 @@ public final class Constants {
         public static final String PENDING = "pending";
         public static final String CARD_ID = "cardId";
         public static final String METADATA = "metadata";
+        public static final String EMAIL = "email";
+        public static final String FIRST_NAME = "firstName";
+        public static final String LAST_NAME = "lastName";
+        public static final String CONTACT_ID = "contactId";
+        public static final String INITIAL_VALUE = "initialValue";
+        public static final String CARD_TYPE = "cardType";
+        public static final String CARD_TYPE_ACCOUNT_CARD = "ACCOUNT_CARD";
+        public static final String CARD_CATEGORIES = "categories";
 
         public static void requireParameters(List<String> requiredParams, Map<String, Object> givenParams) throws BadParameterException {
             if (Lightrail.apiKey == null)
