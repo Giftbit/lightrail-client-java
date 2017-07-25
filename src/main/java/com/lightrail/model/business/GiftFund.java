@@ -24,7 +24,7 @@ public class GiftFund extends GiftTransaction {
         return transactionResponse.getValue();
     }
 
-    public static GiftFund create(String cardId, int amount, String currency) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
+    public static GiftFund createByCardId(String cardId, int amount, String currency) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
         Map<String, Object> giftFundParams = new HashMap<>();
         giftFundParams.put(Constants.LightrailParameters.CARD_ID, cardId);
         giftFundParams.put(Constants.LightrailParameters.AMOUNT, amount);

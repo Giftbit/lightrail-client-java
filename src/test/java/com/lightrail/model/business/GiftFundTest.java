@@ -36,7 +36,7 @@ public class GiftFundTest {
 
         int fundAmount = 500;
 
-        GiftFund giftCharge = GiftFund.create(
+        GiftFund giftCharge = GiftFund.createByCardId(
                 properties.getProperty("happyPath.code.cardId"),
                 fundAmount,
                 properties.getProperty("happyPath.code.currency")

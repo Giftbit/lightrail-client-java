@@ -79,11 +79,14 @@ public class GiftCharge extends GiftTransaction {
     }
 
 
-    public static GiftCharge createByCard(String cardId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
-        return createByCard(cardId, amount, currency, true);
+    public static GiftCharge createPendingByCardId(String cardId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        return createByCardId(cardId, amount, currency, false);
+    }
+    public static GiftCharge createByCardId(String cardId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        return createByCardId(cardId, amount, currency, true);
     }
 
-    public static GiftCharge createByCard(String cardId, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    private static GiftCharge createByCardId(String cardId, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         Map<String, Object> giftChargeParams = new HashMap<>();
         giftChargeParams.put(Constants.LightrailParameters.CARD_ID, cardId);
         giftChargeParams.put(Constants.LightrailParameters.AMOUNT, amount);
@@ -92,11 +95,15 @@ public class GiftCharge extends GiftTransaction {
         return create(giftChargeParams);
     }
 
+
+    public static GiftCharge createPendingByCode(String code, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        return createByCode(code, amount, currency, false);
+    }
     public static GiftCharge createByCode(String code, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         return createByCode(code, amount, currency, true);
     }
 
-    public static GiftCharge createByCode(String code, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    private static GiftCharge createByCode(String code, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         Map<String, Object> giftChargeParams = new HashMap<>();
         giftChargeParams.put(Constants.LightrailParameters.CODE, code);
         giftChargeParams.put(Constants.LightrailParameters.AMOUNT, amount);

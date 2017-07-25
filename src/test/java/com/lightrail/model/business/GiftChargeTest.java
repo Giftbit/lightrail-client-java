@@ -40,9 +40,7 @@ public class GiftChargeTest {
         GiftCharge giftCharge = GiftCharge.createByCode(
                 properties.getProperty("happyPath.code"),
                 chargeAmount,
-                properties.getProperty("happyPath.code.currency"),
-                true
-                );
+                properties.getProperty("happyPath.code.currency"));
         assertEquals(chargeAmount, giftCharge.getAmount());
         assertEquals(properties.getProperty("happyPath.code.cardId"), giftCharge.getCardId());
     }
@@ -54,12 +52,10 @@ public class GiftChargeTest {
 
         int chargeAmount = 101;
 
-        GiftCharge giftCharge = GiftCharge.createByCard(
+        GiftCharge giftCharge = GiftCharge.createByCardId(
                 properties.getProperty("happyPath.code.cardId"),
                 chargeAmount,
-                properties.getProperty("happyPath.code.currency"),
-                true
-        );
+                properties.getProperty("happyPath.code.currency"));
         assertEquals(chargeAmount, giftCharge.getAmount());
         assertEquals(properties.getProperty("happyPath.code.cardId"), giftCharge.getCardId());
     }

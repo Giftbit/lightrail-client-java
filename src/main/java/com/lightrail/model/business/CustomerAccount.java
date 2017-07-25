@@ -76,6 +76,10 @@ public class CustomerAccount {
         return this;
     }
 
+    public GiftCharge pendingCharge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+        getCardFor(defaultCurrency);
+        return pendingCharge(amount, defaultCurrency);
+    }
     public GiftCharge charge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(defaultCurrency);
         return charge(amount, defaultCurrency);
@@ -84,6 +88,10 @@ public class CustomerAccount {
     public GiftCharge charge (int amount, boolean capture) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(defaultCurrency);
         return charge(amount, defaultCurrency, capture);
+    }
+
+    public GiftCharge pendingCharge(int amount, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+        return charge( amount,  currency, false);
     }
 
     public GiftCharge charge(int amount, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
