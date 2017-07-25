@@ -217,16 +217,16 @@ public class CustomerAccount {
         APICore.cancelCard(cardId, params);
     }
 
-    public static void delete(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        CustomerAccount customerAccount = retrieve(customerAccountId);
-        for (String currency : customerAccount.getAvailableCurrencies()) {
-            Card card = customerAccount.getCardFor(currency);
-            String idempotencyKey = card.getUserSuppliedId() + "-cancel";
-            String cardId = card.getCardId();
-            cancelCard(cardId, idempotencyKey);
-        }
-        APICore.deleteContact(customerAccountId);
-    }
+//    public static void delete(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        CustomerAccount customerAccount = retrieve(customerAccountId);
+//        for (String currency : customerAccount.getAvailableCurrencies()) {
+//            Card card = customerAccount.getCardFor(currency);
+//            String idempotencyKey = card.getUserSuppliedId() + "-cancel";
+//            String cardId = card.getCardId();
+//            cancelCard(cardId, idempotencyKey);
+//        }
+//        APICore.deleteContact(customerAccountId);
+//    }
 
     public CustomerAccount setDefaultCurrency(String defaultCurrency) {
         getCardFor(defaultCurrency);

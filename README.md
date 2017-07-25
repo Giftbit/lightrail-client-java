@@ -2,7 +2,7 @@
 
 # Lightrail Client Library
 
-Lightrail is a modern platform for digital account credits, gift cards, promotions, and points (to learn more, visit [Lightrail](https://www.lightrail.com/)). Lightrail Client Library is a basic library for developers to easily connect with the Lightrail API using Java. If you are looking for specific use cases or other languages, check out [related projects](#related-projects). For a complete list of all Lightrail libraries and integratios, check out the [Lightrail Integration page](https://github.com/Giftbit/Lightrail-API-Docs/blob/usecases/Integrations.md).
+Lightrail is a modern platform for digital account credits, gift cards, promotions, and points (to learn more, visit [Lightrail](https://www.lightrail.com/)). Lightrail Client Library is a basic library for developers to easily connect with the Lightrail API using Java. If you are looking for specific use cases or other languages, check out [related projects](#related-projects). For a complete list of all Lightrail libraries and integrations, check out the [Lightrail Integration page](https://github.com/Giftbit/Lightrail-API-Docs/blob/usecases/Integrations.md).
 
 ## Features ##
 
@@ -17,7 +17,7 @@ Note that the Lightrail API supports many other features and we are working on c
 
 ### Gift Cards
 
-A Lighrail gift card is a virtual device for issuing gift values. Each gift card has a specific `currency`, a `cardId`, as well as a `code`, which is a unique unguessable alphanumeric character string, usually released to the gift recipient in confidence. The recipient of the gift card can present the `code` to redeem the gift value. For further explanation of cards and codes see the [Lightrail API documentation](https://www.lightrail.com/docs/).
+A Lightrail gift card is a virtual device for issuing gift values. Each gift card has a specific `currency`, a `cardId`, as well as a `code`, which is a unique unguessable alphanumeric character string, usually released to the gift recipient in confidence. The recipient of the gift card can present the `code` to redeem the gift value. For further explanation of cards and codes see the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 #### Balance Check ####
 For checking the balance of a gift code, depending on your use-case, you can call any of the following methods:
@@ -55,7 +55,7 @@ In order to charge a gift code, you can use `createByCode()` or `createByCardId(
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
 GiftCharge giftCharge = GiftCharge.createByCode("<GIFT CODE>", 735, "USD");
-String transactionId = giftCharge.getTransactionId();
+String chargeTxId = giftCharge.getTransactionId();
 ```
 
 Note that Lightrail does not support currency exchange and the currency provided to these methods must match the currency of the gift card.
@@ -114,7 +114,7 @@ After creating a customer account, you need to define the currencies it can stor
 
 ```java
 customerAccount.addCurrency("USD", 500)
-			   .addCurrency("CAD", 500);
+               .addCurrency("CAD", 500);
 ```
 
 Once the currencies are set up, calling the `balance()` method and providing the currency in question will return a `GiftValue` object which contains the available balance for that currency:
@@ -123,7 +123,7 @@ Once the currencies are set up, calling the `balance()` method and providing the
 int balance = customerAccount.balance("USD").getCurrentValue();
 ```
 
-You can charge or fund the account by specifying the currency and the amount. These calls will return a `GiftCharge` or `GiftFund` objet containing the transaction details. 
+You can charge or fund the account by specifying the currency and the amount. These calls will return a `GiftCharge` or `GiftFund` object containing the transaction details. 
 
 ```java
 GiftCharge charge = customerAccount.charge(100, "USD");

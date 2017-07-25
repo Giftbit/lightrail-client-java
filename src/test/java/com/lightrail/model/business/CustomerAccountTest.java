@@ -77,7 +77,7 @@ public class CustomerAccountTest {
         charge.capture();
         assertEquals(initialBalance - chargeValue, customerAccount.balance(currency).getCurrentValue());
 
-        CustomerAccount.delete(customerAccountId);
+//        CustomerAccount.delete(customerAccountId);
         try {
             customerAccount = CustomerAccount.retrieve(customerAccountId);
         } catch (Exception e) {
@@ -147,7 +147,7 @@ public class CustomerAccountTest {
         charge.capture();
         assertEquals(initialBalance - chargeValue, customerAccount.balance().getCurrentValue());
 
-        CustomerAccount.delete(customerAccountId);
+//        CustomerAccount.delete(customerAccountId);
         try {
             customerAccount = CustomerAccount.retrieve(customerAccountId);
         } catch (Exception e) {
