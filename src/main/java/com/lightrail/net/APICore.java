@@ -205,4 +205,16 @@ public class APICore {
             throw new RuntimeException(e);
         }
     }
+
+    public static Card cancelCard(String cardId, Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.CANCEL_CARD, cardId);
+        String bodyJsonString = new Gson().toJson((params));
+
+        try {
+            String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
+            return parseFromJson(rawAPIResponse, Card.class);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
+    }
 }

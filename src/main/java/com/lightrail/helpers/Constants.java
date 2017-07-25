@@ -27,6 +27,7 @@ public final class Constants {
             public static final String FUND_CARD = "cards/%s/code/transactions";
             public static final String CREATE_CARD = "cards";
             public static final String RETRIEVE_CARD = "cards/%s";
+            public static final String CANCEL_CARD = "cards/%s/cancel";
         }
 
 

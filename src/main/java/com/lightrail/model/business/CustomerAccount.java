@@ -46,6 +46,8 @@ public class CustomerAccount {
             cardIdForCurrency.put(card.getCurrency(), card);
     }
 
+
+
     public CustomerAccount addCurrency(String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
         return addCurrency(currency, 0);
     }
@@ -208,7 +210,21 @@ public class CustomerAccount {
         return customerAccount;
     }
 
+    private static void cancelCard(String cardId, String idempotencyKey) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        Map<String, Object> params = new HashMap<>();
+        params.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
+
+        APICore.cancelCard(cardId, params);
+    }
+
     public static void delete(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        CustomerAccount customerAccount = retrieve(customerAccountId);
+        for (String currency : customerAccount.getAvailableCurrencies()) {
+            Card card = customerAccount.getCardFor(currency);
+            String idempotencyKey = card.getUserSuppliedId() + "-cancel";
+            String cardId = card.getCardId();
+            cancelCard(cardId, idempotencyKey);
+        }
         APICore.deleteContact(customerAccountId);
     }
 
