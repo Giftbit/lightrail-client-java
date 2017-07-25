@@ -4,7 +4,7 @@ package com.lightrail.model.api;
 import java.util.List;
 
 @JsonObjectRoot("balance")
-public class CodeBalance {
+public class Balance {
     ValueStore principal;
     List<ValueStore> attached;
     String currency;

@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 public class GiftChargeTest {
 
     @Test
-    public void GiftChargeCapturedCreateHappyPath () throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+    public void GiftChargeByCodeCapturedCreateHappyPath () throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -31,19 +31,35 @@ public class GiftChargeTest {
     }
 
     @Test
-    public void GiftChargeCapturedCreateHappyPathWithoutParams () throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
+    public void GiftChargeByCodeCapturedCreateHappyPathWithoutParams () throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         int chargeAmount = 101;
 
-        GiftCharge giftCharge = GiftCharge.create(
+        GiftCharge giftCharge = GiftCharge.createByCode(
                 properties.getProperty("happyPath.code"),
                 chargeAmount,
                 properties.getProperty("happyPath.code.currency"),
                 true
                 );
+        assertEquals(chargeAmount, giftCharge.getAmount());
+        assertEquals(properties.getProperty("happyPath.code.cardId"), giftCharge.getCardId());
+    }
 
+    @Test
+    public void GiftChargeByCardCapturedCreateHappyPathWithoutParams () throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
+        Properties properties = TestParams.getProperties();
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        int chargeAmount = 101;
+
+        GiftCharge giftCharge = GiftCharge.createByCard(
+                properties.getProperty("happyPath.code.cardId"),
+                chargeAmount,
+                properties.getProperty("happyPath.code.currency"),
+                true
+        );
         assertEquals(chargeAmount, giftCharge.getAmount());
         assertEquals(properties.getProperty("happyPath.code.cardId"), giftCharge.getCardId());
     }
@@ -89,7 +105,7 @@ public class GiftChargeTest {
     }
 
     @Test
-    public void GiftChargeInsufficientValueTest() throws IOException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException, CouldNotFindObjectException {
+    public void GiftChargeInsufficientValueTest() throws IOException, AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 

@@ -10,18 +10,24 @@ public final class Constants {
     public final class LightrailAPI {
 
         public static final String apiBaseURL = "https://api.lightrail.com/v1/";
-        public static final String PING_ENDPOINT = "ping";
-        public static final String CODES_BALANCE_DETAILS_ENDPOINT = "codes/%s/balance/details";
-        public static final String CODES_TRANSACTION_ENDPOINT = "codes/%s/transactions";
-        public static final String FINALIZE_TRANSACTION_ENDPOINT = "cards/%s/transactions/%s/%s";
-        public static final String RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID_ENDPOINT = "codes/%s/transactions?userSuppliedId=%s";
 
-        public static final String CREATE_CONTACT_ENDPOINT = "contacts";
-        public static final String RETRIEVE_CONTACT_ENDPOINT = "contacts/%s";
+        public final class Endpoints {
+            public static final String PING = "ping";
+            public static final String CODES_BALANCE_DETAILS = "codes/%s/balance/details";
+            public static final String CARDS_BALANCE = "cards/%s/balance";
 
-        public static final String FUND_CARD_ENDPOINT = "cards/%s/code/transactions";
-        public static final String CREATE_CARD_ENDPOINT = "cards";
-        public static final String RETRIEVE_CARD_ENDPOINT = "cards/%s";
+            public static final String CODES_TRANSACTION = "codes/%s/transactions";
+            public static final String FINALIZE_TRANSACTION = "cards/%s/transactions/%s/%s";
+            public static final String RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID = "codes/%s/transactions?userSuppliedId=%s";
+
+            public static final String CREATE_CONTACT = "contacts";
+            public static final String RETRIEVE_CONTACT = "contacts/%s";
+            public static final String RETRIEVE_CONTACT_CARDS = "cards?contactId=%s&cardType=ACCOUNT_CARD";
+
+            public static final String FUND_CARD = "cards/%s/code/transactions";
+            public static final String CREATE_CARD = "cards";
+            public static final String RETRIEVE_CARD = "cards/%s";
+        }
 
 
         public static final String AUTHORIZATION_HEADER_NAME = "Authorization";

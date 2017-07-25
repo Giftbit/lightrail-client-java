@@ -51,14 +51,15 @@ public class GiftFund extends GiftTransaction {
         return new GiftFund(cardTransaction);
     }
 
-    private static Map<String, Object> translateToLightrail(Map<String, Object> giftChargeParams) {
+    static Map<String, Object> translateToLightrail(Map<String, Object> giftFundParams) {
+        giftFundParams = GiftTransaction.translateToLightrail(giftFundParams);
         Map<String, Object> translatedParams = new HashMap<>();
-        for (String paramName : giftChargeParams.keySet()) {
+        for (String paramName : giftFundParams.keySet()) {
             if (Constants.LightrailParameters.AMOUNT.equals(paramName)) {
-                Integer transactionAmount = (Integer) giftChargeParams.get(paramName);
+                Integer transactionAmount = (Integer) giftFundParams.get(paramName);
                 translatedParams.put(Constants.LightrailParameters.VALUE, transactionAmount);
             } else {
-                translatedParams.put(paramName, giftChargeParams.get(paramName));
+                translatedParams.put(paramName, giftFundParams.get(paramName));
             }
         }
         return translatedParams;

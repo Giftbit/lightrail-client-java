@@ -15,15 +15,24 @@ import static org.junit.Assert.assertEquals;
 public class GiftValueTest {
 
     @Test
-    public void GifValueRetrieveHappyPath() throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+    public void GifValueRetrieveByCodeHappyPath() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
-
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
-        GiftValue giftValue = GiftValue.retrieve(properties.getProperty("happyPath.code"));
+        GiftValue giftValue = GiftValue.retrieveByCode(properties.getProperty("happyPath.code"));
     }
 
     @Test
-    public void GifValueWithCurrencyRetrieveHappyPath() throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+    public void GifValueRetrieveByCardHappyPath() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        Properties properties = TestParams.getProperties();
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+        GiftValue giftValueByCardId = GiftValue.retrieveByCardId(properties.getProperty("happyPath.code.cardId"));
+        GiftValue giftValueByCode = GiftValue.retrieveByCode(properties.getProperty("happyPath.code"));
+
+        assertEquals(giftValueByCode.getCurrentValue(), giftValueByCardId.getCurrentValue());
+    }
+
+    @Test
+    public void GifValueByCodeWithCurrencyRetrieveHappyPath() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -33,7 +42,17 @@ public class GiftValueTest {
     }
 
     @Test
-    public void NoAuthorizationCase() throws IOException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException {
+    public void GifValueByCardIdWithCurrencyRetrieveHappyPath() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        Properties properties = TestParams.getProperties();
+
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        Map<String, Object> giftValueParams = TestParams.readCardParamsFromProperties();
+        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+    }
+
+    @Test
+    public void NoAuthorizationCase() throws IOException, AuthorizationException, CurrencyMismatchException {
         Lightrail.apiKey = "";
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
@@ -45,7 +64,7 @@ public class GiftValueTest {
     }
 
     @Test
-    public void CurrencyMismatchCase() throws IOException, AuthorizationException, GiftCodeNotActiveException {
+    public void CurrencyMismatchCase() throws IOException, AuthorizationException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
