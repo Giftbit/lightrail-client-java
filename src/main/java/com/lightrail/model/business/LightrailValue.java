@@ -1,6 +1,7 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.*;
+import com.lightrail.model.Lightrail;
 import com.lightrail.model.api.Balance;
 import com.lightrail.model.api.ValueStore;
 import com.lightrail.helpers.*;
@@ -9,7 +10,7 @@ import com.lightrail.net.APICore;
 import java.io.IOException;
 import java.util.*;
 
-public class GiftValue {
+public class LightrailValue {
 
     private Balance balanceResponse;
 
@@ -41,48 +42,53 @@ public class GiftValue {
         return currentValue;
     }
 
-    private GiftValue(Balance balance) {
+    private LightrailValue(Balance balance) {
         this.balanceResponse = balance;
     }
 
-    public static GiftValue retrieveByCode(String code) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
+    public static LightrailValue retrieveByCode(String code) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
         Map<String, Object> giftValueParams = new HashMap<>();
         giftValueParams.put(Constants.LightrailParameters.CODE, code);
         return retrieve(giftValueParams);
     }
 
-    public static GiftValue retrieveByCardId(String cardId) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
+    public static LightrailValue retrieveByCardId(String cardId) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
         Map<String, Object> giftValueParams = new HashMap<>();
         giftValueParams.put(Constants.LightrailParameters.CARD_ID, cardId);
         return retrieve(giftValueParams);
     }
 
-    public static GiftValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
+    public static LightrailValue retrieveByCustomer(String customerAccountId, String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
+        Map<String, Object> giftValueParams = new HashMap<>();
+        giftValueParams.put(Constants.LightrailParameters.CUSTOMER, customerAccountId);
+        giftValueParams.put(Constants.LightrailParameters.CURRENCY, currency);
+        return retrieve(giftValueParams);
+    }
 
+    public static LightrailValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
+        LightrailTransaction.handleCustomer(giftValueParams);
+        String requestedCurrency = (String) giftValueParams.get(Constants.LightrailParameters.CURRENCY);
         String code = (String) giftValueParams.get(Constants.LightrailParameters.CODE);
         String cardId = (String) giftValueParams.get(Constants.LightrailParameters.CARD_ID);
-
-        if ((code == null || code.isEmpty()) && (cardId == null || cardId.isEmpty()))
-            throw new BadParameterException("Must provide either a gift code or a gift card id.");
-
-        String requestedCurrency = (String) giftValueParams.get(Constants.LightrailParameters.CURRENCY);
 
         Balance balance;
         try {
             if (code != null) {
                 balance = APICore.balanceCheckByCode(code);
-            } else {
+            } else if (cardId != null) {
                 balance = APICore.balanceCheckByCardId(cardId);
+            } else {
+                throw new BadParameterException("Must provide a 'code', a 'cardId', or a valid 'customer'.");
             }
         } catch (InsufficientValueException e) { //never happens
             throw new RuntimeException(e);
         }
 
-        String codeCurrency = balance.getCurrency();
-        if (requestedCurrency != null & !Objects.equals(codeCurrency, requestedCurrency))
+        String cardCurrency = balance.getCurrency();
+        if (requestedCurrency != null & !Objects.equals(cardCurrency, requestedCurrency))
             throw new CurrencyMismatchException(String.format("Currency mismatch. Seeking %s value on a %s gift code.",
                     giftValueParams.get(Constants.LightrailParameters.CURRENCY),
-                    codeCurrency));
-        return new GiftValue(balance);
+                    cardCurrency));
+        return new LightrailValue(balance);
     }
 }

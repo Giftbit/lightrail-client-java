@@ -12,7 +12,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
-public class GiftChargeTest {
+public class LightrailChargeTest {
 
     @Test
     public void GiftChargeByCodeCapturedCreateHappyPath () throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
@@ -24,7 +24,7 @@ public class GiftChargeTest {
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
         giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
 
-        GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+        LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
 
         assertEquals(chargeAmount, giftCharge.getAmount());
         assertEquals(properties.getProperty("happyPath.code.cardId"), giftCharge.getCardId());
@@ -37,7 +37,7 @@ public class GiftChargeTest {
 
         int chargeAmount = 101;
 
-        GiftCharge giftCharge = GiftCharge.createByCode(
+        LightrailCharge giftCharge = LightrailCharge.createByCode(
                 properties.getProperty("happyPath.code"),
                 chargeAmount,
                 properties.getProperty("happyPath.code.currency"));
@@ -52,7 +52,7 @@ public class GiftChargeTest {
 
         int chargeAmount = 101;
 
-        GiftCharge giftCharge = GiftCharge.createByCardId(
+        LightrailCharge giftCharge = LightrailCharge.createByCardId(
                 properties.getProperty("happyPath.code.cardId"),
                 chargeAmount,
                 properties.getProperty("happyPath.code.currency"));
@@ -71,7 +71,7 @@ public class GiftChargeTest {
         giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
         giftChargeParams.put(Constants.LightrailParameters.CAPTURE, false);
 
-        GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+        LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
         assertEquals(chargeAmount, giftCharge.getAmount());
         assertEquals(properties.getProperty("happyPath.code.cardId"), giftCharge.getCardId());
 
@@ -91,7 +91,7 @@ public class GiftChargeTest {
         giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
         giftChargeParams.put(Constants.LightrailParameters.CAPTURE, false);
 
-        GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+        LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
         assertEquals(chargeAmount, giftCharge.getAmount());
         assertEquals(properties.getProperty("happyPath.code.cardId"), giftCharge.getCardId());
 
@@ -106,13 +106,13 @@ public class GiftChargeTest {
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+        LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
         int giftCodeValue = giftValue.getCurrentValue();
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
         giftChargeParams.put(Constants.LightrailParameters.AMOUNT, giftCodeValue + 1);
         try {
-            GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+            LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
         } catch (Exception e) {
             assertEquals(InsufficientValueException.class.getName(), e.getClass().getName());
         }
@@ -128,12 +128,12 @@ public class GiftChargeTest {
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
         giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
 
-        GiftCharge giftCharge = GiftCharge.create(giftChargeParams);
+        LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
         String idempotencyKey = giftCharge.getIdempotencyKey();
         String firstTransactionId = giftCharge.getTransactionId();
 
         giftChargeParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
-        giftCharge = GiftCharge.create(giftChargeParams);
+        giftCharge = LightrailCharge.create(giftChargeParams);
 
         String secondTransactionId = giftCharge.getTransactionId();
 

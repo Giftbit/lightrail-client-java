@@ -78,29 +78,29 @@ public class CustomerAccount {
         return this;
     }
 
-    public GiftCharge pendingCharge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailCharge pendingCharge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(defaultCurrency);
         return pendingCharge(amount, defaultCurrency);
     }
-    public GiftCharge charge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailCharge charge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(defaultCurrency);
         return charge(amount, defaultCurrency);
     }
 
-    public GiftCharge charge (int amount, boolean capture) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailCharge charge (int amount, boolean capture) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(defaultCurrency);
         return charge(amount, defaultCurrency, capture);
     }
 
-    public GiftCharge pendingCharge(int amount, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailCharge pendingCharge(int amount, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         return charge( amount,  currency, false);
     }
 
-    public GiftCharge charge(int amount, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailCharge charge(int amount, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         return charge( amount,  currency, true);
     }
 
-    public GiftCharge charge(int amount, String currency, boolean capture) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
+    public LightrailCharge charge(int amount, String currency, boolean capture) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
         Map<String, Object> chargeParams = new HashMap<>();
         chargeParams.put(Constants.LightrailParameters.AMOUNT, amount);
         chargeParams.put(Constants.LightrailParameters.CURRENCY, currency);
@@ -108,7 +108,7 @@ public class CustomerAccount {
         return charge(chargeParams);
     }
 
-    public GiftCharge charge(Map<String, Object> chargeParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    public LightrailCharge charge(Map<String, Object> chargeParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.AMOUNT,
                 Constants.LightrailParameters.CURRENCY
@@ -122,22 +122,22 @@ public class CustomerAccount {
 
         chargeParams.put(Constants.LightrailParameters.CARD_ID, cardId);
 
-        return GiftCharge.create(chargeParams);
+        return LightrailCharge.create(chargeParams);
     }
 
-    public GiftFund fund(int amount) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailFund fund(int amount) throws AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(defaultCurrency);
         return fund( amount, defaultCurrency);
     }
 
-    public GiftFund fund(int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailFund fund(int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Map<String, Object> chargeParams = new HashMap<>();
         chargeParams.put(Constants.LightrailParameters.AMOUNT, amount);
         chargeParams.put(Constants.LightrailParameters.CURRENCY, currency);
         return fund(chargeParams);
     }
 
-    public GiftFund fund(Map<String, Object> fundParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailFund fund(Map<String, Object> fundParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.AMOUNT,
                 Constants.LightrailParameters.CURRENCY
@@ -148,22 +148,22 @@ public class CustomerAccount {
         String cardId = cardObject.getCardId();
         fundParams.put(Constants.LightrailParameters.CARD_ID, cardId);
 
-        return GiftFund.create(fundParams);
+        return LightrailFund.create(fundParams);
     }
 
-    public GiftValue balance () throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
+    public LightrailValue balance () throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
         getCardFor(defaultCurrency);
         return balance(defaultCurrency);
     }
 
-    public GiftValue balance (String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
-        return GiftValue.retrieveByCardId(getCardFor(currency).getCardId());
+    public LightrailValue balance (String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
+        return LightrailValue.retrieveByCardId(getCardFor(currency).getCardId());
     }
 
-    private Card getCardFor(String currency) {
+    Card getCardFor(String currency) {
         Card cardObject = cardIdForCurrency.get(currency);
         if (cardObject == null)
-            throw new BadParameterException(String.format("Currency %s is not defined for this account. Try adding this currency to the account first. ", currency));
+            throw new BadParameterException(String.format("Currency %s is not defined for this account.", currency));
         else
             return cardObject;
     }

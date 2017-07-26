@@ -11,10 +11,10 @@ import com.lightrail.net.APICore;
 import java.io.IOException;
 import java.util.*;
 
-public class GiftCharge extends GiftTransaction {
+public class LightrailCharge extends LightrailTransaction {
 
 
-    private GiftCharge(Transaction codeTransactionResponse) {
+    private LightrailCharge(Transaction codeTransactionResponse) {
         this.transactionResponse = codeTransactionResponse;
     }
 
@@ -23,7 +23,7 @@ public class GiftCharge extends GiftTransaction {
     }
 
     static Map<String, Object> translateToLightrail(Map<String, Object> giftChargeParams) {
-        giftChargeParams = GiftTransaction.translateToLightrail(giftChargeParams);
+        giftChargeParams = LightrailTransaction.translateToLightrail(giftChargeParams);
         Map<String, Object> translatedParams = new HashMap<>();
 
         for (String paramName : giftChargeParams.keySet()) {
@@ -78,15 +78,32 @@ public class GiftCharge extends GiftTransaction {
         history.add(captureTransaction);
     }
 
+    public static LightrailCharge createPendingByCustomer(String customerAccountId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        return createByCustomer(customerAccountId, amount, currency, false);
+    }
 
-    public static GiftCharge createPendingByCardId(String cardId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    public static LightrailCharge createByCustomer(String customerAccountId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        return createByCustomer(customerAccountId, amount, currency, true);
+    }
+
+    private static LightrailCharge createByCustomer(String customerAccountId, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        Map<String, Object> giftChargeParams = new HashMap<>();
+        giftChargeParams.put(Constants.LightrailParameters.CUSTOMER, customerAccountId);
+        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, amount);
+        giftChargeParams.put(Constants.LightrailParameters.CURRENCY, currency);
+        giftChargeParams.put(Constants.LightrailParameters.CAPTURE, capture);
+        return create(giftChargeParams);
+    }
+
+    public static LightrailCharge createPendingByCardId(String cardId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         return createByCardId(cardId, amount, currency, false);
     }
-    public static GiftCharge createByCardId(String cardId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+
+    public static LightrailCharge createByCardId(String cardId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         return createByCardId(cardId, amount, currency, true);
     }
 
-    private static GiftCharge createByCardId(String cardId, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    private static LightrailCharge createByCardId(String cardId, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         Map<String, Object> giftChargeParams = new HashMap<>();
         giftChargeParams.put(Constants.LightrailParameters.CARD_ID, cardId);
         giftChargeParams.put(Constants.LightrailParameters.AMOUNT, amount);
@@ -95,15 +112,14 @@ public class GiftCharge extends GiftTransaction {
         return create(giftChargeParams);
     }
 
-
-    public static GiftCharge createPendingByCode(String code, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    public static LightrailCharge createPendingByCode(String code, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         return createByCode(code, amount, currency, false);
     }
-    public static GiftCharge createByCode(String code, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    public static LightrailCharge createByCode(String code, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         return createByCode(code, amount, currency, true);
     }
 
-    private static GiftCharge createByCode(String code, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    private static LightrailCharge createByCode(String code, int amount, String currency, boolean capture) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         Map<String, Object> giftChargeParams = new HashMap<>();
         giftChargeParams.put(Constants.LightrailParameters.CODE, code);
         giftChargeParams.put(Constants.LightrailParameters.AMOUNT, amount);
@@ -112,18 +128,20 @@ public class GiftCharge extends GiftTransaction {
         return create(giftChargeParams);
     }
 
-    public static GiftCharge create(Map<String, Object> giftChargeParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+    public static LightrailCharge create(Map<String, Object> giftChargeParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
                 Constants.LightrailParameters.AMOUNT,
                 Constants.LightrailParameters.CURRENCY
         ), giftChargeParams);
+
+        LightrailTransaction.handleCustomer(giftChargeParams);
 
         String code = (String) giftChargeParams.get(Constants.LightrailParameters.CODE);
         String cardId = (String) giftChargeParams.get(Constants.LightrailParameters.CARD_ID);
 
         if ((code == null || code.isEmpty())
                 && (cardId == null || cardId.isEmpty()))
-            throw new BadParameterException("Must provide either a gift code or a gift card id.");
+            throw new BadParameterException("Must provide either a 'code', a 'cardId', or a valid 'customer'.");
 
         String idempotencyKey = (String) giftChargeParams.get(Constants.LightrailParameters.USER_SUPPLIED_ID);
         if (idempotencyKey == null) {
@@ -140,18 +158,18 @@ public class GiftCharge extends GiftTransaction {
         else
             transaction = APICore.postTransactionOnCard(cardId, translateToLightrail(giftChargeParams));
 
-        return new GiftCharge(transaction);
+        return new LightrailCharge(transaction);
     }
 
-    private static GiftCharge retrieveByCodeAndIdempotencyKey(String code, String idempotencyKey) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
+    private static LightrailCharge retrieveByCodeAndIdempotencyKey(String code, String idempotencyKey) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
         Transaction transaction = APICore.retrieveTransactionByCodeAndUserSuppliedId(code, idempotencyKey);
         if (transaction != null)
-            return new GiftCharge(transaction);
+            return new LightrailCharge(transaction);
         else
             return null;
     }
 
-    public static GiftCharge retrieve(Map<String, Object> giftChargeParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
+    public static LightrailCharge retrieve(Map<String, Object> giftChargeParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
         String code = (String) giftChargeParams.get(Constants.LightrailParameters.CODE);
         String idempotencyKey = (String) giftChargeParams.get(Constants.LightrailParameters.USER_SUPPLIED_ID);
 

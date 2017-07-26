@@ -1,6 +1,7 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.Constants;
@@ -13,7 +14,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public abstract class GiftTransaction {
+public abstract class LightrailTransaction {
     Transaction transactionResponse;
     List<Transaction> history = new ArrayList<>();
 
@@ -57,4 +58,22 @@ public abstract class GiftTransaction {
         }
         return translatedParams;
     }
+
+    static Map<String, Object> handleCustomer(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String customerAccountId = (String) params.get(Constants.LightrailParameters.CUSTOMER);
+        String requestedCurrency = (String) params.get(Constants.LightrailParameters.CURRENCY);
+
+        if (customerAccountId != null) {
+            if (requestedCurrency != null && !requestedCurrency.isEmpty()) {
+                CustomerAccount account = CustomerAccount.retrieve(customerAccountId);
+                String cardId = account.getCardFor(requestedCurrency).getCardId();
+                params.remove(Constants.LightrailParameters.CUSTOMER);
+                params.put(Constants.LightrailParameters.CARD_ID, cardId);
+            } else {
+                throw new BadParameterException("Must provide a valid 'currency' when retrieving by 'customer'.");
+            }
+        }
+        return params;
+    }
+
 }

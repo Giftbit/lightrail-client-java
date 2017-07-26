@@ -15,36 +15,33 @@ Note that the Lightrail API supports many other features and we are working on c
 
 ## Usage ##
 
+Before using any other parts of the library, you need to set up your Lightrail API key: 
+
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+```
+
 ### Gift Cards
 
 A Lightrail gift card is a virtual device for issuing gift values. Each gift card has a specific `currency`, a `cardId`, as well as a `code`, which is a unique unguessable alphanumeric character string, usually released to the gift recipient in confidence. The recipient of the gift card can present the `code` to redeem the gift value. For further explanation of cards and codes see the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 #### Balance Check ####
-For checking the balance of a gift code, depending on your use-case, you can call any of the following methods:
-
-- `GiftValue.retrieveByCode()`, 
-
-- `GiftValue.retrieveByCardId()`, or
-
-- `GiftValue.retrieve()`.
-
-
-You can get the current balance of the gift card from the returned object as well as some other information such as its currency:
+For checking the balance of a gift code, depending on your use-case, you can call the`retrieveByCode()` or `retrieveByCardId()` from the `LightrailValue` class. The current balance of the gift card as well as some other information such as its currency are included in the returned object:
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
-GiftValue giftValue = GiftValue.retrieveByCode("<GIFT CODE>");
+LightrailValue giftValue = LightrailValue.retrieveByCode("<GIFT CODE>");
 int value = giftValue.getCurrentValue();
 String currency = giftValue.getCurrency();
 ```
-The more generic  `retrieve()` method will allow passing an expected `currency`. This call will end in a `CurrencyMismatchException` if the expected currency does not match the gift card currency, making it easier to process a gift code redemption when a customer provides a `code` at the checkout.
+The more generic  `retrieve()` method allows passing an expected `currency`. This call will end in a `CurrencyMismatchException` if the expected currency does not match the gift card currency, making error-handling easier when processing gift redemption.
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
 Map<String, Object> giftValueParams = new HashMap<>();
    giftValueParams.put("code", "<GIFT CODE>");
    giftValueParams.put("currency", "USD");
-GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
 int value = giftValue.getCurrentValue();
 ```
 
@@ -54,7 +51,7 @@ In order to charge a gift code, you can use `createByCode()` or `createByCardId(
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
-GiftCharge giftCharge = GiftCharge.createByCode("<GIFT CODE>", 735, "USD");
+LightrailCharge giftCharge = LightrailCharge.createByCode("<GIFT CODE>", 735, "USD");
 String chargeTxId = giftCharge.getTransactionId();
 ```
 
@@ -66,7 +63,7 @@ Using the `createPendingByCode()` or  `createPendingByCardId()` you can create a
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
-GiftCharge giftCharge = GiftCharge.createPendingByCode("<GIFT CODE>", 735, "USD");
+LightrailCharge giftCharge = LightrailCharge.createPendingByCode("<GIFT CODE>", 735, "USD");
 //later on
 giftCharge.capture();
 //or
@@ -80,7 +77,7 @@ For funding a gift card, you can call `GiftFund.createByCardId()`. Note that the
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
-GiftFund giftFund = GiftFund.createByCardId("<CARD ID>", 735, "USD");
+LightrailFund giftFund = LightrailFund.createByCardId("<CARD ID>", 735, "USD");
 ```
 
 ### Customer Accounts
@@ -108,8 +105,6 @@ String customerAccountId = customerAccount.getId();
 CustomerAccount customerAccount = CustomerAccount.retrieve(customerAccountId);
 ```
 
-#### Balance-Check, Charging, and Funding
-
 After creating a customer account, you need to define the currencies it can store. Each currency will be tracked and stored separately. For example, you can specify that a customer account will track USD and CAD values, each with a $5 initial balance:
 
 ```java
@@ -117,30 +112,60 @@ customerAccount.addCurrency("USD", 500)
                .addCurrency("CAD", 500);
 ```
 
-Once the currencies are set up, calling the `balance()` method and providing the currency in question will return a `GiftValue` object which contains the available balance for that currency:
+#### Balance-Check
+
+The `balance()` method on a `CustomerAccount` object returns a `LightrailValue` object which contains the available balance:
 
 ```java
 int balance = customerAccount.balance("USD").getCurrentValue();
 ```
 
-You can charge or fund the account by specifying the currency and the amount. These calls will return a `GiftCharge` or `GiftFund` object containing the transaction details. 
+Alternatively, you can get the balance from the `LightrailValue`class by providing the customer account ID and the currency in question:
 
 ```java
-GiftCharge charge = customerAccount.charge(100, "USD");
+int balance = LightrailValue.retrieveByCustomer("<CUSTOMER_ID", "USD").getCurrentValue(); 
+```
+
+#### Charging and Funding
+
+You can charge or fund the account by specifying the currency and the amount. These calls will return a `LightrailCharge` or `LightrailFund` object containing the transaction details. 
+
+```java
+LightrailCharge charge = customerAccount.charge(100, "USD");
 String chargeTxId = charge.getTransactionId();
 
-GiftFund fund = customerAccount.fund(200, "CAD");
+LightrailFund fund = customerAccount.fund(200, "CAD");
+String fundTxId = fund.getTransactionId();
+```
+
+Alternatively, you can use the `LightrailCharge` or `LightrailFund` class to charge or fund a customer in a similar way to that of gift cards:
+
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+LightrailFund fund = LightrailFund.createByCustomer("<CUSTOMER_ID", 200, "USD");
 String fundTxId = fund.getTransactionId();
 ```
 
 Similar to gift cards, an account can also be charged by following an authorize-capture flow:  
 
 ```java
-GiftCharge charge = customerAccount.pendingCharge(100, "USD");
+LightrailCharge charge = customerAccount.pendingCharge(100, "USD");
 //later on        
 charge.capture();
 //or        
 charge.cancel();        
+```
+
+Or alternatively:
+
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+LightrailCharge charge = LightrailCharge.createPendingByCustomer("<CUSTOMER_ID",
+                                                                 100, "USD");
+//later on        
+charge.capture();
+//or        
+charge.cancel();
 ```
 
 #### Single-Currency Accounts
@@ -148,16 +173,20 @@ charge.cancel();
 For the simpler cases where there is only a single currency for the customer account, you can specify this at the time of creating the account and use a simpler interface for interacting with the account without having to specify the currency for each and every call. For example, if you have a points program (for which the standard currency code is `XXX` ) you can proceed as the following:
 
 ```java
+Lightrail.apiKey = "<your lightrail API key>";
 String email = "test@test.ca";
 String firstName = "Test";
 String lastName = "McTest";
 String currency = "XXX";
 int initialBalance = 500;
 
-CustomerAccount customerAccount = CustomerAccount.create(email, firstName, lastName, currency, initialBalance);
-
+CustomerAccount customerAccount = CustomerAccount.create(email,
+                                                         firstName, 
+                                                         lastName, 
+                                                         currency, 
+                                                         initialBalance);
 //later on
-GiftCharge charge = customerAccount.pendingCharge(300);
+LightrailCharge charge = customerAccount.pendingCharge(300);
 //later on
 charge.capture();
 //later on
