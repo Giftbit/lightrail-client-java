@@ -70,7 +70,7 @@ public final class LightrailConstants {
         public static final String INITIAL_VALUE = "initialValue";
         public static final String CARD_TYPE = "cardType";
         public static final String CARD_TYPE_ACCOUNT_CARD = "ACCOUNT_CARD";
-        public static final String CUSTOMER = "customer";
+        public static final String CUSTOMER = "lightrailCustomer";
 
         public static void requireParameters(List<String> requiredParams, Map<String, Object> givenParams) throws BadParameterException {
             if (Lightrail.apiKey == null)

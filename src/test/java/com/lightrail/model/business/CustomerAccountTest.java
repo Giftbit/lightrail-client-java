@@ -176,7 +176,7 @@ public class CustomerAccountTest {
         CustomerAccount customerAccount = createCustomerAccount(initialBalance, currency);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("customer", customerAccount.getId());
+        params.put("lightrailCustomer", customerAccount.getId());
         params.put("currency", currency);
 
         LightrailValue value = LightrailValue.retrieve(params);
@@ -197,7 +197,7 @@ public class CustomerAccountTest {
         int chargeAmount = 100;
 
         Map<String, Object> params = new HashMap<>();
-        params.put("customer", customerId);
+        params.put("lightrailCustomer", customerId);
         params.put("currency", currency);
         params.put("amount", chargeAmount);
 
@@ -205,14 +205,14 @@ public class CustomerAccountTest {
         assertEquals(initialBalance - chargeAmount, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
 
         params = new HashMap<>();
-        params.put("customer", customerId);
+        params.put("lightrailCustomer", customerId);
         params.put("currency", currency);
         params.put("amount", chargeAmount);
         LightrailFund fund = LightrailFund.create(params);
         assertEquals(initialBalance, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
 
         params = new HashMap<>();
-        params.put("customer", customerId);
+        params.put("lightrailCustomer", customerId);
         params.put("currency", currency);
         params.put("amount", chargeAmount);
         params.put("capture", false);
@@ -223,7 +223,7 @@ public class CustomerAccountTest {
         assertEquals(initialBalance, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
 
         params = new HashMap<>();
-        params.put("customer", customerId);
+        params.put("lightrailCustomer", customerId);
         params.put("currency", currency);
         params.put("amount", chargeAmount);
         params.put("capture", false);
