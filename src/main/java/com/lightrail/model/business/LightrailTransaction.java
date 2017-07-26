@@ -58,20 +58,23 @@ public abstract class LightrailTransaction {
     }
 
     public static Map<String, Object> handleCustomer(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        String customerAccountId = (String) params.get(LightrailConstants.Parameters.CUSTOMER);
-        String requestedCurrency = (String) params.get(LightrailConstants.Parameters.CURRENCY);
+        Map<String, Object> chargeParamsCopy = new HashMap<>(params);
+
+
+        String customerAccountId = (String) chargeParamsCopy.get(LightrailConstants.Parameters.CUSTOMER);
+        String requestedCurrency = (String) chargeParamsCopy.get(LightrailConstants.Parameters.CURRENCY);
 
         if (customerAccountId != null) {
             if (requestedCurrency != null && !requestedCurrency.isEmpty()) {
                 CustomerAccount account = CustomerAccount.retrieve(customerAccountId);
                 String cardId = account.getCardFor(requestedCurrency).getCardId();
-                params.remove(LightrailConstants.Parameters.CUSTOMER);
-                params.put(LightrailConstants.Parameters.CARD_ID, cardId);
+                chargeParamsCopy.remove(LightrailConstants.Parameters.CUSTOMER);
+                chargeParamsCopy.put(LightrailConstants.Parameters.CARD_ID, cardId);
             } else {
                 throw new BadParameterException("Must provide a valid 'currency' when using 'lightrailCustomer'.");
             }
         }
-        return params;
+        return chargeParamsCopy;
     }
 
 }
