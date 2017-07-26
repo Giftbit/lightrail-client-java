@@ -45,7 +45,7 @@ public class LightrailFund extends LightrailTransaction {
                 LightrailConstants.Parameters.AMOUNT,
                 LightrailConstants.Parameters.CURRENCY
         ), giftFundParams);
-        LightrailTransaction.handleCustomer(giftFundParams);
+        giftFundParams = LightrailTransaction.handleCustomer(giftFundParams);
 
         String cardId = (String) giftFundParams.get(LightrailConstants.Parameters.CARD_ID);
         if ((cardId == null || cardId.isEmpty()))

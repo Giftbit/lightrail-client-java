@@ -65,7 +65,7 @@ public class LightrailValue {
     }
 
     public static LightrailValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
-        LightrailTransaction.handleCustomer(giftValueParams);
+        giftValueParams = LightrailTransaction.handleCustomer(giftValueParams);
         String requestedCurrency = (String) giftValueParams.get(LightrailConstants.Parameters.CURRENCY);
         String code = (String) giftValueParams.get(LightrailConstants.Parameters.CODE);
         String cardId = (String) giftValueParams.get(LightrailConstants.Parameters.CARD_ID);

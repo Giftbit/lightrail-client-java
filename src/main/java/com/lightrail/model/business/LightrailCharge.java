@@ -134,7 +134,7 @@ public class LightrailCharge extends LightrailTransaction {
                 LightrailConstants.Parameters.CURRENCY
         ), giftChargeParams);
 
-        LightrailTransaction.handleCustomer(giftChargeParams);
+        giftChargeParams = LightrailTransaction.handleCustomer(giftChargeParams);
 
         String code = (String) giftChargeParams.get(LightrailConstants.Parameters.CODE);
         String cardId = (String) giftChargeParams.get(LightrailConstants.Parameters.CARD_ID);
