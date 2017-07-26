@@ -57,7 +57,7 @@ public abstract class LightrailTransaction {
         return translatedParams;
     }
 
-    static Map<String, Object> handleCustomer(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static Map<String, Object> handleCustomer(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
         String customerAccountId = (String) params.get(LightrailConstants.Parameters.CUSTOMER);
         String requestedCurrency = (String) params.get(LightrailConstants.Parameters.CURRENCY);
 
@@ -68,7 +68,7 @@ public abstract class LightrailTransaction {
                 params.remove(LightrailConstants.Parameters.CUSTOMER);
                 params.put(LightrailConstants.Parameters.CARD_ID, cardId);
             } else {
-                throw new BadParameterException("Must provide a valid 'currency' when retrieving by 'customer'.");
+                throw new BadParameterException("Must provide a valid 'currency' when using 'lightrailCustomer'.");
             }
         }
         return params;
