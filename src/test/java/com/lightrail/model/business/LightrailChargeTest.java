@@ -1,7 +1,7 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.*;
-import com.lightrail.helpers.Constants;
+import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
 import org.junit.Test;
@@ -22,7 +22,7 @@ public class LightrailChargeTest {
         int chargeAmount = 101;
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
-        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
+        giftChargeParams.put(LightrailConstants.Parameters.AMOUNT, chargeAmount);
 
         LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
 
@@ -68,8 +68,8 @@ public class LightrailChargeTest {
         int chargeAmount = 101;
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
-        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
-        giftChargeParams.put(Constants.LightrailParameters.CAPTURE, false);
+        giftChargeParams.put(LightrailConstants.Parameters.AMOUNT, chargeAmount);
+        giftChargeParams.put(LightrailConstants.Parameters.CAPTURE, false);
 
         LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
         assertEquals(chargeAmount, giftCharge.getAmount());
@@ -88,8 +88,8 @@ public class LightrailChargeTest {
         int chargeAmount = 101;
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
-        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
-        giftChargeParams.put(Constants.LightrailParameters.CAPTURE, false);
+        giftChargeParams.put(LightrailConstants.Parameters.AMOUNT, chargeAmount);
+        giftChargeParams.put(LightrailConstants.Parameters.CAPTURE, false);
 
         LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
         assertEquals(chargeAmount, giftCharge.getAmount());
@@ -110,7 +110,7 @@ public class LightrailChargeTest {
         int giftCodeValue = giftValue.getCurrentValue();
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
-        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, giftCodeValue + 1);
+        giftChargeParams.put(LightrailConstants.Parameters.AMOUNT, giftCodeValue + 1);
         try {
             LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
         } catch (Exception e) {
@@ -126,13 +126,13 @@ public class LightrailChargeTest {
         int chargeAmount = 11;
 
         Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
-        giftChargeParams.put(Constants.LightrailParameters.AMOUNT, chargeAmount);
+        giftChargeParams.put(LightrailConstants.Parameters.AMOUNT, chargeAmount);
 
         LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
         String idempotencyKey = giftCharge.getIdempotencyKey();
         String firstTransactionId = giftCharge.getTransactionId();
 
-        giftChargeParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
+        giftChargeParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
         giftCharge = LightrailCharge.create(giftChargeParams);
 
         String secondTransactionId = giftCharge.getTransactionId();

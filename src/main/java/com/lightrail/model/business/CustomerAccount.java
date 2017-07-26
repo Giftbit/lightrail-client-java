@@ -1,7 +1,7 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.*;
-import com.lightrail.helpers.Constants;
+import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.Card;
 import com.lightrail.model.api.CardSearchResult;
 import com.lightrail.model.api.Contact;
@@ -53,26 +53,26 @@ public class CustomerAccount {
     }
     public CustomerAccount addCurrency(String currency, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Map<String, Object> cardParams = new HashMap<>();
-        cardParams.put(Constants.LightrailParameters.CONTACT_ID, getId());
-        cardParams.put(Constants.LightrailParameters.CURRENCY, currency);
-        cardParams.put(Constants.LightrailParameters.INITIAL_VALUE, initialValue);
-        cardParams.put(Constants.LightrailParameters.CARD_TYPE, Constants.LightrailParameters.CARD_TYPE_ACCOUNT_CARD);
+        cardParams.put(LightrailConstants.Parameters.CONTACT_ID, getId());
+        cardParams.put(LightrailConstants.Parameters.CURRENCY, currency);
+        cardParams.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
+        cardParams.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
         return addCurrency(cardParams);
     }
 
     public CustomerAccount addCurrency(Map<String, Object> parameters) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Constants.LightrailParameters.requireParameters(Arrays.asList(
-                Constants.LightrailParameters.CURRENCY
+        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+                LightrailConstants.Parameters.CURRENCY
         ), parameters);
 
-        String currency = (String) parameters.get(Constants.LightrailParameters.CURRENCY);
-        String idempotencyKey = (String) parameters.get(Constants.LightrailParameters.USER_SUPPLIED_ID);
+        String currency = (String) parameters.get(LightrailConstants.Parameters.CURRENCY);
+        String idempotencyKey = (String) parameters.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
 
         if (idempotencyKey == null) {
             idempotencyKey = UUID.randomUUID().toString();
-            parameters.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
+            parameters.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
         }
-        parameters.put(Constants.LightrailParameters.CARD_TYPE, Constants.LightrailParameters.CARD_TYPE_ACCOUNT_CARD);
+        parameters.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
         Card card = APICore.createCard(parameters);
         cardIdForCurrency.put(currency, card);
         return this;
@@ -102,25 +102,25 @@ public class CustomerAccount {
 
     public LightrailCharge charge(int amount, String currency, boolean capture) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
         Map<String, Object> chargeParams = new HashMap<>();
-        chargeParams.put(Constants.LightrailParameters.AMOUNT, amount);
-        chargeParams.put(Constants.LightrailParameters.CURRENCY, currency);
-        chargeParams.put(Constants.LightrailParameters.CAPTURE, capture);
+        chargeParams.put(LightrailConstants.Parameters.AMOUNT, amount);
+        chargeParams.put(LightrailConstants.Parameters.CURRENCY, currency);
+        chargeParams.put(LightrailConstants.Parameters.CAPTURE, capture);
         return charge(chargeParams);
     }
 
     public LightrailCharge charge(Map<String, Object> chargeParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
-        Constants.LightrailParameters.requireParameters(Arrays.asList(
-                Constants.LightrailParameters.AMOUNT,
-                Constants.LightrailParameters.CURRENCY
+        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+                LightrailConstants.Parameters.AMOUNT,
+                LightrailConstants.Parameters.CURRENCY
         ), chargeParams);
 
-        String currency = (String) chargeParams.get(Constants.LightrailParameters.CURRENCY);
+        String currency = (String) chargeParams.get(LightrailConstants.Parameters.CURRENCY);
         Card cardObject = cardIdForCurrency.get(currency);
         if (cardObject == null)
             throw new BadParameterException(String.format("Currency %s is not defined for this account. Try adding this currency to the account first. ", currency));
         String cardId = cardObject.getCardId();
 
-        chargeParams.put(Constants.LightrailParameters.CARD_ID, cardId);
+        chargeParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
 
         return LightrailCharge.create(chargeParams);
     }
@@ -132,21 +132,21 @@ public class CustomerAccount {
 
     public LightrailFund fund(int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Map<String, Object> chargeParams = new HashMap<>();
-        chargeParams.put(Constants.LightrailParameters.AMOUNT, amount);
-        chargeParams.put(Constants.LightrailParameters.CURRENCY, currency);
+        chargeParams.put(LightrailConstants.Parameters.AMOUNT, amount);
+        chargeParams.put(LightrailConstants.Parameters.CURRENCY, currency);
         return fund(chargeParams);
     }
 
     public LightrailFund fund(Map<String, Object> fundParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Constants.LightrailParameters.requireParameters(Arrays.asList(
-                Constants.LightrailParameters.AMOUNT,
-                Constants.LightrailParameters.CURRENCY
+        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+                LightrailConstants.Parameters.AMOUNT,
+                LightrailConstants.Parameters.CURRENCY
         ), fundParams);
 
-        String currency = (String) fundParams.get(Constants.LightrailParameters.CURRENCY);
+        String currency = (String) fundParams.get(LightrailConstants.Parameters.CURRENCY);
         Card cardObject = getCardFor(currency);
         String cardId = cardObject.getCardId();
-        fundParams.put(Constants.LightrailParameters.CARD_ID, cardId);
+        fundParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
 
         return LightrailFund.create(fundParams);
     }
@@ -178,23 +178,23 @@ public class CustomerAccount {
             throw new BadParameterException("Need to provide an email address for the new CustomerAccount.");
 
         Map<String, Object> customerAccountParams = new HashMap<>();
-        customerAccountParams.put(Constants.LightrailParameters.EMAIL, email);
+        customerAccountParams.put(LightrailConstants.Parameters.EMAIL, email);
         if (firstName != null)
-            customerAccountParams.put(Constants.LightrailParameters.FIRST_NAME, firstName);
+            customerAccountParams.put(LightrailConstants.Parameters.FIRST_NAME, firstName);
         if (lastName != null)
-            customerAccountParams.put(Constants.LightrailParameters.LAST_NAME, lastName);
+            customerAccountParams.put(LightrailConstants.Parameters.LAST_NAME, lastName);
 
         return create(customerAccountParams);
     }
 
     public static CustomerAccount create(Map<String, Object> customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Constants.LightrailParameters.requireParameters(Arrays.asList(Constants.LightrailParameters.EMAIL), customerAccountParams);
+        LightrailConstants.Parameters.requireParameters(Arrays.asList(LightrailConstants.Parameters.EMAIL), customerAccountParams);
 
-        String idempotencyKey = (String) customerAccountParams.get(Constants.LightrailParameters.USER_SUPPLIED_ID);
+        String idempotencyKey = (String) customerAccountParams.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
 
         if (idempotencyKey == null) {
             idempotencyKey = UUID.randomUUID().toString();
-            customerAccountParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
+            customerAccountParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
         }
 
         Contact contactObject = APICore.createContact(customerAccountParams);
@@ -212,7 +212,7 @@ public class CustomerAccount {
 
     private static void cancelCard(String cardId, String idempotencyKey) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Map<String, Object> params = new HashMap<>();
-        params.put(Constants.LightrailParameters.USER_SUPPLIED_ID, idempotencyKey);
+        params.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
 
         APICore.cancelCard(cardId, params);
     }

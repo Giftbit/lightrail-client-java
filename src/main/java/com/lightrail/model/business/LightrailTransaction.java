@@ -3,10 +3,8 @@ package com.lightrail.model.business;
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
-import com.lightrail.exceptions.InsufficientValueException;
-import com.lightrail.helpers.Constants;
+import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.Transaction;
-import com.lightrail.net.APICore;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -51,8 +49,8 @@ public abstract class LightrailTransaction {
         Map<String, Object> translatedParams = new HashMap<>();
 
         for (String paramName : giftChargeParams.keySet()) {
-            if (!Constants.LightrailParameters.CODE.equals(paramName)
-                    && ! Constants.LightrailParameters.CARD_ID.equals(paramName)) {
+            if (!LightrailConstants.Parameters.CODE.equals(paramName)
+                    && ! LightrailConstants.Parameters.CARD_ID.equals(paramName)) {
                 translatedParams.put(paramName, giftChargeParams.get(paramName));
             }
         }
@@ -60,15 +58,15 @@ public abstract class LightrailTransaction {
     }
 
     static Map<String, Object> handleCustomer(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        String customerAccountId = (String) params.get(Constants.LightrailParameters.CUSTOMER);
-        String requestedCurrency = (String) params.get(Constants.LightrailParameters.CURRENCY);
+        String customerAccountId = (String) params.get(LightrailConstants.Parameters.CUSTOMER);
+        String requestedCurrency = (String) params.get(LightrailConstants.Parameters.CURRENCY);
 
         if (customerAccountId != null) {
             if (requestedCurrency != null && !requestedCurrency.isEmpty()) {
                 CustomerAccount account = CustomerAccount.retrieve(customerAccountId);
                 String cardId = account.getCardFor(requestedCurrency).getCardId();
-                params.remove(Constants.LightrailParameters.CUSTOMER);
-                params.put(Constants.LightrailParameters.CARD_ID, cardId);
+                params.remove(LightrailConstants.Parameters.CUSTOMER);
+                params.put(LightrailConstants.Parameters.CARD_ID, cardId);
             } else {
                 throw new BadParameterException("Must provide a valid 'currency' when retrieving by 'customer'.");
             }

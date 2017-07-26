@@ -6,8 +6,8 @@ import com.lightrail.model.Lightrail;
 import java.util.List;
 import java.util.Map;
 
-public final class Constants {
-    public final class LightrailAPI {
+public final class LightrailConstants {
+    public final class API {
 
         public static final String apiBaseURL = "https://api.lightrail.com/v1/";
 
@@ -52,7 +52,7 @@ public final class Constants {
         }
     }
 
-    public static class LightrailParameters {
+    public static class Parameters {
 
         public static final String CURRENCY = "currency";
         public static final String CODE = "code";
