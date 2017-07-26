@@ -168,8 +168,7 @@ charge.cancel();
 ```
 
 #### Single-Currency Accounts
-
-For the simpler cases where there is only a single currency for the customer account, you can specify this at the time of creating the account and use a simpler interface for interacting with the account without having to specify the currency for each and every call. For example, if you have a points program (for which the standard currency code is `XXX` ) you can proceed as the following:
+For simpler cases where only one currency is defined for the customer account, you can use a simpler interface for interacting with the account without having to specify the currency for each and every call. For example, if you have a points program (for which the standard currency code is `XXX` ) you can proceed as the following:
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
@@ -193,7 +192,7 @@ customerAccount.fund(100);
 int balance = customerAccount.balance().getCurrentValue();
 ```
 
-
+Note that if there is more than one currency defined for the account these calls will throw a `BadParameterException`.
 
 ## Related Projects
 
