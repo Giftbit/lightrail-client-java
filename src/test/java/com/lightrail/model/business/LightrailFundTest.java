@@ -13,7 +13,7 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
-public class GiftFundTest {
+public class LightrailFundTest {
 
     @Test
     public void GiftFundHappyPathTest () throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
@@ -25,7 +25,7 @@ public class GiftFundTest {
         Map<String, Object> giftFundParams = TestParams.readCardParamsFromProperties();
         giftFundParams.put("amount", fundAmount);
 
-        GiftFund giftCharge = GiftFund.create(giftFundParams);
+        LightrailFund giftCharge = LightrailFund.create(giftFundParams);
         assertEquals(giftCharge.getAmount(), fundAmount);
     }
 
@@ -36,7 +36,7 @@ public class GiftFundTest {
 
         int fundAmount = 500;
 
-        GiftFund giftCharge = GiftFund.create(
+        LightrailFund giftCharge = LightrailFund.createByCardId(
                 properties.getProperty("happyPath.code.cardId"),
                 fundAmount,
                 properties.getProperty("happyPath.code.currency")

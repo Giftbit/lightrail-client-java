@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class GiftFund extends GiftTransaction {
+public class LightrailFund extends LightrailTransaction {
 
-    private GiftFund(Transaction cardTransactionResponse) {
+    private LightrailFund(Transaction cardTransactionResponse) {
         this.transactionResponse = cardTransactionResponse;
     }
 
@@ -24,7 +24,7 @@ public class GiftFund extends GiftTransaction {
         return transactionResponse.getValue();
     }
 
-    public static GiftFund create(String cardId, int amount, String currency) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
+    public static LightrailFund createByCardId(String cardId, int amount, String currency) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
         Map<String, Object> giftFundParams = new HashMap<>();
         giftFundParams.put(Constants.LightrailParameters.CARD_ID, cardId);
         giftFundParams.put(Constants.LightrailParameters.AMOUNT, amount);
@@ -32,33 +32,46 @@ public class GiftFund extends GiftTransaction {
         return create(giftFundParams);
     }
 
-    public static GiftFund create(Map<String, Object> giftFundParams) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
+    public static LightrailFund createByCustomer(String customerAccountId, int amount, String currency) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
+        Map<String, Object> giftFundParams = new HashMap<>();
+        giftFundParams.put(Constants.LightrailParameters.CUSTOMER, customerAccountId);
+        giftFundParams.put(Constants.LightrailParameters.AMOUNT, amount);
+        giftFundParams.put(Constants.LightrailParameters.CURRENCY, currency);
+        return create(giftFundParams);
+    }
+
+    public static LightrailFund create(Map<String, Object> giftFundParams) throws BadParameterException, IOException, AuthorizationException, CouldNotFindObjectException {
         Constants.LightrailParameters.requireParameters(Arrays.asList(
-                Constants.LightrailParameters.CARD_ID,
                 Constants.LightrailParameters.AMOUNT,
                 Constants.LightrailParameters.CURRENCY
         ), giftFundParams);
+        LightrailTransaction.handleCustomer(giftFundParams);
 
         String cardId = (String) giftFundParams.get(Constants.LightrailParameters.CARD_ID);
+        if ((cardId == null || cardId.isEmpty()))
+            throw new BadParameterException("Must provide either a 'cardId' or a valid 'customer'.");
+
         if (!giftFundParams.containsKey(Constants.LightrailParameters.USER_SUPPLIED_ID))
             giftFundParams.put(Constants.LightrailParameters.USER_SUPPLIED_ID, UUID.randomUUID().toString());
+
         Transaction cardTransaction;
         try {
             cardTransaction = APICore.postTransactionOnCard(cardId, translateToLightrail(giftFundParams));
         } catch (InsufficientValueException e) {
             throw new RuntimeException(e);
         }
-        return new GiftFund(cardTransaction);
+        return new LightrailFund(cardTransaction);
     }
 
-    private static Map<String, Object> translateToLightrail(Map<String, Object> giftChargeParams) {
+    static Map<String, Object> translateToLightrail(Map<String, Object> giftFundParams) {
+        giftFundParams = LightrailTransaction.translateToLightrail(giftFundParams);
         Map<String, Object> translatedParams = new HashMap<>();
-        for (String paramName : giftChargeParams.keySet()) {
+        for (String paramName : giftFundParams.keySet()) {
             if (Constants.LightrailParameters.AMOUNT.equals(paramName)) {
-                Integer transactionAmount = (Integer) giftChargeParams.get(paramName);
+                Integer transactionAmount = (Integer) giftFundParams.get(paramName);
                 translatedParams.put(Constants.LightrailParameters.VALUE, transactionAmount);
             } else {
-                translatedParams.put(paramName, giftChargeParams.get(paramName));
+                translatedParams.put(paramName, giftFundParams.get(paramName));
             }
         }
         return translatedParams;

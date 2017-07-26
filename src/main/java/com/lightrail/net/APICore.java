@@ -53,7 +53,7 @@ public class APICore {
 
         String responseString = responseStringBuffer.toString();
 
-        if (responseCode > 200) {
+        if (responseCode > 204) {
             handleErrors(responseCode, responseString);
         }
 
@@ -76,6 +76,8 @@ public class APICore {
             case 400:
                 if (errorMessage.contains("Insufficient Value")) {
                     throw new InsufficientValueException();
+                } else {
+                    throw new BadParameterException(errorMessage);
                 }
             default:
                 throw new IOException(String.format("Server responded with %d : %s", responseCode, errorMessage));
@@ -84,7 +86,7 @@ public class APICore {
     }
 
     public static String ping() throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
-        return getRawAPIResponse(Constants.LightrailAPI.PING_ENDPOINT, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
+        return getRawAPIResponse(Constants.LightrailAPI.Endpoints.PING, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
     }
 
     private static <T> T parseFromJson(String jsonString, Class<T> classOfT) {
@@ -101,13 +103,18 @@ public class APICore {
         return new Gson().fromJson(jsonElement, classOfT);
     }
 
-    public static CodeBalance balanceCheck(String code) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
-        String rawAPIResponse = getRawAPIResponse(String.format(Constants.LightrailAPI.CODES_BALANCE_DETAILS_ENDPOINT, code), Constants.LightrailAPI.REQUEST_METHOD_GET, null);
-        return parseFromJson(rawAPIResponse, CodeBalance.class);
+    public static Balance balanceCheckByCardId(String cardId) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        String rawAPIResponse = getRawAPIResponse(String.format(Constants.LightrailAPI.Endpoints.CARDS_BALANCE, cardId), Constants.LightrailAPI.REQUEST_METHOD_GET, null);
+        return parseFromJson(rawAPIResponse, Balance.class);
+    }
+
+    public static Balance balanceCheckByCode(String code) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        String rawAPIResponse = getRawAPIResponse(String.format(Constants.LightrailAPI.Endpoints.CODES_BALANCE_DETAILS, code), Constants.LightrailAPI.REQUEST_METHOD_GET, null);
+        return parseFromJson(rawAPIResponse, Balance.class);
     }
 
     public static Transaction postTransactionOnCode(String code, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
-        String urlSuffix = String.format(Constants.LightrailAPI.CODES_TRANSACTION_ENDPOINT, code);
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.CODES_TRANSACTION, code);
         String bodyJsonString = new Gson().toJson(transactionParams);
         String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
         return parseFromJson(rawAPIResponse, Transaction.class);
@@ -117,14 +124,14 @@ public class APICore {
                                                   String transactionId,
                                                   String finalizationType,
                                                   Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
-        String urlSuffix = String.format(Constants.LightrailAPI.FINALIZE_TRANSACTION_ENDPOINT, cardId, transactionId, finalizationType);
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.FINALIZE_TRANSACTION, cardId, transactionId, finalizationType);
         String bodyJsonString = new Gson().toJson((transactionParams));
         String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
         return parseFromJson(rawAPIResponse, Transaction.class);
     }
 
     public static Transaction postTransactionOnCard(String cardId, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
-        String urlSuffix = String.format(Constants.LightrailAPI.FUND_CARD_ENDPOINT, cardId);
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.FUND_CARD, cardId);
         String bodyJsonString = new Gson().toJson((transactionParams));
         String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
         return parseFromJson(rawAPIResponse, Transaction.class);
@@ -132,9 +139,82 @@ public class APICore {
 
     public static Transaction retrieveTransactionByCodeAndUserSuppliedId(String code, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
         String urlSuffix = String.format(
-                Constants.LightrailAPI.RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID_ENDPOINT,
+                Constants.LightrailAPI.Endpoints.RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID,
                 code, userSuppliedId);
         String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
         return parseFromJson(rawAPIResponse, TransactionSearchResult.class).getOneTransaction();
+    }
+
+    public static Contact createContact(Map<String, Object> createContactParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.CREATE_CONTACT);
+        String bodyJsonString = new Gson().toJson((createContactParams));
+        try {
+            String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
+            return parseFromJson(rawAPIResponse, Contact.class);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Contact retrieveContact(String contactId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.RETRIEVE_CONTACT, contactId);
+        try {
+            String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
+            return parseFromJson(rawAPIResponse, Contact.class);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static void deleteContact (String contactId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.RETRIEVE_CONTACT, contactId);
+        try {
+            String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_DELETE, null);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Card createCard(Map<String, Object> createContactParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.CREATE_CARD);
+        String bodyJsonString = new Gson().toJson((createContactParams));
+        try {
+            String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
+            return parseFromJson(rawAPIResponse, Card.class);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Card retrieveCard(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.RETRIEVE_CARD, cardId);
+        try {
+            String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
+            return parseFromJson(rawAPIResponse, Card.class);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static CardSearchResult retrieveCardsOfContact(String contactId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.RETRIEVE_CONTACT_CARDS, contactId);
+        try {
+            String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_GET, null);
+            return parseFromJson(rawAPIResponse, CardSearchResult.class);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static Card cancelCard(String cardId, Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String urlSuffix = String.format(Constants.LightrailAPI.Endpoints.CANCEL_CARD, cardId);
+        String bodyJsonString = new Gson().toJson((params));
+
+        try {
+            String rawAPIResponse = getRawAPIResponse(urlSuffix, Constants.LightrailAPI.REQUEST_METHOD_POST, bodyJsonString);
+            return parseFromJson(rawAPIResponse, Card.class);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
     }
 }

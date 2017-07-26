@@ -12,40 +12,59 @@ import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
 
-public class GiftValueTest {
+public class LightrailValueTest {
 
     @Test
-    public void GifValueRetrieveHappyPath() throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+    public void GifValueRetrieveByCodeHappyPath() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
-
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
-        GiftValue giftValue = GiftValue.retrieve(properties.getProperty("happyPath.code"));
+        LightrailValue giftValue = LightrailValue.retrieveByCode(properties.getProperty("happyPath.code"));
     }
 
     @Test
-    public void GifValueWithCurrencyRetrieveHappyPath() throws IOException, CurrencyMismatchException, GiftCodeNotActiveException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+    public void GifValueRetrieveByCardHappyPath() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        Properties properties = TestParams.getProperties();
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+        LightrailValue giftValueByCardId = LightrailValue.retrieveByCardId(properties.getProperty("happyPath.code.cardId"));
+        LightrailValue giftValueByCode = LightrailValue.retrieveByCode(properties.getProperty("happyPath.code"));
+
+        assertEquals(giftValueByCode.getCurrentValue(), giftValueByCardId.getCurrentValue());
+    }
+
+    @Test
+    public void GifValueByCodeWithCurrencyRetrieveHappyPath() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
-        GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+        LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
     }
 
     @Test
-    public void NoAuthorizationCase() throws IOException, AuthorizationException, CurrencyMismatchException, GiftCodeNotActiveException {
+    public void GifValueByCardIdWithCurrencyRetrieveHappyPath() throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        Properties properties = TestParams.getProperties();
+
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        Map<String, Object> giftValueParams = TestParams.readCardParamsFromProperties();
+        LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
+    }
+
+    @Test
+    public void NoAuthorizationCase() throws IOException, AuthorizationException, CurrencyMismatchException {
         Lightrail.apiKey = "";
 
         Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
         try {
-            GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+            LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
         } catch (Exception e) {
             assertEquals(AuthorizationException.class.getName(), e.getClass().getName());
         }
     }
 
     @Test
-    public void CurrencyMismatchCase() throws IOException, AuthorizationException, GiftCodeNotActiveException {
+    public void CurrencyMismatchCase() throws IOException, AuthorizationException {
         Properties properties = TestParams.getProperties();
 
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
@@ -57,7 +76,7 @@ public class GiftValueTest {
                 wrongCurrency = "USD";
 
             giftValueParams.put("currency", wrongCurrency);
-            GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+            LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
         } catch (Exception e) {
             assertEquals(CurrencyMismatchException.class.getName(), e.getClass().getName());
         }
@@ -69,7 +88,7 @@ public class GiftValueTest {
 
         Map<String, Object> giftValueParams = new HashMap<>();
         try {
-            GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+            LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
         } catch (Exception e) {
             assertEquals(e.getClass().getName(), BadParameterException.class.getName());
         }
@@ -78,14 +97,14 @@ public class GiftValueTest {
 
         giftValueParams.put("code", null);
         try {
-            GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+            LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
         } catch (Exception e) {
             assertEquals(e.getClass().getName(), BadParameterException.class.getName());
         }
 
         giftValueParams.put("code", properties.getProperty("happyPath.code"));
         try {
-            GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+            LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
         } catch (Exception e) {
             assertEquals(e.getClass().getName(), BadParameterException.class.getName());
         }
@@ -94,7 +113,7 @@ public class GiftValueTest {
         giftValueParams.put("currency", properties.getProperty("happyPath.code.currency"));
 
         try {
-            GiftValue giftValue = GiftValue.retrieve(giftValueParams);
+            LightrailValue giftValue = LightrailValue.retrieve(giftValueParams);
         } catch (Exception e) {
             assertEquals(e.getClass().getName(), BadParameterException.class.getName());
         }
