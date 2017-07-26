@@ -14,7 +14,7 @@ public class CustomerAccount {
     private Map<String, Card> cardIdForCurrency = new HashMap<>();
 
     Contact contactObject;
-    String defaultCurrency;
+    //String defaultCurrency;
 
     public String getId() {
         return contactObject.getContactId();
@@ -46,7 +46,13 @@ public class CustomerAccount {
             cardIdForCurrency.put(card.getCurrency(), card);
     }
 
-
+    private String getDefaultCurrency() {
+        if (cardIdForCurrency.keySet().size() == 1) {
+            return cardIdForCurrency.keySet().iterator().next();
+        } else {
+            throw new BadParameterException("Need to specify the currency.");
+        }
+    }
 
     public CustomerAccount addCurrency(String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
         return addCurrency(currency, 0);
@@ -79,17 +85,17 @@ public class CustomerAccount {
     }
 
     public LightrailCharge pendingCharge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
-        getCardFor(defaultCurrency);
-        return pendingCharge(amount, defaultCurrency);
+        getCardFor(getDefaultCurrency());
+        return pendingCharge(amount, getDefaultCurrency());
     }
     public LightrailCharge charge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
-        getCardFor(defaultCurrency);
-        return charge(amount, defaultCurrency);
+        getCardFor(getDefaultCurrency());
+        return charge(amount, getDefaultCurrency());
     }
 
     public LightrailCharge charge (int amount, boolean capture) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
-        getCardFor(defaultCurrency);
-        return charge(amount, defaultCurrency, capture);
+        getCardFor(getDefaultCurrency());
+        return charge(amount, getDefaultCurrency(), capture);
     }
 
     public LightrailCharge pendingCharge(int amount, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
@@ -117,7 +123,7 @@ public class CustomerAccount {
         String currency = (String) chargeParams.get(LightrailConstants.Parameters.CURRENCY);
         Card cardObject = cardIdForCurrency.get(currency);
         if (cardObject == null)
-            throw new BadParameterException(String.format("Currency %s is not defined for this account. Try adding this currency to the account first. ", currency));
+            throw new BadParameterException(String.format("Currency %s is not defined for this account. ", currency));
         String cardId = cardObject.getCardId();
 
         chargeParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
@@ -126,8 +132,8 @@ public class CustomerAccount {
     }
 
     public LightrailFund fund(int amount) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        getCardFor(defaultCurrency);
-        return fund( amount, defaultCurrency);
+        getCardFor(getDefaultCurrency());
+        return fund( amount, getDefaultCurrency());
     }
 
     public LightrailFund fund(int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
@@ -152,8 +158,8 @@ public class CustomerAccount {
     }
 
     public LightrailValue balance () throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
-        getCardFor(defaultCurrency);
-        return balance(defaultCurrency);
+        getCardFor(getDefaultCurrency());
+        return balance(getDefaultCurrency());
     }
 
     public LightrailValue balance (String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
@@ -170,8 +176,7 @@ public class CustomerAccount {
 
     public static CustomerAccount create(String email, String firstName, String lastName, String defaultCurrency, int initialBalance) throws AuthorizationException, CouldNotFindObjectException, IOException {
         return create(email, firstName, lastName).
-                addCurrency(defaultCurrency,initialBalance).
-                setDefaultCurrency(defaultCurrency);
+                addCurrency(defaultCurrency,initialBalance);
     }
     public static CustomerAccount create(String email, String firstName, String lastName) throws AuthorizationException, CouldNotFindObjectException, IOException {
         if (email == null || email.isEmpty())
@@ -205,8 +210,6 @@ public class CustomerAccount {
         Contact contactObject = APICore.retrieveContact(customerAccountId);
         CardSearchResult cards = APICore.retrieveCardsOfContact(customerAccountId);
         CustomerAccount customerAccount = new CustomerAccount(contactObject, cards.getCards());
-        if (cards.getCards().size() == 1)
-            customerAccount.setDefaultCurrency(cards.getCards().get(0).getCurrency());
         return customerAccount;
     }
 
@@ -227,10 +230,4 @@ public class CustomerAccount {
 //        }
 //        APICore.deleteContact(customerAccountId);
 //    }
-
-    public CustomerAccount setDefaultCurrency(String defaultCurrency) {
-        getCardFor(defaultCurrency);
-        this.defaultCurrency = defaultCurrency;
-        return this;
-    }
 }
