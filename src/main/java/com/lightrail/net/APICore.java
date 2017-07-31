@@ -120,11 +120,11 @@ public class APICore {
         return parseFromJson(rawAPIResponse, Transaction.class);
     }
 
-    public static Transaction finalizeTransaction(String cardId,
+    public static Transaction actionOnTransaction(String cardId,
                                                   String transactionId,
-                                                  String finalizationType,
+                                                  String action,
                                                   Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
-        String urlSuffix = String.format(LightrailConstants.API.Endpoints.FINALIZE_TRANSACTION, cardId, transactionId, finalizationType);
+        String urlSuffix = String.format(LightrailConstants.API.Endpoints.ACTION_ON_TRANSACTION, cardId, transactionId, action);
         String bodyJsonString = new Gson().toJson((transactionParams));
         String rawAPIResponse = getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
         return parseFromJson(rawAPIResponse, Transaction.class);

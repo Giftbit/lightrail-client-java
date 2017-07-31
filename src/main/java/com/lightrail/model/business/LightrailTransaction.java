@@ -3,14 +3,13 @@ package com.lightrail.model.business;
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
+import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.Transaction;
+import com.lightrail.net.APICore;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public abstract class LightrailTransaction {
     Transaction transactionResponse;
@@ -59,7 +58,6 @@ public abstract class LightrailTransaction {
 
     public static Map<String, Object> handleCustomer(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Map<String, Object> chargeParamsCopy = new HashMap<>(params);
-
 
         String customerAccountId = (String) chargeParamsCopy.get(LightrailConstants.Parameters.CUSTOMER);
         String requestedCurrency = (String) chargeParamsCopy.get(LightrailConstants.Parameters.CURRENCY);

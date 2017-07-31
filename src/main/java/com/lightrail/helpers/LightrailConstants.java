@@ -17,19 +17,18 @@ public final class LightrailConstants {
             public static final String CARDS_BALANCE = "cards/%s/balance";
 
             public static final String CODES_TRANSACTION = "codes/%s/transactions";
-            public static final String FINALIZE_TRANSACTION = "cards/%s/transactions/%s/%s";
+            public static final String ACTION_ON_TRANSACTION = "cards/%s/transactions/%s/%s";
             public static final String RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID = "codes/%s/transactions?userSuppliedId=%s";
 
             public static final String CREATE_CONTACT = "contacts";
             public static final String RETRIEVE_CONTACT = "contacts/%s";
             public static final String RETRIEVE_CONTACT_CARDS = "cards?contactId=%s&cardType=ACCOUNT_CARD";
 
-            public static final String FUND_CARD = "cards/%s/code/transactions";
+            public static final String FUND_CARD = "cards/%s/transactions";
             public static final String CREATE_CARD = "cards";
             public static final String RETRIEVE_CARD = "cards/%s";
             public static final String CANCEL_CARD = "cards/%s/cancel";
         }
-
 
         public static final String AUTHORIZATION_HEADER_NAME = "Authorization";
         public static final String AUTHORIZATION_TOKEN_TYPE = "Bearer";
@@ -49,6 +48,7 @@ public final class LightrailConstants {
         public final class Transactions {
             public static final String CAPTURE = "capture";
             public static final String VOID = "void";
+            public static final String REFUND = "refund";
         }
     }
 

@@ -24,6 +24,9 @@ public class LightrailCharge extends LightrailTransaction {
 
     static Map<String, Object> translateToLightrail(Map<String, Object> giftChargeParams) {
         giftChargeParams = LightrailTransaction.translateToLightrail(giftChargeParams);
+        if (!giftChargeParams.containsKey(LightrailConstants.Parameters.CAPTURE))
+            giftChargeParams.put(LightrailConstants.Parameters.CAPTURE, true);
+
         Map<String, Object> translatedParams = new HashMap<>();
 
         for (String paramName : giftChargeParams.keySet()) {
@@ -43,11 +46,18 @@ public class LightrailCharge extends LightrailTransaction {
     String getCapturingIdempotencyKey() {
         return getIdempotencyKey() + "-capture";
     }
-
     String getCancelingIdempotencyKey() {
         return getIdempotencyKey() + "-void";
     }
+    String getRefundingIdempotencyKey() {
+        return getIdempotencyKey() + "-refund";
+    }
 
+    public void refund () throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
+        Map<String, Object> transactionParams = new HashMap<>();
+        transactionParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, getRefundingIdempotencyKey());
+        refund(transactionParams);
+    }
 
     public void capture() throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         Map<String, Object> transactionParams = new HashMap<>();
@@ -61,9 +71,17 @@ public class LightrailCharge extends LightrailTransaction {
         cancel(transactionParams);
     }
 
+    void refund(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+        Transaction refundTransaction = APICore.actionOnTransaction(getCardId(),
+                getTransactionId(),
+                LightrailConstants.API.Transactions.REFUND,
+                transactionParams);
+        history.add(refundTransaction);
+    }
+
     void cancel(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
 
-        Transaction cancelTransaction = APICore.finalizeTransaction(getCardId(),
+        Transaction cancelTransaction = APICore.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.VOID,
                 transactionParams);
@@ -71,7 +89,7 @@ public class LightrailCharge extends LightrailTransaction {
     }
 
     void capture(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
-        Transaction captureTransaction = APICore.finalizeTransaction(getCardId(),
+        Transaction captureTransaction = APICore.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.CAPTURE,
                 transactionParams);
@@ -139,24 +157,19 @@ public class LightrailCharge extends LightrailTransaction {
         String code = (String) giftChargeParams.get(LightrailConstants.Parameters.CODE);
         String cardId = (String) giftChargeParams.get(LightrailConstants.Parameters.CARD_ID);
 
-        if ((code == null || code.isEmpty())
-                && (cardId == null || cardId.isEmpty()))
-            throw new BadParameterException("Must provide either a 'code', a 'cardId', or a valid 'customer'.");
-
         String idempotencyKey = (String) giftChargeParams.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
         if (idempotencyKey == null) {
             idempotencyKey = UUID.randomUUID().toString();
             giftChargeParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
         }
 
-        if (!giftChargeParams.containsKey(LightrailConstants.Parameters.CAPTURE))
-            giftChargeParams.put(LightrailConstants.Parameters.CAPTURE, true);
-
         Transaction transaction;
         if (code != null && !code.isEmpty())
             transaction = APICore.postTransactionOnCode(code, translateToLightrail(giftChargeParams));
-        else
+        else if (cardId != null && !cardId.isEmpty())
             transaction = APICore.postTransactionOnCard(cardId, translateToLightrail(giftChargeParams));
+        else
+            throw new BadParameterException("Must provide either a 'code', a 'cardId', or a valid 'customer'.");
 
         return new LightrailCharge(transaction);
     }

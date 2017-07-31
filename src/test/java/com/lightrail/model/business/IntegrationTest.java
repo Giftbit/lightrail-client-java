@@ -40,6 +40,29 @@ public class IntegrationTest {
     }
 
     @Test
+    public void GiftValueChargeRefundTest () throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        Properties properties = TestParams.getProperties();
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        Map<String, Object> giftValueParams = TestParams.readCodeParamsFromProperties();
+        int giftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+
+        int chargeAmount = 101;
+
+        Map<String, Object> giftChargeParams = TestParams.readCodeParamsFromProperties();
+        giftChargeParams.put(LightrailConstants.Parameters.AMOUNT, chargeAmount);
+
+        LightrailCharge giftCharge = LightrailCharge.create(giftChargeParams);
+        int newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+
+        assertEquals(giftCodeValue - chargeAmount, newGiftCodeValue);
+
+        giftCharge.refund();
+        newGiftCodeValue = LightrailValue.retrieve(giftValueParams).getCurrentValue();
+        assertEquals(giftCodeValue, newGiftCodeValue);
+    }
+
+    @Test
     public void GiftValueFundTest () throws IOException, CurrencyMismatchException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
