@@ -264,6 +264,9 @@ The following dependency is also necessary if you want to run the unit tests.
 ```
 ## Changelog ## 
 
+### 1.1.1
+- Refund transactions.
+
 ### 1.1.0
 
 - Customer account credits: create, charge, fund, and balance-check.
