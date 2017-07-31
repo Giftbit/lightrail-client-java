@@ -70,6 +70,18 @@ giftCharge.capture();
 giftCharge.cancel();
 ```
 
+#### Refunding a Charge
+
+You can undo a charge by calling `refund()`. This will create a new `refund` transaction which will return the charged amount back to the card. 
+
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+LightrailCharge giftCharge = LightrailCharge.createByCode("<GIFT CODE>", 735, "USD");
+//later on
+giftCharge.refund();
+```
+
+Note that this does not necessarily mean that the refunded amount is available for re-charge. In the edge case where the fund for the original charge came from an attached promotional value which has now expired, refunding will return those funds back to the now-expired value store and therefore the value will not be available for re-charge.
 
 #### Funding a Gift Card
 
