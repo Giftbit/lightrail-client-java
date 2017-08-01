@@ -28,6 +28,7 @@ public final class LightrailConstants {
             public static final String CREATE_CARD = "cards";
             public static final String RETRIEVE_CARD = "cards/%s";
             public static final String CANCEL_CARD = "cards/%s/cancel";
+            public static final String RETRIEVE_FULL_CODE = "cards/%s/fullcode";
         }
 
         public static final String AUTHORIZATION_HEADER_NAME = "Authorization";
@@ -39,7 +40,6 @@ public final class LightrailConstants {
         public static final String REQUEST_METHOD_GET = "GET";
         public static final String REQUEST_METHOD_POST = "POST";
         public static final String REQUEST_METHOD_DELETE = "DELETE";
-
 
         public final class CodeBalanceCheck {
             public static final String ACTIVE = "ACTIVE";
@@ -53,7 +53,6 @@ public final class LightrailConstants {
     }
 
     public static class Parameters {
-
         public static final String CURRENCY = "currency";
         public static final String CODE = "code";
         public static final String AMOUNT = "amount";
@@ -70,7 +69,11 @@ public final class LightrailConstants {
         public static final String INITIAL_VALUE = "initialValue";
         public static final String CARD_TYPE = "cardType";
         public static final String CARD_TYPE_ACCOUNT_CARD = "ACCOUNT_CARD";
+        public static final String CARD_TYPE_GIFT_CARD = "GIFT_CARD";
         public static final String CUSTOMER = "lightrailCustomer";
+        public static final String PROGRAM_ID = "programId";
+        public static final String EXPIRES = "expires";
+        public static final String START_DATE = "startDate";
 
         public static void requireParameters(List<String> requiredParams, Map<String, Object> givenParams) throws BadParameterException {
             if (Lightrail.apiKey == null)

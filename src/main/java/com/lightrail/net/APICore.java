@@ -217,4 +217,14 @@ public class APICore {
             throw new RuntimeException(e);
         }
     }
+
+    public static FullCode retrieveCardsFullCode(String contactId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_FULL_CODE, contactId);
+        try {
+            String rawAPIResponse = getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null);
+            return parseFromJson(rawAPIResponse, FullCode.class);
+        } catch (InsufficientValueException e) { //never happens
+            throw new RuntimeException(e);
+        }
+    }
 }
