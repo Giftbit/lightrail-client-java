@@ -141,22 +141,5 @@ public class IntegrationTest {
         assertEquals(giftCodeValue, newGiftCodeValue);
     }
 
-    @Test
-    public void createCardWithExpiryDate() throws IOException, CouldNotFindObjectException, AuthorizationException {
-        Properties properties = TestParams.getProperties();
-        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
-
-        String programId = properties.getProperty("happyPath.code.programId");
-        String startDate =  "2017-08-02T00:27:02.910Z";
-        String expiryDate = "2017-10-02T00:27:02.910Z";
-
-        GiftCard createdGiftCard = GiftCard.createWithStartAndExpiryDate(programId, 400,startDate ,expiryDate);
-        String cardId = createdGiftCard.getCardId();
-
-        LightrailValue lightrailValue = LightrailValue.retrieveByCardId(cardId);
-        assertEquals(startDate, lightrailValue.getStartDate());
-        assertEquals(expiryDate, lightrailValue.getExpires());
-    }
-
 
 }

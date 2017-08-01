@@ -29,6 +29,8 @@ public final class LightrailConstants {
             public static final String RETRIEVE_CARD = "cards/%s";
             public static final String CANCEL_CARD = "cards/%s/cancel";
             public static final String RETRIEVE_FULL_CODE = "cards/%s/fullcode";
+            public static final String ACTION_ON_CARD = "cards/%s/%s";
+
         }
 
         public static final String AUTHORIZATION_HEADER_NAME = "Authorization";
@@ -41,14 +43,20 @@ public final class LightrailConstants {
         public static final String REQUEST_METHOD_POST = "POST";
         public static final String REQUEST_METHOD_DELETE = "DELETE";
 
-        public final class CodeBalanceCheck {
+        public final class Balance {
             public static final String ACTIVE = "ACTIVE";
+            public static final String FROZEN = "FROZEN";
         }
 
         public final class Transactions {
             public static final String CAPTURE = "capture";
             public static final String VOID = "void";
             public static final String REFUND = "refund";
+        }
+        public final class Cards {
+            public static final String FREEZE = "freeze";
+            public static final String UNFREEZE = "unfreeze";
+            public static final String ACTIVATE = "activate";
         }
     }
 

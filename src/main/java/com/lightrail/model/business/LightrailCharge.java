@@ -71,29 +71,29 @@ public class LightrailCharge extends LightrailTransaction {
         cancel(transactionParams);
     }
 
-    void refund(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    LightrailActionTransaction refund(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         Transaction refundTransaction = APICore.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.REFUND,
                 transactionParams);
-        history.add(refundTransaction);
+        return new LightrailActionTransaction(refundTransaction);
     }
 
-    void cancel(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    LightrailActionTransaction cancel(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
 
         Transaction cancelTransaction = APICore.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.VOID,
                 transactionParams);
-        history.add(cancelTransaction);
+        return new LightrailActionTransaction(cancelTransaction);
     }
 
-    void capture(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    LightrailActionTransaction capture(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         Transaction captureTransaction = APICore.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.CAPTURE,
                 transactionParams);
-        history.add(captureTransaction);
+        return new LightrailActionTransaction(captureTransaction);
     }
 
     public static LightrailCharge createPendingByCustomer(String customerAccountId, int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
@@ -157,11 +157,7 @@ public class LightrailCharge extends LightrailTransaction {
         String code = (String) giftChargeParams.get(LightrailConstants.Parameters.CODE);
         String cardId = (String) giftChargeParams.get(LightrailConstants.Parameters.CARD_ID);
 
-        String idempotencyKey = (String) giftChargeParams.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
-        if (idempotencyKey == null) {
-            idempotencyKey = UUID.randomUUID().toString();
-            giftChargeParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
-        }
+        giftChargeParams = LightrailTransaction.addDefaultIdempotencyKeyIfNotProvided(giftChargeParams);
 
         Transaction transaction;
         if (code != null && !code.isEmpty())
