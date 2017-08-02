@@ -8,14 +8,14 @@ Lightrail is a modern platform for digital account credits, gift cards, promotio
 
 The following features are supported in this version:
 
-- Gift Cards: balance-check, charge, and fund.
+- Gift Cards: create, retrieve, balance-check, charge, and fund.
 - Account Credits: create, retrieve, balance-check, charge, and fund.
 
 Note that the Lightrail API supports many other features and we are working on covering them in this library. For a complete picture of Lightrail API features check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 
 
 ## Usage ##
 
-Before using any other parts of the library, you need to set up your Lightrail API key: 
+Before using any parts of the library, you need to set up your Lightrail API key: 
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
@@ -23,18 +23,19 @@ Lightrail.apiKey = "<your lightrail API key>";
 
 ### Gift Cards
 
-A Lightrail gift card is a virtual device for issuing gift values. Each gift card has a specific `currency`, a `cardId`, as well as a `code`, which is a unique unguessable alphanumeric character string, usually released to the gift recipient in confidence. The recipient of the gift card can present the `code` to redeem the gift value. For further explanation of cards and codes see the [Lightrail API documentation](https://www.lightrail.com/docs/).
+A Lightrail gift card is a virtual device for issuing gift values. Each gift card has a specific `currency`, a `cardId`, as well as a `fullCode`, which is a unique unguessable alphanumeric string, usually released to the gift recipient in confidence. The recipient of the gift card can present the `fullCode` to redeem the gift value. For further explanation of cards and codes see the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 #### Balance Check ####
-For checking the balance of a gift code, depending on your use-case, you can call the`retrieveByCode()` or `retrieveByCardId()` from the `LightrailValue` class. The current balance of the gift card as well as some other information such as its currency are included in the returned object:
+For checking the balance of a gift code, depending on your use-case, you can call the`retrieveByCode()` or `retrieveByCardId()` from the `LightrailValue` class. The current balance of the gift card as well as some other information such as its `currency` and `state` are included in the returned object:
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
 LightrailValue giftValue = LightrailValue.retrieveByCode("<GIFT CODE>");
 int value = giftValue.getCurrentValue();
 String currency = giftValue.getCurrency();
+boolean isCardActive = ("ACTIVE".equals(giftValue.getState()));
 ```
-The more generic  `retrieve()` method allows passing an expected `currency`. This call will end in a `CurrencyMismatchException` if the expected currency does not match the gift card currency, making error-handling easier when processing gift redemption.
+The more generic  `retrieve()` method allows passing an expected `currency`. This call will end in a `CurrencyMismatchException` if the expected currency does not match the gift card currency which can make error-handling easier when processing gift redemptions.
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
@@ -70,9 +71,11 @@ giftCharge.capture();
 giftCharge.cancel();
 ```
 
+Note that `capture()` and `cancel()` will each end in a new transaction with its own `transactionId`. If you need to record the transaction ID you can get it from the transaction object returned by these methods. 
+
 #### Refunding a Charge
 
-You can undo a charge by calling `refund()`. This will create a new `refund` transaction which will return the charged amount back to the card. 
+You can undo a charge by calling `refund()`. This will create a new `refund` transaction which will return the charged amount back to the card. If you need the transaction ID of the refund transaction, you can find it the returned transaction object. 
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
@@ -81,7 +84,7 @@ LightrailCharge giftCharge = LightrailCharge.createByCode("<GIFT CODE>", 735, "U
 giftCharge.refund();
 ```
 
-Note that this does not necessarily mean that the refunded amount is available for re-charge. In the edge case where the fund for the original charge came from an attached promotional value which has now expired, refunding will return those funds back to the now-expired value store and therefore the value will not be available for re-charge.
+Note that this does not necessarily mean that the refunded amount is available for a re-charge. In the edge case where the fund for the original charge came from a promotion which has now expired, refunding will return those funds back to the now-expired value store and therefore the value will not be available for re-charge.
 
 #### Funding a Gift Card
 
@@ -92,9 +95,9 @@ Lightrail.apiKey = "<your lightrail API key>";
 LightrailFund giftFund = LightrailFund.createByCardId("<CARD ID>", 735, "USD");
 ```
 
-#### Creating and Retrieving Gift Cards
+#### Creating Gift Cards
 
-Gift cards are created as part of a Gift Card Program. You can set up a Gift Card Program by logging into the Lightrail [web application](https://www.lightrail.com). A Program Once you have a Gift Card Program, you need the `programId` in order to create Gift Cards in that program.
+Gift cards are created as part of a Gift Card Program. You can set up a Gift Card Program by logging into the Lightrail [web application](https://www.lightrail.com). Once you have a Gift Card Program, you can copy and use the `programId` for creating Gift Cards in that program.
 
 You can create a Gift Card by calling one of the `create()` methods in the `GiftCard` class. You need to provide the Program ID. Optionally, you can also provide an initial value, a start date, and an expiry date. For example:
 
@@ -109,7 +112,9 @@ GiftCard newGiftCard = GiftCard.create("<PROGRAM ID>", 400, startDate, expiryDat
 
 To pass more parameters, you can use the generic `create()` method which accepts a `Map<String,Object>`.
 
-You can retrieve an exiting gift card by providing its `cardId`, using the `retrieve()` method:
+#### Retrieving Gift Cards
+
+You can retrieve an exiting gift card by providing its `cardId`, using the `retrieve()` method. 
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
@@ -118,7 +123,7 @@ GiftCard existingGiftCard = GiftCard.retrieve("<CARD ID>");
 
 #### Retrieving the Full Code
 
-Gift codes are an unguessable alphanumeric string which can be used to redeem the value of a card. This value is usually shared with the recipient of the Gift Card in confidence. To improve the confidentiality, Lightrail API endpoints which return a `card` object only return its last 4 digits of the code. If you want to retrieve the `fullCode` you can do this by calling the `retrieveFullCode()` method on a `GiftCard` object. Usually you will email this value directly to the recipient of the Gift Card after creating it and we highly suggest that you refrain from persisting it.
+Gift codes are an unguessable alphanumeric string associate to a gift card which can be used to redeem the value of a card. This value is usually shared with the recipient of the gift card in confidence. To improve the confidentiality, Lightrail API endpoints which return a `card` object only return the last 4 digits of the code. For retrieving the `fullCode` you can call the `retrieveFullCode()` method on a `GiftCard` object. Usually you will email this value directly to the recipient of the Gift Card after creating it; we highly suggest that you refrain from persisting it.
 
 ```java
 Lightrail.apiKey = "<your lightrail API key>";
@@ -127,7 +132,7 @@ String fullCode = newGiftCard.retrieveFullCode();
 //email the fullCode to the recipient of the gift.
 ```
 
-Note that the `GiftCard` class does not cache the value of the code and every call to retrieve the full code, implies an API call to Lightrail servers.
+Note that the `GiftCard` class does not cache the value of the code and every call to retrieve the full code, leads to an API call to Lightrail servers.
 
 #### Freezing and Unfreezing Cards
 
@@ -141,11 +146,16 @@ existingGiftCard.freeze();
 existingGiftCard.unfreeze();
 ```
 
-Note that freezing and unfreezing a card is a special transaction and the corresponding transaction object will be returned by the corresponding method calls.
+Note that freezing and unfreezing a card are special transactions and the corresponding transaction object will be returned by the these methods.
 
 #### Gift Card Attributes
 
-There are two sets of methods for reading a gift card attributes: the getter methods prefixed with `get` will read a local copy of the attribute if available. The `retrieve` methods make a call to the API and ensure that the most updated value for the attribute is returned. For example `getState()` will return the `state` of the card (i.e. whether it is active, frozen, etc.) according to the local copy, while `retrieveState()` will make a call to the API and ensure an up-to-date value is returned. These methods will enable you flexibly to budget your API calls. 
+There are two sets of methods for reading a gift card attributes: 
+
+- The getter methods prefixed with `get` will read a local copy of the attribute if available. 
+- The `retrieve` methods make a call to the API and ensure that a fresh value for the attribute is fetched from the server. 
+
+For example `getState()` will return the `state` of the card (i.e. whether it is active, frozen, etc.) according to the local copy, while `retrieveState()` will make a call to the API and ensure an up-to-date value is returned. These methods will enable you to budget your API calls. 
 
 ### Customer Accounts
 
