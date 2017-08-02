@@ -141,6 +141,12 @@ existingGiftCard.freeze();
 existingGiftCard.unfreeze();
 ```
 
+Note that freezing and unfreezing a card is a special transaction and the corresponding transaction object will be returned by the corresponding method calls.
+
+#### Gift Card Attributes
+
+There are two sets of methods for reading a gift card attributes: the getter methods prefixed with `get` will read a local copy of the attribute if available. The `retrieve` methods make a call to the API and ensure that the most updated value for the attribute is returned. For example `getState()` will return the `state` of the card (i.e. whether it is active, frozen, etc.) according to the local copy, while `retrieveState()` will make a call to the API and ensure an up-to-date value is returned. These methods will enable you flexibly to budget your API calls. 
+
 ### Customer Accounts
 
 Customer Accounts are values attached to a customer and are commonly used for customer rewards and account credit programs. For further explanation of this concept check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 
