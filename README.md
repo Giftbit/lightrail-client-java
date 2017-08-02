@@ -338,7 +338,7 @@ The following dependency is also necessary if you want to run the unit tests.
 ### 1.1.0
 
 - Customer account credits: create, charge, fund, and balance-check.
-- Simpler shortcut methods creating `GiftCharge` , `GiftFund` , and retrieving `GiftValue`.
+- Simpler shortcut methods creating `GiftCharge`, `GiftFund`, and retrieving `GiftValue`.
 
 ### 1.0.2
 
