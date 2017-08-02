@@ -92,6 +92,55 @@ Lightrail.apiKey = "<your lightrail API key>";
 LightrailFund giftFund = LightrailFund.createByCardId("<CARD ID>", 735, "USD");
 ```
 
+#### Creating and Retrieving Gift Cards
+
+Gift cards are created as part of a Gift Card Program. You can set up a Gift Card Program by logging into the Lightrail [web application](https://www.lightrail.com). A Program Once you have a Gift Card Program, you need the `programId` in order to create Gift Cards in that program.
+
+You can create a Gift Card by calling one of the `create()` methods in the `GiftCard` class. You need to provide the Program ID. Optionally, you can also provide an initial value, a start date, and an expiry date. For example:
+
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+GiftCard newGiftCard = GiftCard.create("<PROGRAM ID>", 400);
+//or
+String startDate = "2017-08-02T00:27:02.910Z";
+String expiryDate = "2017-10-02T00:27:02.910Z";
+GiftCard newGiftCard = GiftCard.create("<PROGRAM ID>", 400, startDate, expiryDate);
+```
+
+To pass more parameters, you can use the generic `create()` method which accepts a `Map<String,Object>`.
+
+You can retrieve an exiting gift card by providing its `cardId`, using the `retrieve()` method:
+
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+GiftCard existingGiftCard = GiftCard.retrieve("<CARD ID>");
+```
+
+#### Retrieving the Full Code
+
+Gift codes are an unguessable alphanumeric string which can be used to redeem the value of a card. This value is usually shared with the recipient of the Gift Card in confidence. To improve the confidentiality, Lightrail API endpoints which return a `card` object only return its last 4 digits of the code. If you want to retrieve the `fullCode` you can do this by calling the `retrieveFullCode()` method on a `GiftCard` object. Usually you will email this value directly to the recipient of the Gift Card after creating it and we highly suggest that you refrain from persisting it.
+
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+GiftCard newGiftCard = GiftCard.create("<PROGRAM ID>", 400);
+String fullCode = newGiftCard.retrieveFullCode();
+//email the fullCode to the recipient of the gift.
+```
+
+Note that the `GiftCard` class does not cache the value of the code and every call to retrieve the full code, implies an API call to Lightrail servers.
+
+#### Freezing and Unfreezing Cards
+
+Freezing a card will suspend its value until it is unfrozen. This is a useful method when investigating potential fraud. 
+
+```java
+Lightrail.apiKey = "<your lightrail API key>";
+GiftCard existingGiftCard = GiftCard.retrieve("<CARD ID>");
+existingGiftCard.freeze();
+//later
+existingGiftCard.unfreeze();
+```
+
 ### Customer Accounts
 
 Customer Accounts are values attached to a customer and are commonly used for customer rewards and account credit programs. For further explanation of this concept check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 

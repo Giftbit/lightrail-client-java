@@ -14,7 +14,6 @@ public class CustomerAccount {
     private Map<String, Card> cardIdForCurrency = new HashMap<>();
 
     Contact contactObject;
-    //String defaultCurrency;
 
     public String getId() {
         return contactObject.getContactId();

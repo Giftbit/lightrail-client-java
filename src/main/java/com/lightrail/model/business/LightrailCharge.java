@@ -53,22 +53,22 @@ public class LightrailCharge extends LightrailTransaction {
         return getIdempotencyKey() + "-refund";
     }
 
-    public void refund () throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
+    public LightrailActionTransaction refund () throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
         Map<String, Object> transactionParams = new HashMap<>();
         transactionParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, getRefundingIdempotencyKey());
-        refund(transactionParams);
+        return refund(transactionParams);
     }
 
-    public void capture() throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    public LightrailActionTransaction capture() throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         Map<String, Object> transactionParams = new HashMap<>();
         transactionParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, getCapturingIdempotencyKey());
-        capture(transactionParams);
+        return capture(transactionParams);
     }
 
-    public void cancel() throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    public LightrailActionTransaction cancel() throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         Map<String, Object> transactionParams = new HashMap<>();
         transactionParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, getCancelingIdempotencyKey());
-        cancel(transactionParams);
+        return cancel(transactionParams);
     }
 
     LightrailActionTransaction refund(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {

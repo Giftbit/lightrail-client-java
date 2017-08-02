@@ -41,6 +41,7 @@ public class GiftCardTest {
 
         retrievedGiftCard.unfreeze();
         assertEquals(LightrailConstants.API.Balance.ACTIVE, createdGiftCard.getState());
+        assertEquals(LightrailConstants.API.Balance.ACTIVE, createdGiftCard.retrieveState());
     }
 
     @Test
@@ -52,9 +53,11 @@ public class GiftCardTest {
         String startDate = "2017-08-02T00:27:02.910Z";
         String expiryDate = "2017-10-02T00:27:02.910Z";
 
-        GiftCard createdGiftCard = GiftCard.createWithStartAndExpiryDate(programId, 400, startDate, expiryDate);
+        GiftCard createdGiftCard = GiftCard.create(programId, 400, startDate, expiryDate);
 
         assertEquals(startDate, createdGiftCard.getStartDate());
+        assertEquals(startDate, createdGiftCard.retrieveStartDate());
         assertEquals(expiryDate, createdGiftCard.getExpires());
+        assertEquals(expiryDate, createdGiftCard.retrieveExpires());
     }
 }

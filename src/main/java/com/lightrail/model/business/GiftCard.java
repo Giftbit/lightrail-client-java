@@ -3,7 +3,6 @@ package com.lightrail.model.business;
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
-import com.lightrail.model.api.Balance;
 import com.lightrail.model.api.Card;
 import com.lightrail.model.api.Transaction;
 import com.lightrail.net.APICore;
@@ -12,7 +11,6 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class GiftCard {
     Card card;
@@ -95,7 +93,7 @@ public class GiftCard {
         return new LightrailActionTransaction(transaction);
     }
 
-    public static GiftCard createWithStartAndExpiryDate(String programId, int initialValue, String startDate, String expiryDate) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static GiftCard create(String programId, int initialValue, String startDate, String expiryDate) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Map<String, Object> params = new HashMap<>();
         params.put(LightrailConstants.Parameters.PROGRAM_ID, programId);
         params.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
@@ -107,7 +105,7 @@ public class GiftCard {
     }
 
     public static GiftCard create(String programId, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return createWithStartAndExpiryDate(programId, initialValue, null,null);
+        return create(programId, initialValue, null,null);
     }
 
     public static GiftCard create(Map<String, Object> cardCreationParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
