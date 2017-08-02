@@ -329,6 +329,9 @@ The following dependency is also necessary if you want to run the unit tests.
 ```
 ## Changelog ## 
 
+### 1.2.0
+- Gift cards: create, retrieve, and freeze/unfreeze.
+
 ### 1.1.1
 - Refund transactions.
 
