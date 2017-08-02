@@ -10,6 +10,7 @@ public class Card {
     String dateCreated;
     String cardType;
     String currency;
+    String programId;
     List<CardCategory> categories;
 
     public String getCardId() {
@@ -35,6 +36,8 @@ public class Card {
     public String getCurrency() {
         return currency;
     }
+
+    public String getProgramId() { return programId; }
 
     public List<CardCategory> getCategories() {
         return categories;

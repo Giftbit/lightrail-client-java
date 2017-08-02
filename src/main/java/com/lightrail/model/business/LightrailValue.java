@@ -1,7 +1,6 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.*;
-import com.lightrail.model.api.Balance;
 import com.lightrail.model.api.ValueStore;
 import com.lightrail.helpers.*;
 import com.lightrail.net.APICore;
@@ -11,7 +10,7 @@ import java.util.*;
 
 public class LightrailValue {
 
-    private Balance balanceResponse;
+    private com.lightrail.model.api.Balance balanceResponse;
 
     public String getCurrency() {
         return balanceResponse.getCurrency();
@@ -21,12 +20,20 @@ public class LightrailValue {
         return balanceResponse.getBalanceDate();
     }
 
+    public String getExpires() {return balanceResponse.getPrincipal().getExpires();}
+    public String getStartDate() {return balanceResponse.getPrincipal().getStartDate();}
+    public String getState() {return balanceResponse.getPrincipal().getState();}
+
+    com.lightrail.model.api.Balance getBalanceResponse () {
+        return balanceResponse;
+    }
+
     public int getCurrentValue() {
         int currentValue = 0;
 
         String codeState = balanceResponse.getPrincipal().getState();
 
-        if (!Objects.equals(codeState, LightrailConstants.API.CodeBalanceCheck.ACTIVE))
+        if (!Objects.equals(codeState, LightrailConstants.API.Balance.ACTIVE))
             throw new CardNotActiveException("This gift code is not active at this time.");
 
         currentValue = balanceResponse.getPrincipal().getCurrentValue();
@@ -34,27 +41,39 @@ public class LightrailValue {
         if (attachedValues != null) {
             for (ValueStore attachedValue : attachedValues) {
                 String attachedValueState = attachedValue.getState();
-                if (Objects.equals(attachedValueState, LightrailConstants.API.CodeBalanceCheck.ACTIVE))
+                if (Objects.equals(attachedValueState, LightrailConstants.API.Balance.ACTIVE))
                     currentValue += attachedValue.getCurrentValue();
             }
         }
         return currentValue;
     }
 
-    private LightrailValue(Balance balance) {
+    private LightrailValue(com.lightrail.model.api.Balance balance) {
         this.balanceResponse = balance;
     }
 
-    public static LightrailValue retrieveByCode(String code) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
+    public static LightrailValue retrieveByCode(String code) throws IOException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
         Map<String, Object> giftValueParams = new HashMap<>();
         giftValueParams.put(LightrailConstants.Parameters.CODE, code);
-        return retrieve(giftValueParams);
+        LightrailValue lightrailValue;
+        try {
+            lightrailValue = retrieve(giftValueParams);
+        } catch (CurrencyMismatchException e) { //never happens
+            throw new RuntimeException(e);
+        }
+        return lightrailValue;
     }
 
-    public static LightrailValue retrieveByCardId(String cardId) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
+    public static LightrailValue retrieveByCardId(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Map<String, Object> giftValueParams = new HashMap<>();
         giftValueParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
-        return retrieve(giftValueParams);
+        LightrailValue lightrailValue;
+        try {
+            lightrailValue = retrieve(giftValueParams);
+        } catch (CurrencyMismatchException e) { //never happens
+            throw new RuntimeException(e);
+        }
+        return lightrailValue;
     }
 
     public static LightrailValue retrieveByCustomer(String customerAccountId, String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
@@ -70,7 +89,7 @@ public class LightrailValue {
         String code = (String) giftValueParams.get(LightrailConstants.Parameters.CODE);
         String cardId = (String) giftValueParams.get(LightrailConstants.Parameters.CARD_ID);
 
-        Balance balance;
+        com.lightrail.model.api.Balance balance;
         try {
             if (code != null) {
                 balance = APICore.balanceCheckByCode(code);

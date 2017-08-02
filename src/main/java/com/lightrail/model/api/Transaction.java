@@ -12,6 +12,8 @@ public class Transaction {
     String codeLastFour;
     String giftbitUserId;
     String dateCreated;
+    String transactionType;
+    String transactionAccessMethod;
     Map<String, Object> metadata;
 
     public String getTransactionId() {
@@ -44,6 +46,14 @@ public class Transaction {
 
     public String getDateCreated() {
         return dateCreated;
+    }
+
+    public String getTransactionType() {
+        return transactionType;
+    }
+
+    public String getTransactionAccessMethod() {
+        return transactionAccessMethod;
     }
 
     public Map<String, Object> getMetadata() {return metadata;}

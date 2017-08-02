@@ -14,7 +14,6 @@ public class CustomerAccount {
     private Map<String, Card> cardIdForCurrency = new HashMap<>();
 
     Contact contactObject;
-    //String defaultCurrency;
 
     public String getId() {
         return contactObject.getContactId();
@@ -72,12 +71,8 @@ public class CustomerAccount {
         ), parameters);
 
         String currency = (String) parameters.get(LightrailConstants.Parameters.CURRENCY);
-        String idempotencyKey = (String) parameters.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
+        parameters = LightrailTransaction.addDefaultIdempotencyKeyIfNotProvided(parameters);
 
-        if (idempotencyKey == null) {
-            idempotencyKey = UUID.randomUUID().toString();
-            parameters.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
-        }
         parameters.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
         Card card = APICore.createCard(parameters);
         cardIdForCurrency.put(currency, card);
@@ -195,13 +190,7 @@ public class CustomerAccount {
     public static CustomerAccount create(Map<String, Object> customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(LightrailConstants.Parameters.EMAIL), customerAccountParams);
 
-        String idempotencyKey = (String) customerAccountParams.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
-
-        if (idempotencyKey == null) {
-            idempotencyKey = UUID.randomUUID().toString();
-            customerAccountParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
-        }
-
+        customerAccountParams = LightrailTransaction.addDefaultIdempotencyKeyIfNotProvided(customerAccountParams);
         Contact contactObject = APICore.createContact(customerAccountParams);
         return new CustomerAccount(contactObject);
     }

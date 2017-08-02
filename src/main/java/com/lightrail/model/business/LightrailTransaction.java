@@ -13,8 +13,6 @@ import java.util.*;
 
 public abstract class LightrailTransaction {
     Transaction transactionResponse;
-    List<Transaction> history = new ArrayList<>();
-
 
     public String getCardId() {
         return transactionResponse.getCardId();
@@ -38,6 +36,10 @@ public abstract class LightrailTransaction {
 
     public String getIdempotencyKey() {
         return transactionResponse.getUserSuppliedId();
+    }
+
+    public String getTransactionType() {
+        return transactionResponse.getTransactionType();
     }
 
     public Map<String, Object> getMetadata() {
@@ -73,6 +75,16 @@ public abstract class LightrailTransaction {
             }
         }
         return chargeParamsCopy;
+    }
+
+    public static Map<String, Object> addDefaultIdempotencyKeyIfNotProvided(Map<String, Object> params) {
+        Map<String, Object> paramsCopy = new HashMap<>(params);
+        String idempotencyKey = (String) paramsCopy.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
+        if (idempotencyKey == null) {
+            idempotencyKey = UUID.randomUUID().toString();
+            paramsCopy.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
+        }
+        return paramsCopy;
     }
 
 }

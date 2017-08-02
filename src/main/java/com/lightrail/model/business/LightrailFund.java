@@ -51,9 +51,7 @@ public class LightrailFund extends LightrailTransaction {
         if ((cardId == null || cardId.isEmpty()))
             throw new BadParameterException("Must provide either a 'cardId' or a valid 'customer'.");
 
-        if (!giftFundParams.containsKey(LightrailConstants.Parameters.USER_SUPPLIED_ID))
-            giftFundParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, UUID.randomUUID().toString());
-
+        giftFundParams = LightrailTransaction.addDefaultIdempotencyKeyIfNotProvided(giftFundParams);
         Transaction cardTransaction;
         try {
             cardTransaction = APICore.postTransactionOnCard(cardId, translateToLightrail(giftFundParams));
