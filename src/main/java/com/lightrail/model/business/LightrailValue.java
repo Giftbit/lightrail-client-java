@@ -20,11 +20,23 @@ public class LightrailValue {
         return balanceResponse.getBalanceDate();
     }
 
-    public String getExpires() {return balanceResponse.getPrincipal().getExpires();}
-    public String getStartDate() {return balanceResponse.getPrincipal().getStartDate();}
-    public String getState() {return balanceResponse.getPrincipal().getState();}
+    public String getExpires() {
+        return balanceResponse.getPrincipal().getExpires();
+    }
 
-    com.lightrail.model.api.Balance getBalanceResponse () {
+    public String getStartDate() {
+        return balanceResponse.getPrincipal().getStartDate();
+    }
+
+    public String getState() {
+        return balanceResponse.getPrincipal().getState();
+    }
+
+    public String getCardId() {
+        return balanceResponse.getCardId();
+    }
+
+    com.lightrail.model.api.Balance getBalanceResponse() {
         return balanceResponse;
     }
 

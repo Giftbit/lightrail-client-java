@@ -9,6 +9,7 @@ public class Balance {
     List<ValueStore> attached;
     String currency;
     String balanceDate;
+    String cardId;
 
     public List<ValueStore> getAttached() {
         return attached;
@@ -24,5 +25,9 @@ public class Balance {
 
     public String getBalanceDate() {
         return balanceDate;
+    }
+
+    public String getCardId() {
+        return cardId;
     }
 }
