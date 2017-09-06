@@ -1,4 +1,4 @@
-package com.lightrail.model.api;
+package com.lightrail.model.api.objects;
 
 import java.util.Map;
 
@@ -10,9 +10,9 @@ public class Transaction {
     String cardId;
     String currency;
     String codeLastFour;
-    String giftbitUserId;
     String dateCreated;
     String transactionType;
+    String parentTransactionId;
     String transactionAccessMethod;
     Map<String, Object> metadata;
 
@@ -40,8 +40,8 @@ public class Transaction {
         return codeLastFour;
     }
 
-    public String getGiftbitUserId() {
-        return giftbitUserId;
+    public String getParentTransactionId() {
+        return parentTransactionId;
     }
 
     public String getDateCreated() {
@@ -57,4 +57,5 @@ public class Transaction {
     }
 
     public Map<String, Object> getMetadata() {return metadata;}
+
 }

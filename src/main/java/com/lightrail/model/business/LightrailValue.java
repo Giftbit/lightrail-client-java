@@ -1,16 +1,17 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.*;
-import com.lightrail.model.api.ValueStore;
+import com.lightrail.model.api.objects.ValueStore;
 import com.lightrail.helpers.*;
-import com.lightrail.net.APICore;
+import com.lightrail.model.api.objects.Balance;
+import com.lightrail.model.api.net.APICore;
 
 import java.io.IOException;
 import java.util.*;
 
 public class LightrailValue {
 
-    private com.lightrail.model.api.Balance balanceResponse;
+    private Balance balanceResponse;
 
     public String getCurrency() {
         return balanceResponse.getCurrency();
@@ -36,7 +37,7 @@ public class LightrailValue {
         return balanceResponse.getCardId();
     }
 
-    com.lightrail.model.api.Balance getBalanceResponse() {
+    Balance getBalanceResponse() {
         return balanceResponse;
     }
 
@@ -60,7 +61,7 @@ public class LightrailValue {
         return currentValue;
     }
 
-    private LightrailValue(com.lightrail.model.api.Balance balance) {
+    private LightrailValue(Balance balance) {
         this.balanceResponse = balance;
     }
 
@@ -88,20 +89,20 @@ public class LightrailValue {
         return lightrailValue;
     }
 
-    public static LightrailValue retrieveByCustomer(String customerAccountId, String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
+    public static LightrailValue retrieveByContact(String customerAccountId, String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
         Map<String, Object> giftValueParams = new HashMap<>();
-        giftValueParams.put(LightrailConstants.Parameters.CUSTOMER, customerAccountId);
+        giftValueParams.put(LightrailConstants.Parameters.CONTACT, customerAccountId);
         giftValueParams.put(LightrailConstants.Parameters.CURRENCY, currency);
         return retrieve(giftValueParams);
     }
 
     public static LightrailValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
-        giftValueParams = LightrailTransaction.handleCustomer(giftValueParams);
+        giftValueParams = ContactHandler.handleContact(giftValueParams);
         String requestedCurrency = (String) giftValueParams.get(LightrailConstants.Parameters.CURRENCY);
         String code = (String) giftValueParams.get(LightrailConstants.Parameters.CODE);
         String cardId = (String) giftValueParams.get(LightrailConstants.Parameters.CARD_ID);
 
-        com.lightrail.model.api.Balance balance;
+        Balance balance;
         try {
             if (code != null) {
                 balance = APICore.balanceCheckByCode(code);

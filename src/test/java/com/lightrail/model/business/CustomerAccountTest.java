@@ -58,33 +58,33 @@ public class CustomerAccountTest {
         assertEquals(initialBalance, customerAccount.balance(currency).getCurrentValue());
 
         //charge simple
-        int chargeValue = 400;
-        customerAccount.charge(chargeValue, currency);
-        assertEquals(initialBalance - chargeValue, customerAccount.balance(currency).getCurrentValue());
+        int chargeValue = -400;
+        customerAccount.transact(chargeValue, currency);
+        assertEquals(initialBalance + chargeValue, customerAccount.balance(currency).getCurrentValue());
 
         //fund simple
         int fundValue = 400;
-        customerAccount.fund(fundValue, currency);
-        assertEquals(initialBalance - chargeValue + fundValue, customerAccount.balance(currency).getCurrentValue());
+        customerAccount.transact(fundValue, currency);
+        assertEquals(initialBalance + chargeValue + fundValue, customerAccount.balance(currency).getCurrentValue());
 
         //charge pending-void
-        LightrailCharge charge = customerAccount.charge(chargeValue, currency, false);
-        assertEquals(initialBalance - chargeValue, customerAccount.balance(currency).getCurrentValue());
-        charge.cancel();
+        LightrailTransaction charge = customerAccount.transact(chargeValue, currency, true);
+        assertEquals(initialBalance + chargeValue, customerAccount.balance(currency).getCurrentValue());
+        charge.doVoid();
         assertEquals(initialBalance, customerAccount.balance(currency).getCurrentValue());
 
         //charge pending-capture
-        charge = customerAccount.charge(chargeValue, currency, false);
-        assertEquals(initialBalance - chargeValue, customerAccount.balance(currency).getCurrentValue());
+        charge = customerAccount.transact(chargeValue, currency, true);
+        assertEquals(initialBalance + chargeValue, customerAccount.balance(currency).getCurrentValue());
         charge.capture();
-        assertEquals(initialBalance - chargeValue, customerAccount.balance(currency).getCurrentValue());
+        assertEquals(initialBalance + chargeValue, customerAccount.balance(currency).getCurrentValue());
 
 //        CustomerAccount.delete(customerAccountId);
-        try {
-            customerAccount = CustomerAccount.retrieve(customerAccountId);
-        } catch (Exception e) {
-//            assertEquals(CouldNotFindObjectException.class.getName(), e.getClass().getName()); //todo: uncomment this after the API side is fixed
-        }
+//        try {
+//            customerAccount = CustomerAccount.retrieve(customerAccountId);
+//        } catch (Exception e) {
+//            assertEquals(CouldNotFindObjectException.class.getName(), e.getClass().getName());
+//        }
 
     }
 
@@ -127,26 +127,26 @@ public class CustomerAccountTest {
         assertEquals(initialBalance, customerAccount.balance().getCurrentValue());
 
         //charge simple
-        int chargeValue = 400;
-        customerAccount.charge(chargeValue);
-        assertEquals(initialBalance - chargeValue, customerAccount.balance().getCurrentValue());
+        int chargeValue = -400;
+        customerAccount.transact(chargeValue);
+        assertEquals(initialBalance + chargeValue, customerAccount.balance().getCurrentValue());
 
         //fund simple
         int fundValue = 400;
-        customerAccount.fund(fundValue);
-        assertEquals(initialBalance - chargeValue + fundValue, customerAccount.balance().getCurrentValue());
+        customerAccount.transact(fundValue);
+        assertEquals(initialBalance + chargeValue + fundValue, customerAccount.balance().getCurrentValue());
 
         //charge pending-void
-        LightrailCharge charge = customerAccount.charge(chargeValue, false);
-        assertEquals(initialBalance - chargeValue, customerAccount.balance().getCurrentValue());
-        charge.cancel();
+        LightrailTransaction charge = customerAccount.transact(chargeValue, true);
+        assertEquals(initialBalance + chargeValue, customerAccount.balance().getCurrentValue());
+        charge.doVoid();
         assertEquals(initialBalance, customerAccount.balance().getCurrentValue());
 
         //charge pending-capture
-        charge = customerAccount.charge(chargeValue, false);
-        assertEquals(initialBalance - chargeValue, customerAccount.balance().getCurrentValue());
+        charge = customerAccount.transact(chargeValue, true);
+        assertEquals(initialBalance + chargeValue, customerAccount.balance().getCurrentValue());
         charge.capture();
-        assertEquals(initialBalance - chargeValue, customerAccount.balance().getCurrentValue());
+        assertEquals(initialBalance + chargeValue, customerAccount.balance().getCurrentValue());
 
 //        CustomerAccount.delete(customerAccountId);
         try {
@@ -176,13 +176,13 @@ public class CustomerAccountTest {
         CustomerAccount customerAccount = createCustomerAccount(initialBalance, currency);
 
         Map<String, Object> params = new HashMap<>();
-        params.put("lightrailCustomer", customerAccount.getId());
+        params.put("contact", customerAccount.getId());
         params.put("currency", currency);
 
         LightrailValue value = LightrailValue.retrieve(params);
         assertEquals(initialBalance, value.getCurrentValue());
 
-        value = LightrailValue.retrieveByCustomer(customerAccount.getId(), currency);
+        value = LightrailValue.retrieveByContact(customerAccount.getId(), currency);
         assertEquals(initialBalance, value.getCurrentValue());
     }
 
@@ -192,65 +192,65 @@ public class CustomerAccountTest {
         String currency = "USD";
 
         CustomerAccount customerAccount = createCustomerAccount(initialBalance, currency);
-        String customerId = customerAccount.getId();
+        String contactId = customerAccount.getId();
 
-        int chargeAmount = 100;
+        int amount = 100;
 
         Map<String, Object> params = new HashMap<>();
-        params.put("lightrailCustomer", customerId);
+        params.put("contact", contactId);
         params.put("currency", currency);
-        params.put("amount", chargeAmount);
+        params.put("value", 0 - amount);
 
-        LightrailCharge.create(params);
-        assertEquals(initialBalance - chargeAmount, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        LightrailTransaction.create(params);
+        assertEquals(initialBalance - amount, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
 
         params = new HashMap<>();
-        params.put("lightrailCustomer", customerId);
+        params.put("contact", contactId);
         params.put("currency", currency);
-        params.put("amount", chargeAmount);
-        LightrailFund fund = LightrailFund.create(params);
-        assertEquals(initialBalance, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        params.put("value", amount);
+        LightrailTransaction fund = LightrailTransaction.create(params);
+        assertEquals(initialBalance, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
 
         params = new HashMap<>();
-        params.put("lightrailCustomer", customerId);
+        params.put("contact", contactId);
         params.put("currency", currency);
-        params.put("amount", chargeAmount);
-        params.put("capture", false);
+        params.put("value", 0 - amount);
+        params.put("pending", true);
 
-        LightrailCharge charge = LightrailCharge.create(params);
-        assertEquals(initialBalance - chargeAmount, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
-        charge.cancel();
-        assertEquals(initialBalance, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        LightrailTransaction charge = LightrailTransaction.create(params);
+        assertEquals(initialBalance - amount, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
+        charge.doVoid();
+        assertEquals(initialBalance, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
 
         params = new HashMap<>();
-        params.put("lightrailCustomer", customerId);
+        params.put("contact", contactId);
         params.put("currency", currency);
-        params.put("amount", chargeAmount);
-        params.put("capture", false);
+        params.put("value", 0 - amount);
+        params.put("pending", true);
 
-        charge = LightrailCharge.create(params);
-        assertEquals(initialBalance - chargeAmount, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        charge = LightrailTransaction.create(params);
+        assertEquals(initialBalance - amount, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
         charge.capture();
-        assertEquals(initialBalance - chargeAmount, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        assertEquals(initialBalance - amount, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
 
-        LightrailFund.createByCustomer(customerId, chargeAmount, currency);
-        assertEquals(initialBalance, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        LightrailTransaction.createByContact(contactId, amount, currency);
+        assertEquals(initialBalance, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
 
-        LightrailCharge.createByCustomer(customerId, chargeAmount, currency);
-        assertEquals(initialBalance - chargeAmount, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        LightrailTransaction.createByContact(contactId, 0 - amount, currency);
+        assertEquals(initialBalance - amount, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
 
-        LightrailFund.createByCustomer(customerId, chargeAmount, currency);
-        assertEquals(initialBalance, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        LightrailTransaction.createByContact(contactId, amount, currency);
+        assertEquals(initialBalance, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
 
-        charge = LightrailCharge.createPendingByCustomer(customerId, chargeAmount, currency);
-        assertEquals(initialBalance - chargeAmount, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
-        charge.cancel();
-        assertEquals(initialBalance, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        charge = LightrailTransaction.createPendingByContact(contactId, 0 - amount, currency);
+        assertEquals(initialBalance - amount, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
+        charge.doVoid();
+        assertEquals(initialBalance, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
 
-        charge = LightrailCharge.createPendingByCustomer(customerId, chargeAmount, currency);
-        assertEquals(initialBalance - chargeAmount, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        charge = LightrailTransaction.createPendingByContact(contactId, 0 - amount, currency);
+        assertEquals(initialBalance - amount, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
         charge.capture();
-        assertEquals(initialBalance - chargeAmount, LightrailValue.retrieveByCustomer(customerId, currency).getCurrentValue());
+        assertEquals(initialBalance - amount, LightrailValue.retrieveByContact(contactId, currency).getCurrentValue());
 
     }
 }
