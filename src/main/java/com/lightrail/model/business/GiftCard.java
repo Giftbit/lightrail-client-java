@@ -3,41 +3,24 @@ package com.lightrail.model.business;
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
-import com.lightrail.model.api.Card;
-import com.lightrail.model.api.Transaction;
-import com.lightrail.net.APICore;
+import com.lightrail.model.api.objects.Card;
+import com.lightrail.model.api.objects.Transaction;
+import com.lightrail.model.api.net.APICore;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
-public class GiftCard {
-    Card card;
+public class GiftCard extends Card {
     LightrailValue balance;
 
-    private GiftCard(Card card) {
-        this.card = card;
-    }
-
-    public String getCardId() {
-        return card.getCardId();
-    }
-
-    public String getDateCreated() {
-        return card.getDateCreated();
-    }
-
-    public String getCurrency() {
-        return card.getCurrency();
-    }
 
     public String retrieveFullCode() throws AuthorizationException, CouldNotFindObjectException, IOException {
         return APICore.retrieveCardsFullCode(getCardId()).getCode();
     }
 
     private void retrieveBalance() throws AuthorizationException, CouldNotFindObjectException, IOException {
-        balance = LightrailValue.retrieveByCardId(card.getCardId());
+        balance = LightrailValue.retrieveByCardId(getCardId());
     }
     private LightrailValue getBalance() throws AuthorizationException, CouldNotFindObjectException, IOException {
         if (balance == null) {
@@ -82,13 +65,13 @@ public class GiftCard {
     }
 
     public LightrailActionTransaction freeze(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        transactionParams = LightrailTransaction.addDefaultIdempotencyKeyIfNotProvided(transactionParams);
+        transactionParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(transactionParams);
         Transaction transaction = APICore.actionOnCard(getCardId(), LightrailConstants.API.Cards.FREEZE, transactionParams);
         return new LightrailActionTransaction(transaction);
     }
 
     public LightrailActionTransaction unfreeze (Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        transactionParams = LightrailTransaction.addDefaultIdempotencyKeyIfNotProvided(transactionParams);
+        transactionParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(transactionParams);
         Transaction transaction = APICore.actionOnCard(getCardId(), LightrailConstants.API.Cards.UNFREEZE, transactionParams);
         return new LightrailActionTransaction(transaction);
     }
@@ -109,18 +92,10 @@ public class GiftCard {
     }
 
     public static GiftCard create(Map<String, Object> cardCreationParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-                LightrailConstants.Parameters.PROGRAM_ID
-        ), cardCreationParams);
-
-        cardCreationParams = LightrailTransaction.addDefaultIdempotencyKeyIfNotProvided(cardCreationParams);
-        cardCreationParams.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_GIFT_CARD);
-
-        Card card = APICore.createCard(cardCreationParams);
-        return new GiftCard(card);
+        return (GiftCard) LightrailCard.createGiftCard(cardCreationParams);
     }
 
     public static GiftCard retrieve(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return new GiftCard(APICore.retrieveCard(cardId));
+        return (GiftCard) LightrailCard.retrieve(cardId, GiftCard.class);
     }
 }

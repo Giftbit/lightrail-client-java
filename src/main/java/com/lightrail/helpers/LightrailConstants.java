@@ -3,8 +3,10 @@ package com.lightrail.helpers;
 import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.model.Lightrail;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public final class LightrailConstants {
     public final class API {
@@ -90,6 +92,15 @@ public final class LightrailConstants {
                 if (!givenParams.containsKey(paramName) || givenParams.get(paramName) == null)
                     throw new BadParameterException(String.format("Missing Parameter: %s.", paramName));
             }
+        }
+        public static Map<String, Object> addDefaultUserSuppliedIdIfNotProvided(Map<String, Object> params) {
+            Map<String, Object> paramsCopy = new HashMap<>(params);
+            String idempotencyKey = (String) paramsCopy.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
+            if (idempotencyKey == null) {
+                idempotencyKey = UUID.randomUUID().toString();
+                paramsCopy.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
+            }
+            return paramsCopy;
         }
     }
 }

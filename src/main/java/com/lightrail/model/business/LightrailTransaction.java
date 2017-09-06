@@ -3,10 +3,8 @@ package com.lightrail.model.business;
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
-import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
-import com.lightrail.model.api.Transaction;
-import com.lightrail.net.APICore;
+import com.lightrail.model.api.objects.Transaction;
 
 import java.io.IOException;
 import java.util.*;
@@ -77,14 +75,6 @@ public abstract class LightrailTransaction {
         return chargeParamsCopy;
     }
 
-    public static Map<String, Object> addDefaultIdempotencyKeyIfNotProvided(Map<String, Object> params) {
-        Map<String, Object> paramsCopy = new HashMap<>(params);
-        String idempotencyKey = (String) paramsCopy.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
-        if (idempotencyKey == null) {
-            idempotencyKey = UUID.randomUUID().toString();
-            paramsCopy.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, idempotencyKey);
-        }
-        return paramsCopy;
-    }
+
 
 }

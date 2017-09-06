@@ -1,16 +1,17 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.*;
-import com.lightrail.model.api.ValueStore;
+import com.lightrail.model.api.objects.ValueStore;
 import com.lightrail.helpers.*;
-import com.lightrail.net.APICore;
+import com.lightrail.model.api.objects.Balance;
+import com.lightrail.model.api.net.APICore;
 
 import java.io.IOException;
 import java.util.*;
 
 public class LightrailValue {
 
-    private com.lightrail.model.api.Balance balanceResponse;
+    private Balance balanceResponse;
 
     public String getCurrency() {
         return balanceResponse.getCurrency();
@@ -36,7 +37,7 @@ public class LightrailValue {
         return balanceResponse.getCardId();
     }
 
-    com.lightrail.model.api.Balance getBalanceResponse() {
+    Balance getBalanceResponse() {
         return balanceResponse;
     }
 
@@ -60,7 +61,7 @@ public class LightrailValue {
         return currentValue;
     }
 
-    private LightrailValue(com.lightrail.model.api.Balance balance) {
+    private LightrailValue(Balance balance) {
         this.balanceResponse = balance;
     }
 
@@ -101,7 +102,7 @@ public class LightrailValue {
         String code = (String) giftValueParams.get(LightrailConstants.Parameters.CODE);
         String cardId = (String) giftValueParams.get(LightrailConstants.Parameters.CARD_ID);
 
-        com.lightrail.model.api.Balance balance;
+        Balance balance;
         try {
             if (code != null) {
                 balance = APICore.balanceCheckByCode(code);

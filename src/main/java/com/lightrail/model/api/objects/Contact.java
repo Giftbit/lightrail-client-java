@@ -1,4 +1,4 @@
-package com.lightrail.model.api;
+package com.lightrail.model.api.objects;
 
 @JsonObjectRoot("contact")
 public class Contact {

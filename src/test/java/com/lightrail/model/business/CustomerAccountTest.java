@@ -80,11 +80,11 @@ public class CustomerAccountTest {
         assertEquals(initialBalance - chargeValue, customerAccount.balance(currency).getCurrentValue());
 
 //        CustomerAccount.delete(customerAccountId);
-        try {
-            customerAccount = CustomerAccount.retrieve(customerAccountId);
-        } catch (Exception e) {
+//        try {
+//            customerAccount = CustomerAccount.retrieve(customerAccountId);
+//        } catch (Exception e) {
 //            assertEquals(CouldNotFindObjectException.class.getName(), e.getClass().getName()); //todo: uncomment this after the API side is fixed
-        }
+//        }
 
     }
 

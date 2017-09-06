@@ -5,8 +5,8 @@ import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
-import com.lightrail.model.api.Transaction;
-import com.lightrail.net.APICore;
+import com.lightrail.model.api.objects.Transaction;
+import com.lightrail.model.api.net.APICore;
 
 import java.io.IOException;
 import java.util.*;
@@ -157,7 +157,7 @@ public class LightrailCharge extends LightrailTransaction {
         String code = (String) giftChargeParams.get(LightrailConstants.Parameters.CODE);
         String cardId = (String) giftChargeParams.get(LightrailConstants.Parameters.CARD_ID);
 
-        giftChargeParams = LightrailTransaction.addDefaultIdempotencyKeyIfNotProvided(giftChargeParams);
+        giftChargeParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(giftChargeParams);
 
         Transaction transaction;
         if (code != null && !code.isEmpty())

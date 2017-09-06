@@ -9,12 +9,14 @@ import java.util.Properties;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
+import com.lightrail.model.api.net.APICore;
+import com.lightrail.model.api.objects.Card;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 
-public class GiftCardTest {
+public class LightrailGiftCardTest {
 
     @Test
     public void walkThroughHappyPathTest() throws IOException, CouldNotFindObjectException, AuthorizationException {
@@ -59,5 +61,15 @@ public class GiftCardTest {
         assertEquals(startDate, createdGiftCard.retrieveStartDate());
         assertEquals(expiryDate, createdGiftCard.getExpires());
         assertEquals(expiryDate, createdGiftCard.retrieveExpires());
+    }
+
+    @Test
+    public void retrieveCard () throws AuthorizationException, CouldNotFindObjectException, IOException {
+        Properties properties = TestParams.getProperties();
+
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        Card card = GiftCard.retrieve("card-6d13a30197ce4c88ba76a1621a402a89");
+        System.out.println();
     }
 }

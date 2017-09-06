@@ -5,14 +5,13 @@ import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
-import com.lightrail.model.api.Transaction;
-import com.lightrail.net.APICore;
+import com.lightrail.model.api.objects.Transaction;
+import com.lightrail.model.api.net.APICore;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 public class LightrailFund extends LightrailTransaction {
 
@@ -51,7 +50,7 @@ public class LightrailFund extends LightrailTransaction {
         if ((cardId == null || cardId.isEmpty()))
             throw new BadParameterException("Must provide either a 'cardId' or a valid 'customer'.");
 
-        giftFundParams = LightrailTransaction.addDefaultIdempotencyKeyIfNotProvided(giftFundParams);
+        giftFundParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(giftFundParams);
         Transaction cardTransaction;
         try {
             cardTransaction = APICore.postTransactionOnCard(cardId, translateToLightrail(giftFundParams));
