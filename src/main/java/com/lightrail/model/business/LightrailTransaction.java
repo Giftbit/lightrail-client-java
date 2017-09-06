@@ -144,11 +144,11 @@ public class LightrailTransaction extends Transaction {
         return transaction;
     }
 
-    private static Transaction retrieveByCodeAndUserSuppliedId(String code, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
-        Transaction transaction = APICore.retrieveTransactionByCodeAndUserSuppliedId(code, userSuppliedId);
-        if (transaction != null)
-            return transaction;
-        else
-            return null;
+    public static Transaction retrieveByCardAndUserSuppliedId(String cardId, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
+        return APICore.retrieveTransactionByCardAndUserSuppliedId(cardId, userSuppliedId);
+    }
+
+    public static Transaction retrieveByCodeAndUserSuppliedId(String code, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
+        return APICore.retrieveTransactionByCodeAndUserSuppliedId(code, userSuppliedId);
     }
 }

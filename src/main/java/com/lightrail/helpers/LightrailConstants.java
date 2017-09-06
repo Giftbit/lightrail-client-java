@@ -21,6 +21,7 @@ public final class LightrailConstants {
             public static final String CODES_TRANSACTION = "codes/%s/transactions";
             public static final String ACTION_ON_TRANSACTION = "cards/%s/transactions/%s/%s";
             public static final String RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID = "codes/%s/transactions?userSuppliedId=%s";
+            public static final String RETRIEVE_TRANSACTION_BASED_ON_CARD_AND_USERSUPPLIEDID = "cards/%s/transactions?userSuppliedId=%s";
 
             public static final String CREATE_CONTACT = "contacts";
             public static final String RETRIEVE_CONTACT = "contacts/%s";

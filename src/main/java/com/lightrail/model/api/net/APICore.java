@@ -146,6 +146,14 @@ public class APICore {
         return (T) parseFromJson(rawAPIResponse, transactionClass);
     }
 
+    public static Transaction retrieveTransactionByCardAndUserSuppliedId(String cardId, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
+        String urlSuffix = String.format(
+                LightrailConstants.API.Endpoints.RETRIEVE_TRANSACTION_BASED_ON_CARD_AND_USERSUPPLIEDID,
+                cardId, userSuppliedId);
+        String rawAPIResponse = getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null);
+        return parseFromJson(rawAPIResponse, TransactionSearchResult.class).getOneTransaction();
+    }
+
     public static Transaction retrieveTransactionByCodeAndUserSuppliedId(String code, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
         String urlSuffix = String.format(
                 LightrailConstants.API.Endpoints.RETRIEVE_TRANSACTION_BASED_ON_CODE_AND_USERSUPPLIEDID,
