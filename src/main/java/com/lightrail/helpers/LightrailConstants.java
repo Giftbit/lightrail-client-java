@@ -65,10 +65,10 @@ public final class LightrailConstants {
     public static class Parameters {
         public static final String CURRENCY = "currency";
         public static final String CODE = "code";
-        public static final String AMOUNT = "amount";
+        //public static final String AMOUNT = "amount";
         public static final String VALUE = "value";
         public static final String USER_SUPPLIED_ID = "userSuppliedId";
-        public static final String CAPTURE = "capture";
+//        public static final String CAPTURE = "capture";
         public static final String PENDING = "pending";
         public static final String CARD_ID = "cardId";
         public static final String METADATA = "metadata";
@@ -80,7 +80,7 @@ public final class LightrailConstants {
         public static final String CARD_TYPE = "cardType";
         public static final String CARD_TYPE_ACCOUNT_CARD = "ACCOUNT_CARD";
         public static final String CARD_TYPE_GIFT_CARD = "GIFT_CARD";
-        public static final String CUSTOMER = "lightrailCustomer";
+        public static final String CONTACT = "contact";
         public static final String PROGRAM_ID = "programId";
         public static final String EXPIRES = "expires";
         public static final String START_DATE = "startDate";

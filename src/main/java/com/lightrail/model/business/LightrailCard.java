@@ -12,7 +12,7 @@ import java.util.Map;
 
 class LightrailCard {
 
-    public static Card retrieve (String cardId, Class<? extends Card> cardClass) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static <T extends Card> T retrieve (String cardId, Class<? extends Card> cardClass) throws AuthorizationException, CouldNotFindObjectException, IOException {
         return APICore.retrieveCard(cardId, cardClass);
     }
 
@@ -38,7 +38,7 @@ class LightrailCard {
         return create(params, GiftCard.class);
     }
 
-    private static Card create(Map<String, Object> params, Class<? extends Card> cardClass) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    private static <T extends Card> T create(Map<String, Object> params, Class<? extends Card> cardClass) throws AuthorizationException, CouldNotFindObjectException, IOException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
                 LightrailConstants.Parameters.USER_SUPPLIED_ID
         ), params);

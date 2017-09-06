@@ -56,24 +56,24 @@ public class GiftCard extends Card {
         return getStartDate();
     }
 
-    public LightrailActionTransaction freeze() throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public Transaction freeze() throws AuthorizationException, CouldNotFindObjectException, IOException {
         return freeze(new HashMap<String, Object>());
     }
 
-    public LightrailActionTransaction unfreeze () throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public Transaction unfreeze () throws AuthorizationException, CouldNotFindObjectException, IOException {
         return unfreeze(new HashMap<String, Object>());
     }
 
-    public LightrailActionTransaction freeze(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public Transaction freeze(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
         transactionParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(transactionParams);
         Transaction transaction = APICore.actionOnCard(getCardId(), LightrailConstants.API.Cards.FREEZE, transactionParams);
-        return new LightrailActionTransaction(transaction);
+        return transaction;
     }
 
-    public LightrailActionTransaction unfreeze (Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public Transaction unfreeze (Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
         transactionParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(transactionParams);
         Transaction transaction = APICore.actionOnCard(getCardId(), LightrailConstants.API.Cards.UNFREEZE, transactionParams);
-        return new LightrailActionTransaction(transaction);
+        return transaction;
     }
 
     public static GiftCard create(String programId, int initialValue, String startDate, String expiryDate) throws AuthorizationException, CouldNotFindObjectException, IOException {

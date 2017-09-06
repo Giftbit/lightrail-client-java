@@ -76,77 +76,52 @@ public class CustomerAccount {
         return this;
     }
 
-    public LightrailCharge pendingCharge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailTransaction pendingTransact (int value) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(getDefaultCurrency());
-        return pendingCharge(amount, getDefaultCurrency());
+        return pendingTransact(value, getDefaultCurrency());
     }
-    public LightrailCharge charge(int amount) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+
+    public LightrailTransaction pendingTransact(int value, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+        return transact(value,  currency, true);
+    }
+
+    public LightrailTransaction transact (int value) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(getDefaultCurrency());
-        return charge(amount, getDefaultCurrency());
+        return transact (value, getDefaultCurrency());
     }
 
-    public LightrailCharge charge (int amount, boolean capture) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailTransaction transact (int value, boolean pending) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(getDefaultCurrency());
-        return charge(amount, getDefaultCurrency(), capture);
+        return transact(value, getDefaultCurrency(), pending);
     }
 
-    public LightrailCharge pendingCharge(int amount, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
-        return charge( amount,  currency, false);
+    public LightrailTransaction transact(int value, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
+        return transact( value,  currency, false);
     }
 
-    public LightrailCharge charge(int amount, String currency) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
-        return charge( amount,  currency, true);
+    public LightrailTransaction transact (int value, String currency, boolean pending) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
+        Map<String, Object> transactionParams = new HashMap<>();
+        transactionParams.put(LightrailConstants.Parameters.VALUE, value);
+        transactionParams.put(LightrailConstants.Parameters.CURRENCY, currency);
+        transactionParams.put(LightrailConstants.Parameters.PENDING, pending);
+        return transact (transactionParams);
     }
 
-    public LightrailCharge charge(int amount, String currency, boolean capture) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
-        Map<String, Object> chargeParams = new HashMap<>();
-        chargeParams.put(LightrailConstants.Parameters.AMOUNT, amount);
-        chargeParams.put(LightrailConstants.Parameters.CURRENCY, currency);
-        chargeParams.put(LightrailConstants.Parameters.CAPTURE, capture);
-        return charge(chargeParams);
-    }
-
-    public LightrailCharge charge(Map<String, Object> chargeParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    public LightrailTransaction transact (Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
-                LightrailConstants.Parameters.AMOUNT,
+                LightrailConstants.Parameters.VALUE,
                 LightrailConstants.Parameters.CURRENCY
-        ), chargeParams);
+        ), transactionParams);
 
-        String currency = (String) chargeParams.get(LightrailConstants.Parameters.CURRENCY);
+        String currency = (String) transactionParams.get(LightrailConstants.Parameters.CURRENCY);
         Card cardObject = cardIdForCurrency.get(currency);
         if (cardObject == null)
             throw new BadParameterException(String.format("Currency %s is not defined for this account. ", currency));
         String cardId = cardObject.getCardId();
 
-        chargeParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
+        transactionParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
 
-        return LightrailCharge.create(chargeParams);
-    }
-
-    public LightrailFund fund(int amount) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        getCardFor(getDefaultCurrency());
-        return fund( amount, getDefaultCurrency());
-    }
-
-    public LightrailFund fund(int amount, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Map<String, Object> chargeParams = new HashMap<>();
-        chargeParams.put(LightrailConstants.Parameters.AMOUNT, amount);
-        chargeParams.put(LightrailConstants.Parameters.CURRENCY, currency);
-        return fund(chargeParams);
-    }
-
-    public LightrailFund fund(Map<String, Object> fundParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-                LightrailConstants.Parameters.AMOUNT,
-                LightrailConstants.Parameters.CURRENCY
-        ), fundParams);
-
-        String currency = (String) fundParams.get(LightrailConstants.Parameters.CURRENCY);
-        Card cardObject = getCardFor(currency);
-        String cardId = cardObject.getCardId();
-        fundParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
-
-        return LightrailFund.create(fundParams);
+        return LightrailTransaction.create(transactionParams);
     }
 
     public LightrailValue balance () throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {

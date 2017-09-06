@@ -89,15 +89,15 @@ public class LightrailValue {
         return lightrailValue;
     }
 
-    public static LightrailValue retrieveByCustomer(String customerAccountId, String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
+    public static LightrailValue retrieveByContact(String customerAccountId, String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
         Map<String, Object> giftValueParams = new HashMap<>();
-        giftValueParams.put(LightrailConstants.Parameters.CUSTOMER, customerAccountId);
+        giftValueParams.put(LightrailConstants.Parameters.CONTACT, customerAccountId);
         giftValueParams.put(LightrailConstants.Parameters.CURRENCY, currency);
         return retrieve(giftValueParams);
     }
 
     public static LightrailValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
-        giftValueParams = LightrailTransaction.handleCustomer(giftValueParams);
+        giftValueParams = ContactHandler.handleContact(giftValueParams);
         String requestedCurrency = (String) giftValueParams.get(LightrailConstants.Parameters.CURRENCY);
         String code = (String) giftValueParams.get(LightrailConstants.Parameters.CODE);
         String cardId = (String) giftValueParams.get(LightrailConstants.Parameters.CARD_ID);
