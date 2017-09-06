@@ -43,7 +43,7 @@ public class LightrailTransaction extends Transaction {
         return doVoid(transactionParams);
     }
 
-    LightrailTransaction doVoid (Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    public LightrailTransaction doVoid (Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         LightrailTransaction cancelTransaction = APICore.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.VOID,
@@ -52,7 +52,7 @@ public class LightrailTransaction extends Transaction {
         return cancelTransaction;
     }
 
-    LightrailTransaction capture(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    public LightrailTransaction capture(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         LightrailTransaction captureTransaction = APICore.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.CAPTURE,
@@ -61,7 +61,7 @@ public class LightrailTransaction extends Transaction {
         return captureTransaction;
     }
 
-    LightrailTransaction refund(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    public LightrailTransaction refund(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         LightrailTransaction refundTransaction = APICore.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.REFUND,
