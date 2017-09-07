@@ -99,8 +99,8 @@ public class LightrailValue {
     public static LightrailValue retrieve(Map<String, Object> giftValueParams) throws IOException, CurrencyMismatchException, BadParameterException, AuthorizationException, CouldNotFindObjectException {
         giftValueParams = ContactHandler.handleContact(giftValueParams);
         String requestedCurrency = (String) giftValueParams.get(LightrailConstants.Parameters.CURRENCY);
-        String code = (String) giftValueParams.get(LightrailConstants.Parameters.CODE);
-        String cardId = (String) giftValueParams.get(LightrailConstants.Parameters.CARD_ID);
+        String code = (String) giftValueParams.remove(LightrailConstants.Parameters.CODE);
+        String cardId = (String) giftValueParams.remove(LightrailConstants.Parameters.CARD_ID);
 
         Balance balance;
         try {
@@ -109,7 +109,7 @@ public class LightrailValue {
             } else if (cardId != null) {
                 balance = APICore.balanceCheckByCardId(cardId);
             } else {
-                throw new BadParameterException("Must provide a 'code', a 'cardId', or a valid 'customer'.");
+                throw new BadParameterException("Must provide a 'code', a 'cardId', or a valid 'contact'.");
             }
         } catch (InsufficientValueException e) { //never happens
             throw new RuntimeException(e);
