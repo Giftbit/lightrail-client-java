@@ -128,8 +128,8 @@ public class LightrailTransaction extends Transaction {
 
         giftChargeParams = ContactHandler.handleContact(giftChargeParams);
 
-        String code = (String) giftChargeParams.get(LightrailConstants.Parameters.CODE);
-        String cardId = (String) giftChargeParams.get(LightrailConstants.Parameters.CARD_ID);
+        String code = (String) giftChargeParams.remove(LightrailConstants.Parameters.CODE);
+        String cardId = (String) giftChargeParams.remove(LightrailConstants.Parameters.CARD_ID);
 
         giftChargeParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(giftChargeParams);
 
@@ -139,7 +139,7 @@ public class LightrailTransaction extends Transaction {
         else if (cardId != null && !cardId.isEmpty())
             transaction = APICore.postTransactionOnCard(cardId, giftChargeParams, LightrailTransaction.class);
         else
-            throw new BadParameterException("Must provide either a 'code', a 'cardId', or a valid 'customer'.");
+            throw new BadParameterException("Must provide either a 'code', a 'cardId', or a valid 'contact'.");
 
         return transaction;
     }
@@ -151,4 +151,20 @@ public class LightrailTransaction extends Transaction {
     public static Transaction retrieveByCodeAndUserSuppliedId(String code, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
         return APICore.retrieveTransactionByCodeAndUserSuppliedId(code, userSuppliedId);
     }
+
+    public static Transaction retrieve(Map<String, Object> giftChargeParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
+        String code = (String) giftChargeParams.get(LightrailConstants.Parameters.CODE);
+        String userSuppliedId = (String) giftChargeParams.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
+
+        try {
+            if (code != null && userSuppliedId != null) {
+                return retrieveByCodeAndUserSuppliedId(code, userSuppliedId);
+            } else {
+                throw new BadParameterException("Not enough information to retrieve the gift charge."); // todo: more ways to retrieve
+            }
+        } catch (InsufficientValueException e) {//never happens
+            throw new RuntimeException(e);
+        }
+    }
+
 }
