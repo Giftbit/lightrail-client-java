@@ -13,12 +13,12 @@ public class ContactHandler {
     public static Map<String, Object> handleContact(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Map<String, Object> chargeParamsCopy = new HashMap<>(params);
 
-        String customerAccountId = (String) chargeParamsCopy.remove(LightrailConstants.Parameters.CONTACT);
+        String contactId = (String) chargeParamsCopy.remove(LightrailConstants.Parameters.CONTACT);
         String requestedCurrency = (String) chargeParamsCopy.get(LightrailConstants.Parameters.CURRENCY);
 
-        if (customerAccountId != null) {
+        if (contactId != null) {
             if (requestedCurrency != null && !requestedCurrency.isEmpty()) {
-                CustomerAccount account = CustomerAccount.retrieve(customerAccountId);
+                CustomerAccount account = CustomerAccount.retrieve(contactId);
                 String cardId = account.getCardFor(requestedCurrency).getCardId();
                 chargeParamsCopy.put(LightrailConstants.Parameters.CARD_ID, cardId);
             } else {
