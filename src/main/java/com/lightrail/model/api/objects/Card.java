@@ -1,17 +1,21 @@
 package com.lightrail.model.api.objects;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+
 import java.util.List;
 
 @JsonObjectRoot("card")
-public class Card {
-    String cardId;
-    String userSuppliedId;
-    String contactId;
-    String dateCreated;
-    String cardType;
-    String currency;
-    String programId;
-    List<CardCategory> categories;
+public class Card extends LightrailObject{
+    public String cardId;
+    public String userSuppliedId;
+    public String contactId;
+    public String dateCreated;
+    public String cardType;
+    public String currency;
+    public String programId;
+    public List<CardCategory> categories;
 
     public String getCardId() {
         return cardId;
@@ -42,4 +46,10 @@ public class Card {
     public List<CardCategory> getCategories() {
         return categories;
     }
+
+    public Card (String jsonObject) {
+        super(jsonObject);
+
+    }
+
 }

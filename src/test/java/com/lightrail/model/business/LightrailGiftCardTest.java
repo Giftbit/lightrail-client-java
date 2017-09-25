@@ -12,6 +12,7 @@ import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
 import com.lightrail.model.api.net.APICore;
 import com.lightrail.model.api.objects.Card;
+import com.lightrail.model.api.objects.CardDetails;
 import com.lightrail.model.api.objects.Transaction;
 import org.junit.Test;
 
@@ -30,21 +31,30 @@ public class LightrailGiftCardTest {
 
         GiftCard createdGiftCard = GiftCard.create(programId, 400);
 
+        assertEquals(400, createdGiftCard.retrieveMaximumValue());
+
+
         String fullCode = createdGiftCard.retrieveFullCode();
         String cardId = createdGiftCard.getCardId();
 
         LightrailTransaction fund = LightrailTransaction.createByCardId(cardId, 200, currency);
+
+        assertEquals(600, createdGiftCard.retrieveMaximumValue());
+
         LightrailTransaction charge = LightrailTransaction.createByCode(fullCode, -200, currency);
+
+        assertEquals(400, createdGiftCard.retrieveMaximumValue());
+
 
         String fundTxId= fund.getTransactionId();
         String fundUserSuppliedId= fund.getUserSuppliedId();
         String chargeTxId= fund.getTransactionId();
         String chargeUserSuppliedId= fund.getUserSuppliedId();
 
-//        Transaction retrievedFund = LightrailTransaction.retrieveByCardAndUserSuppliedId(cardId, fundUserSuppliedId); //known BE issue.
+        Transaction retrievedFund = LightrailTransaction.retrieveByCardIdAndUserSuppliedId(cardId, fundUserSuppliedId);
         Transaction retrievedCharge = LightrailTransaction.retrieveByCodeAndUserSuppliedId(fullCode, chargeUserSuppliedId);
 
-//        assertEquals(fundTxId, retrievedFund.getTransactionId());
+        assertEquals(fundTxId, retrievedFund.getTransactionId());
         assertEquals(chargeTxId, retrievedCharge.getTransactionId());
 
 
@@ -55,11 +65,12 @@ public class LightrailGiftCardTest {
 
         createdGiftCard.freeze();
 
-        assertEquals(LightrailConstants.API.Balance.FROZEN, retrievedGiftCard.getState());
+        CardDetails cardDetails = GiftCard.retrieveCardDetailsByCode(fullCode);
+        assertEquals(LightrailConstants.API.ValueStores.STATE_FROZEN, cardDetails.getState());
 
         retrievedGiftCard.unfreeze();
-        assertEquals(LightrailConstants.API.Balance.ACTIVE, createdGiftCard.getState());
-        assertEquals(LightrailConstants.API.Balance.ACTIVE, createdGiftCard.retrieveState());
+        cardDetails = createdGiftCard.retrieveCardDetails();
+        assertEquals(LightrailConstants.API.ValueStores.STATE_ACTIVE, cardDetails.getState());
     }
 
     @Test
@@ -69,23 +80,12 @@ public class LightrailGiftCardTest {
 
         String programId = properties.getProperty("happyPath.code.programId");
         String startDate = "2017-08-02T00:27:02.910Z";
-        String expiryDate = "2017-10-02T00:27:02.910Z";
+        String expiryDate = "2019-10-02T00:27:02.910Z";
 
         GiftCard createdGiftCard = GiftCard.create(programId, 400, startDate, expiryDate);
+        CardDetails cardDetails = GiftCard.retrieveCardDetailsByCode(createdGiftCard.retrieveFullCode());
 
-        assertEquals(startDate, createdGiftCard.getStartDate());
-        assertEquals(startDate, createdGiftCard.retrieveStartDate());
-        assertEquals(expiryDate, createdGiftCard.getExpires());
-        assertEquals(expiryDate, createdGiftCard.retrieveExpires());
-    }
-
-    @Test
-    public void retrieveCard () throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Properties properties = TestParams.getProperties();
-
-        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
-
-        Card card = GiftCard.retrieve("card-6d13a30197ce4c88ba76a1621a402a89");
-        System.out.println();
+        assertEquals(startDate, cardDetails.getStartDate());
+        assertEquals(expiryDate, cardDetails.getExpires());
     }
 }
