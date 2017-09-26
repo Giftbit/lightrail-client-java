@@ -79,7 +79,7 @@ public class LightrailTransaction extends Transaction {
         return doVoid(transactionParams);
     }
 
-    private LightrailTransaction capture(RequestParameters transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    public LightrailTransaction capture(RequestParameters transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         if (! LightrailConstants.API.Transactions.TYPE_PENDING.equals(this.getTransactionType())) {
             throw new BadParameterException("Not a pending transaction.");
         }
@@ -91,7 +91,7 @@ public class LightrailTransaction extends Transaction {
         return new LightrailTransaction(captureTransaction);
     }
 
-    private LightrailTransaction doVoid(RequestParameters transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    public LightrailTransaction doVoid(RequestParameters transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         if (! LightrailConstants.API.Transactions.TYPE_PENDING.equals(this.getTransactionType())) {
             throw new BadParameterException("Not a pending transaction.");
         }
@@ -103,7 +103,7 @@ public class LightrailTransaction extends Transaction {
         return new LightrailTransaction(cancelTransaction);
     }
 
-    private LightrailTransaction refund(RequestParameters transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    public LightrailTransaction refund(RequestParameters transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         Transaction refundTransaction = APICore.Transactions.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.REFUND,
