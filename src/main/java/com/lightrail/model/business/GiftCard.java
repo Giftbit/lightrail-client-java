@@ -7,8 +7,10 @@ import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.objects.Card;
 import com.lightrail.model.api.net.APICore;
 import com.lightrail.model.api.objects.CardDetails;
+import com.lightrail.model.api.objects.Metadata;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +28,10 @@ public class GiftCard extends LightrailCard {
     }
 
     public static GiftCard create(String programId, int initialValue, String startDate, String expiryDate) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        return create(programId, initialValue, startDate, expiryDate, null);
+    }
+
+    public static GiftCard create(String programId, int initialValue, String startDate, String expiryDate, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Map<String, Object> params = new HashMap<>();
         params.put(LightrailConstants.Parameters.PROGRAM_ID, programId);
         params.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
@@ -33,16 +39,23 @@ public class GiftCard extends LightrailCard {
             params.put(LightrailConstants.Parameters.START_DATE, startDate);
         if (expiryDate != null)
             params.put(LightrailConstants.Parameters.EXPIRES, expiryDate);
+        if (metadata != null && !metadata.isEmpty())
+            params.put(LightrailConstants.Parameters.METADATA, metadata);
         return create(params);
     }
 
     public static GiftCard create(String programId, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return create(programId, initialValue, null,null);
+        return create (programId, initialValue, null);
+    }
+
+    public static GiftCard create(String programId, int initialValue, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        return create(programId, initialValue, null,null, metadata);
     }
 
     public static GiftCard create(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-//        ), params);
+        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+                LightrailConstants.Parameters.PROGRAM_ID
+        ), params);
 
         params = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(params);
         params.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_GIFT_CARD);
@@ -55,7 +68,7 @@ public class GiftCard extends LightrailCard {
         if (LightrailConstants.Parameters.CARD_TYPE_GIFT_CARD.equals(card.getCardType()))
             return new GiftCard(card);
         else
-            throw new CouldNotFindObjectException("This cardId is not associated with an Gift Card.");
+            throw new CouldNotFindObjectException("This cardId is not associated with a Gift Card.");
     }
 
     public static CardDetails retrieveCardDetailsByCode (String code) throws AuthorizationException, CouldNotFindObjectException, IOException {

@@ -112,7 +112,7 @@ public class LightrailCustomerAccount extends Contact {
 
         transactionParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
 
-        return LightrailTransaction.create(transactionParams);
+        return LightrailTransaction.Create.create(transactionParams);
     }
 
     public int retrieveMaximumValue() throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {

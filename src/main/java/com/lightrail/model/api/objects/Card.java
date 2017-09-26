@@ -1,8 +1,5 @@
 package com.lightrail.model.api.objects;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import java.util.List;
 
@@ -14,7 +11,7 @@ public class Card extends LightrailObject{
     public String dateCreated;
     public String cardType;
     public String currency;
-    public String programId;
+    //public String programId;
     public List<CardCategory> categories;
 
     public String getCardId() {
@@ -41,7 +38,7 @@ public class Card extends LightrailObject{
         return currency;
     }
 
-    public String getProgramId() { return programId; }
+    //public String getProgramId() { return programId; }
 
     public List<CardCategory> getCategories() {
         return categories;

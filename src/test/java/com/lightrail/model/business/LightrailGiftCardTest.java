@@ -4,15 +4,17 @@ import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
+import java.util.UUID;
 
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
-import com.lightrail.model.api.net.APICore;
-import com.lightrail.model.api.objects.Card;
 import com.lightrail.model.api.objects.CardDetails;
+import com.lightrail.model.api.objects.Metadata;
 import com.lightrail.model.api.objects.Transaction;
 import org.junit.Test;
 
@@ -29,19 +31,21 @@ public class LightrailGiftCardTest {
         String programId = properties.getProperty("happyPath.code.programId");
         String currency = properties.getProperty("happyPath.code.currency");
 
-        GiftCard createdGiftCard = GiftCard.create(programId, 400);
+        Metadata metadata = new Metadata();
+        metadata.put("testKey", "testValue");
+
+        GiftCard createdGiftCard = GiftCard.create(programId, 400, metadata);
 
         assertEquals(400, createdGiftCard.retrieveMaximumValue());
-
 
         String fullCode = createdGiftCard.retrieveFullCode();
         String cardId = createdGiftCard.getCardId();
 
-        LightrailTransaction fund = LightrailTransaction.createByCardId(cardId, 200, currency);
+        LightrailTransaction fund = LightrailTransaction.Create.byCardId(cardId, 200, currency);
 
         assertEquals(600, createdGiftCard.retrieveMaximumValue());
 
-        LightrailTransaction charge = LightrailTransaction.createByCode(fullCode, -200, currency);
+        LightrailTransaction charge = LightrailTransaction.Create.byCode(fullCode, -200, currency);
 
         assertEquals(400, createdGiftCard.retrieveMaximumValue());
 
@@ -51,8 +55,8 @@ public class LightrailGiftCardTest {
         String chargeTxId= fund.getTransactionId();
         String chargeUserSuppliedId= fund.getUserSuppliedId();
 
-        Transaction retrievedFund = LightrailTransaction.retrieveByCardIdAndUserSuppliedId(cardId, fundUserSuppliedId);
-        Transaction retrievedCharge = LightrailTransaction.retrieveByCodeAndUserSuppliedId(fullCode, chargeUserSuppliedId);
+        Transaction retrievedFund = LightrailTransaction.Retrieve.byCardIdAndUserSuppliedId(cardId, fundUserSuppliedId);
+        Transaction retrievedCharge = LightrailTransaction.Retrieve.byCodeAndUserSuppliedId(fullCode, chargeUserSuppliedId);
 
         assertEquals(fundTxId, retrievedFund.getTransactionId());
         assertEquals(chargeTxId, retrievedCharge.getTransactionId());
@@ -87,5 +91,23 @@ public class LightrailGiftCardTest {
 
         assertEquals(startDate, cardDetails.getStartDate());
         assertEquals(expiryDate, cardDetails.getExpires());
+    }
+
+    @Test
+    public void createCardWithUserSuppliedId() throws IOException, CouldNotFindObjectException, AuthorizationException {
+        Properties properties = TestParams.getProperties();
+        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
+
+        String programId = properties.getProperty("happyPath.code.programId");
+        int initialValue = 400;
+        String userSuppliedId = UUID.randomUUID().toString();
+
+        Map<String, Object> params = new HashMap<>();
+        params.put(LightrailConstants.Parameters.PROGRAM_ID, programId);
+        params.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
+        params.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, userSuppliedId);
+        GiftCard createdGiftCard = GiftCard.create(params);
+
+        assertEquals(userSuppliedId, createdGiftCard.getUserSuppliedId());
     }
 }

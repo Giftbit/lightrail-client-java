@@ -15,7 +15,7 @@ public class Transaction extends LightrailObject{
     public String parentTransactionId;
     public String transactionAccessMethod;
     public TransactionValue[] transactionBreakdown;
-    public Map<String, Object> metadata;
+    public Metadata metadata;
 
     public String getTransactionId() {
         return transactionId;
@@ -57,7 +57,7 @@ public class Transaction extends LightrailObject{
         return transactionAccessMethod;
     }
 
-    public Map<String, Object> getMetadata() {return metadata;}
+    public Metadata getMetadata() {return metadata;}
 
     public TransactionValue[] getTransactionBreakdown() {
         return transactionBreakdown;

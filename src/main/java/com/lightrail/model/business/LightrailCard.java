@@ -2,7 +2,6 @@ package com.lightrail.model.business;
 
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
-import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.objects.Card;
 import com.lightrail.model.api.net.APICore;
