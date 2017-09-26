@@ -7,13 +7,12 @@ import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
+import com.lightrail.model.api.objects.RequestParameters;
 import org.junit.Test;
 
 import static org.junit.Assert.assertEquals;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 public class CustomerAccountTest {
@@ -180,7 +179,7 @@ public class CustomerAccountTest {
 
         int amount = 100;
 
-        Map<String, Object> params = new HashMap<>();
+        RequestParameters params = new RequestParameters();
         params.put("contact", contactId);
         params.put("currency", currency);
         params.put("value", 0 - amount);
@@ -188,14 +187,14 @@ public class CustomerAccountTest {
         LightrailTransaction.Create.create(params);
         assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
 
-        params = new HashMap<>();
+        params = new RequestParameters();
         params.put("contact", contactId);
         params.put("currency", currency);
         params.put("value", amount);
         LightrailTransaction fund = LightrailTransaction.Create.create(params);
         assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
 
-        params = new HashMap<>();
+        params = new RequestParameters();
         params.put("contact", contactId);
         params.put("currency", currency);
         params.put("value", 0 - amount);
@@ -206,7 +205,7 @@ public class CustomerAccountTest {
         charge.doVoid();
         assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
 
-        params = new HashMap<>();
+        params = new RequestParameters();
         params.put("contact", contactId);
         params.put("currency", currency);
         params.put("value", 0 - amount);

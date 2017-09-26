@@ -2,6 +2,7 @@ package com.lightrail.helpers;
 
 import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.model.Lightrail;
+import com.lightrail.model.api.objects.RequestParameters;
 
 import java.util.HashMap;
 import java.util.List;
@@ -111,8 +112,8 @@ public final class LightrailConstants {
                     throw new BadParameterException(String.format("Missing Parameter: %s.", paramName));
             }
         }
-        public static Map<String, Object> addDefaultUserSuppliedIdIfNotProvided(Map<String, Object> params) {
-            Map<String, Object> paramsCopy = new HashMap<>(params);
+        public static RequestParameters addDefaultUserSuppliedIdIfNotProvided(RequestParameters params) {
+            RequestParameters paramsCopy = new RequestParameters(params);
             String userSuppliedId = (String) paramsCopy.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
             if (userSuppliedId == null) {
                 userSuppliedId = UUID.randomUUID().toString();

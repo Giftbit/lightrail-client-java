@@ -6,9 +6,13 @@ import com.lightrail.model.api.objects.Card;
 import com.lightrail.model.api.objects.CardSearchResult;
 import com.lightrail.model.api.objects.Contact;
 import com.lightrail.model.api.net.APICore;
+import com.lightrail.model.api.objects.RequestParameters;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 public class LightrailCustomerAccount extends Contact {
     private Map<String, AccountCard> cardForCurrency = new HashMap<>();
@@ -42,7 +46,7 @@ public class LightrailCustomerAccount extends Contact {
     }
 
     public LightrailCustomerAccount addCurrency(String currency, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Map<String, Object> cardParams = new HashMap<>();
+        RequestParameters cardParams = new RequestParameters();
         cardParams.put(LightrailConstants.Parameters.CONTACT_ID, getContactId());
         cardParams.put(LightrailConstants.Parameters.CURRENCY, currency);
         cardParams.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
@@ -50,7 +54,7 @@ public class LightrailCustomerAccount extends Contact {
         return addCurrency(cardParams);
     }
 
-    public LightrailCustomerAccount addCurrency(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailCustomerAccount addCurrency(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
                 LightrailConstants.Parameters.CURRENCY
         ), params);
@@ -91,14 +95,14 @@ public class LightrailCustomerAccount extends Contact {
     }
 
     public LightrailTransaction createTransaction(int value, String currency, boolean pending) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
-        Map<String, Object> transactionParams = new HashMap<>();
+        RequestParameters transactionParams = new RequestParameters();
         transactionParams.put(LightrailConstants.Parameters.VALUE, value);
         transactionParams.put(LightrailConstants.Parameters.CURRENCY, currency);
         transactionParams.put(LightrailConstants.Parameters.PENDING, pending);
         return createTransaction(transactionParams);
     }
 
-    public LightrailTransaction createTransaction(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    public LightrailTransaction createTransaction(RequestParameters transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
                 LightrailConstants.Parameters.VALUE,
                 LightrailConstants.Parameters.CURRENCY
@@ -141,7 +145,7 @@ public class LightrailCustomerAccount extends Contact {
         if (email == null || email.isEmpty())
             throw new BadParameterException("Need to provide an email address for the new LightrailCustomerAccount.");
 
-        Map<String, Object> customerAccountParams = new HashMap<>();
+        RequestParameters customerAccountParams = new RequestParameters();
         customerAccountParams.put(LightrailConstants.Parameters.EMAIL, email);
         if (firstName != null)
             customerAccountParams.put(LightrailConstants.Parameters.FIRST_NAME, firstName);
@@ -151,7 +155,7 @@ public class LightrailCustomerAccount extends Contact {
         return create(customerAccountParams);
     }
 
-    public static LightrailCustomerAccount create(Map<String, Object> customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static LightrailCustomerAccount create(RequestParameters customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
                 LightrailConstants.Parameters.EMAIL)
                 , customerAccountParams);
@@ -174,14 +178,14 @@ public class LightrailCustomerAccount extends Contact {
     }
 
     private static void cancelCard(String cardId, String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Map<String, Object> params = new HashMap<>();
+        RequestParameters params = new RequestParameters();
         params.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, userSuppliedId);
 
         APICore.Cards.cancelCard(cardId, params);
     }
 
-    public static Map<String, Object> handleContact(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Map<String, Object> chargeParamsCopy = new HashMap<>(params);
+    public static RequestParameters handleContact(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        RequestParameters chargeParamsCopy = new RequestParameters(params);
 
         String contactId = (String) chargeParamsCopy.remove(LightrailConstants.Parameters.CONTACT);
         String requestedCurrency = (String) chargeParamsCopy.get(LightrailConstants.Parameters.CURRENCY);

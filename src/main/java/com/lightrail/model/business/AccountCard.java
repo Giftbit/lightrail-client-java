@@ -4,6 +4,7 @@ import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.objects.Card;
+import com.lightrail.model.api.objects.RequestParameters;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -26,7 +27,7 @@ public class AccountCard extends LightrailCard {
             throw new CouldNotFindObjectException("This cardId is not associated with an Account Card.");
     }
 
-    public static AccountCard create(Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static AccountCard create(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
                 LightrailConstants.Parameters.CONTACT_ID, LightrailConstants.Parameters.CURRENCY
         ), params);

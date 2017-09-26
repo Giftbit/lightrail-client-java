@@ -1,9 +1,9 @@
 package com.lightrail.helpers;
 
+import com.lightrail.model.api.objects.RequestParameters;
+
 import java.io.FileInputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 
 public class TestParams {
@@ -14,25 +14,24 @@ public class TestParams {
         return properties;
     }
 
-
-    public static Map<String, Object> readCodeParamsFromProperties () throws IOException {
+    public static RequestParameters readCodeParamsFromProperties () throws IOException {
         Properties properties = getProperties();
 
-        Map<String, Object> giftChargeParams = new HashMap<>();
-        giftChargeParams.put("code", properties.getProperty("happyPath.code"));
-        giftChargeParams.put("currency", properties.getProperty("happyPath.code.currency"));
+        RequestParameters params = new RequestParameters();
+        params.put("code", properties.getProperty("happyPath.code"));
+        params.put("currency", properties.getProperty("happyPath.code.currency"));
 
-        return giftChargeParams;
+        return params;
     }
 
-    public static Map<String, Object> readCardParamsFromProperties () throws IOException {
+    public static RequestParameters readCardParamsFromProperties () throws IOException {
         Properties properties = getProperties();
 
-        Map<String, Object> giftChargeParams = new HashMap<String, Object>();
-        giftChargeParams.put("cardId", properties.getProperty("happyPath.code.cardId"));
-        giftChargeParams.put("currency", properties.getProperty("happyPath.code.currency"));
+        RequestParameters params = new RequestParameters();
+        params.put("cardId", properties.getProperty("happyPath.code.cardId"));
+        params.put("currency", properties.getProperty("happyPath.code.currency"));
 
-        return giftChargeParams;
+        return params;
     }
 
 }
