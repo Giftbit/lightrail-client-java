@@ -4,8 +4,6 @@ import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -15,6 +13,7 @@ import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
 import com.lightrail.model.api.objects.CardDetails;
 import com.lightrail.model.api.objects.Metadata;
+import com.lightrail.model.api.objects.RequestParameters;
 import com.lightrail.model.api.objects.Transaction;
 import org.junit.Test;
 
@@ -102,7 +101,7 @@ public class LightrailGiftCardTest {
         int initialValue = 400;
         String userSuppliedId = UUID.randomUUID().toString();
 
-        Map<String, Object> params = new HashMap<>();
+        RequestParameters params = new RequestParameters();
         params.put(LightrailConstants.Parameters.PROGRAM_ID, programId);
         params.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
         params.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, userSuppliedId);

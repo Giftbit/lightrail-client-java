@@ -7,6 +7,7 @@ import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.net.APICore;
 import com.lightrail.model.api.objects.Metadata;
+import com.lightrail.model.api.objects.RequestParameters;
 import com.lightrail.model.api.objects.Transaction;
 
 import java.io.IOException;
@@ -39,7 +40,7 @@ public class LightrailTransaction extends Transaction {
     }
 
     public LightrailTransaction refund(String userSuppliedId, Metadata metadata) throws IOException, AuthorizationException, CouldNotFindObjectException, InsufficientValueException {
-        Map<String, Object> transactionParams = new HashMap<>();
+        RequestParameters transactionParams = new RequestParameters();
         transactionParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, userSuppliedId);
         if (metadata != null && !metadata.isEmpty())
             transactionParams.put(LightrailConstants.Parameters.METADATA, metadata);
@@ -55,7 +56,7 @@ public class LightrailTransaction extends Transaction {
     }
 
     public LightrailTransaction capture(String userSuppliedId, Metadata metadata) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
-        Map<String, Object> transactionParams = new HashMap<>();
+        RequestParameters transactionParams = new RequestParameters();
         transactionParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, userSuppliedId);
         if (metadata != null && !metadata.isEmpty())
             transactionParams.put(LightrailConstants.Parameters.METADATA, metadata);
@@ -71,14 +72,14 @@ public class LightrailTransaction extends Transaction {
     }
 
     public LightrailTransaction doVoid(String userSuppliedId, Metadata metadata) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
-        Map<String, Object> transactionParams = new HashMap<>();
+        RequestParameters transactionParams = new RequestParameters();
         transactionParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, userSuppliedId);
         if (metadata != null && !metadata.isEmpty())
             transactionParams.put(LightrailConstants.Parameters.METADATA, metadata);
         return doVoid(transactionParams);
     }
 
-    private LightrailTransaction capture(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    private LightrailTransaction capture(RequestParameters transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         if (! LightrailConstants.API.Transactions.TYPE_PENDING.equals(this.getTransactionType())) {
             throw new BadParameterException("Not a pending transaction.");
         }
@@ -90,7 +91,7 @@ public class LightrailTransaction extends Transaction {
         return new LightrailTransaction(captureTransaction);
     }
 
-    private LightrailTransaction doVoid(Map<String, Object> transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
+    private LightrailTransaction doVoid(RequestParameters transactionParams) throws IOException, AuthorizationException, InsufficientValueException, CouldNotFindObjectException {
         if (! LightrailConstants.API.Transactions.TYPE_PENDING.equals(this.getTransactionType())) {
             throw new BadParameterException("Not a pending transaction.");
         }
@@ -102,7 +103,7 @@ public class LightrailTransaction extends Transaction {
         return new LightrailTransaction(cancelTransaction);
     }
 
-    private LightrailTransaction refund(Map<String, Object> transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+    private LightrailTransaction refund(RequestParameters transactionParams) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
         Transaction refundTransaction = APICore.Transactions.actionOnTransaction(getCardId(),
                 getTransactionId(),
                 LightrailConstants.API.Transactions.REFUND,
@@ -161,7 +162,7 @@ public class LightrailTransaction extends Transaction {
         }
 
         private static LightrailTransaction byCardId(String cardId, int value, String currency, boolean pending, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
-            Map<String, Object> transactionParams = new HashMap<>();
+            RequestParameters transactionParams = new RequestParameters();
             transactionParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
             transactionParams.put(LightrailConstants.Parameters.VALUE, value);
             transactionParams.put(LightrailConstants.Parameters.CURRENCY, currency);
@@ -172,7 +173,7 @@ public class LightrailTransaction extends Transaction {
         }
 
         private static LightrailTransaction byCode(String code, int value, String currency, boolean pending, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
-            Map<String, Object> transactionParams = new HashMap<>();
+            RequestParameters transactionParams = new RequestParameters();
             transactionParams.put(LightrailConstants.Parameters.CODE, code);
             transactionParams.put(LightrailConstants.Parameters.VALUE, value);
             transactionParams.put(LightrailConstants.Parameters.CURRENCY, currency);
@@ -183,7 +184,7 @@ public class LightrailTransaction extends Transaction {
         }
 
         private static LightrailTransaction byContact(String contactId, int value, String currency, boolean pending, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
-            Map<String, Object> transactionParams = new HashMap<>();
+            RequestParameters transactionParams = new RequestParameters();
             transactionParams.put(LightrailConstants.Parameters.CONTACT, contactId);
             transactionParams.put(LightrailConstants.Parameters.VALUE, value);
             transactionParams.put(LightrailConstants.Parameters.CURRENCY, currency);
@@ -193,11 +194,11 @@ public class LightrailTransaction extends Transaction {
             return create(transactionParams);
         }
 
-        public static LightrailTransaction create(Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        public static LightrailTransaction create(RequestParameters transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             return create(transactionParams, false);
         }
 
-        private static LightrailTransaction create(Map<String, Object> transactionParams, boolean simulate) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        private static LightrailTransaction create(RequestParameters transactionParams, boolean simulate) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             LightrailConstants.Parameters.requireParameters(Arrays.asList(
                     LightrailConstants.Parameters.VALUE,
                     LightrailConstants.Parameters.CURRENCY
@@ -231,7 +232,7 @@ public class LightrailTransaction extends Transaction {
             return transaction;
         }
 
-        private static void makeSureValueOfPendingTransactionIsNegative(Map<String, Object> transactionParams) {
+        private static void makeSureValueOfPendingTransactionIsNegative(RequestParameters transactionParams) {
             Integer value = (Integer) transactionParams.get(LightrailConstants.Parameters.VALUE);
             Boolean pending = (Boolean) transactionParams.get(LightrailConstants.Parameters.PENDING);
             if (pending == null)
@@ -248,7 +249,7 @@ public class LightrailTransaction extends Transaction {
             return byCardId(cardId, value, currency, null);
         }
         public static LightrailTransaction byCardId(String cardId, int value, String currency, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
-            Map<String, Object> transactionParams = new HashMap<>();
+            RequestParameters transactionParams = new RequestParameters();
             transactionParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
             transactionParams.put(LightrailConstants.Parameters.VALUE, value);
             transactionParams.put(LightrailConstants.Parameters.CURRENCY, currency);
@@ -261,7 +262,7 @@ public class LightrailTransaction extends Transaction {
             return byCode(code, value, currency, null);
         }
         public static LightrailTransaction byCode(String code, int value, String currency, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
-            Map<String, Object> transactionParams = new HashMap<>();
+            RequestParameters transactionParams = new RequestParameters();
             transactionParams.put(LightrailConstants.Parameters.CODE, code);
             transactionParams.put(LightrailConstants.Parameters.VALUE, value);
             transactionParams.put(LightrailConstants.Parameters.CURRENCY, currency);
@@ -270,9 +271,9 @@ public class LightrailTransaction extends Transaction {
             return simulate(transactionParams);
         }
 
-        public static LightrailTransaction simulate(Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        public static LightrailTransaction simulate(RequestParameters transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             if (!transactionParams.containsKey(LightrailConstants.Parameters.NSF)) {
-                HashMap<String, Object> newParams = new HashMap<>(transactionParams);
+                RequestParameters newParams = new RequestParameters(transactionParams);
                 newParams.put(LightrailConstants.Parameters.NSF, false);
                 return Create.create(newParams, true);
             } else {
@@ -283,7 +284,7 @@ public class LightrailTransaction extends Transaction {
 
     public static final class Retrieve {
 
-        public static LightrailTransaction retrieve(Map<String, Object> transactionParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
+        public static LightrailTransaction retrieve(RequestParameters transactionParams) throws AuthorizationException, IOException, CouldNotFindObjectException {
             String code = (String) transactionParams.get(LightrailConstants.Parameters.CODE);
             String cardId = (String) transactionParams.get(LightrailConstants.Parameters.CARD_ID);
             String transactionId = (String) transactionParams.get(LightrailConstants.Parameters.TRANSACTION_ID);

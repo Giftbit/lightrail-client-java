@@ -8,11 +8,10 @@ import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.helpers.TestParams;
 import com.lightrail.model.Lightrail;
 import com.lightrail.model.api.objects.Metadata;
+import com.lightrail.model.api.objects.RequestParameters;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Properties;
 import java.util.UUID;
 
@@ -33,7 +32,7 @@ public class LightrailTransactionTest {
         String baseUserSuppliedId = UUID.randomUUID().toString();
 
         //create by giving parameters: card
-        Map<String, Object> transactionParams = TestParams.readCardParamsFromProperties();
+        RequestParameters transactionParams = TestParams.readCardParamsFromProperties();
         transactionParams.put(LightrailConstants.Parameters.VALUE, transactionValue);
         transactionParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, baseUserSuppliedId + "-by-card");
         LightrailTransaction transaction = LightrailTransaction.Create.create(transactionParams);
@@ -59,13 +58,13 @@ public class LightrailTransactionTest {
         retrievedTransaction = LightrailTransaction.Retrieve.byCardIdAndUserSuppliedId(cardId, baseUserSuppliedId + "-by-card");
         assertEquals(transactionId, retrievedTransaction.getTransactionId());
 
-        Map<String, Object> retrieveParams = new HashMap<>();
+        RequestParameters retrieveParams = new RequestParameters();
         retrieveParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
         retrieveParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, baseUserSuppliedId + "-by-card");
         retrievedTransaction = LightrailTransaction.Retrieve.retrieve(retrieveParams);
         assertEquals(transactionId, retrievedTransaction.getTransactionId());
 
-        retrieveParams = new HashMap<>();
+        retrieveParams = new RequestParameters();
         retrieveParams.put(LightrailConstants.Parameters.CODE, code);
         retrieveParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, baseUserSuppliedId + "-by-card");
         retrievedTransaction = LightrailTransaction.Retrieve.retrieve(retrieveParams);
@@ -119,7 +118,7 @@ public class LightrailTransactionTest {
 
         //create pending/capture by code
         try {
-            pendingTransaction = LightrailTransaction.Create.pendingByCode(code, transactionValue, currency);
+            LightrailTransaction.Create.pendingByCode(code, transactionValue, currency);
         } catch (Exception e)
         {
             assert e instanceof BadParameterException;
