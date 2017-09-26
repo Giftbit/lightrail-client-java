@@ -3,18 +3,19 @@ package com.lightrail.model.api.objects;
 import java.util.Map;
 
 @JsonObjectRoot("transaction")
-public class Transaction {
-    String transactionId;
-    Integer value;
-    String userSuppliedId;
-    String cardId;
-    String currency;
-    String codeLastFour;
-    String dateCreated;
-    String transactionType;
-    String parentTransactionId;
-    String transactionAccessMethod;
-    Map<String, Object> metadata;
+public class Transaction extends LightrailObject{
+    public String transactionId;
+    public Integer value;
+    public String userSuppliedId;
+    public String cardId;
+    public String currency;
+    public String codeLastFour;
+    public String dateCreated;
+    public String transactionType;
+    public String parentTransactionId;
+    public String transactionAccessMethod;
+    public TransactionValue[] transactionBreakdown;
+    public Metadata metadata;
 
     public String getTransactionId() {
         return transactionId;
@@ -56,6 +57,13 @@ public class Transaction {
         return transactionAccessMethod;
     }
 
-    public Map<String, Object> getMetadata() {return metadata;}
+    public Metadata getMetadata() {return metadata;}
 
+    public TransactionValue[] getTransactionBreakdown() {
+        return transactionBreakdown;
+    }
+
+    public Transaction (String jsonObject) {
+        super(jsonObject);
+    }
 }
