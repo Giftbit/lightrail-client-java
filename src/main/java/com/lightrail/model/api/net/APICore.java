@@ -64,12 +64,11 @@ public class APICore {
             APIError error = new APIError(responseString);
             String errorMessage = responseString;
             String errorMessageCode = "";
-            if (error != null) {
-                if (error.getMessage() != null)
-                    errorMessage = error.getMessage();
-                if (error.getMessageCode() != null)
-                    errorMessageCode = error.getMessageCode();
-            }
+            if (error.getMessage() != null)
+                errorMessage = error.getMessage();
+            if (error.getMessageCode() != null)
+                errorMessageCode = error.getMessageCode();
+
             switch (responseCode) {
                 case 401:
                 case 403:
@@ -112,12 +111,13 @@ public class APICore {
         }
 
         public static Transaction simulateTransactionByCard(String cardId,
-                                                        Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+                                                            Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.SIMULATE_TRANSACTION_BY_CARD, cardId);
             String bodyJsonString = new Gson().toJson(transactionParams);
             String rawAPIResponse = Core.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
             return new Transaction(rawAPIResponse);
         }
+
         public static Transaction simulateTransactionByCode(String code, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.SIMULATE_TRANSACTION_BY_CODE, code);
             String bodyJsonString = new Gson().toJson(transactionParams);
