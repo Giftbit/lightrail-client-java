@@ -66,4 +66,8 @@ public class Transaction extends LightrailObject{
     public Transaction (String jsonObject) {
         super(jsonObject);
     }
+
+    public void setValue(int value) {
+        this.value = value;
+    }
 }
