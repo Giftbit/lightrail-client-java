@@ -2,6 +2,8 @@ package com.lightrail.model.api.objects;
 
 
 import com.google.gson.Gson;
+import com.lightrail.exceptions.BadParameterException;
+import com.lightrail.exceptions.CouldNotFindObjectException;
 
 public class TransactionSearchResult extends LightrailObject{
     public Transaction[] transactions;
@@ -15,11 +17,13 @@ public class TransactionSearchResult extends LightrailObject{
         return pagination;
     }
 
-    public Transaction getOneTransaction () {
-        if (transactions.length > 0)
+    public Transaction getOneTransaction () throws CouldNotFindObjectException {
+        if (transactions.length == 1)
             return transactions[0];
+        else if (transactions.length > 1)
+            throw new BadParameterException("Search results include more than one transaction.");
         else
-            return null;
+            throw new CouldNotFindObjectException("Transaction does not exists.");
     }
 
     public TransactionSearchResult (String jsonObject) {

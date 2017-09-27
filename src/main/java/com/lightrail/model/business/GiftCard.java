@@ -2,6 +2,7 @@ package com.lightrail.model.business;
 
 
 import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.objects.Card;
@@ -12,16 +13,14 @@ import com.lightrail.model.api.objects.RequestParameters;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 public class GiftCard extends LightrailCard {
-    public GiftCard (String jsonObject) {
+    public GiftCard(String jsonObject) {
         super(jsonObject);
     }
 
-    public GiftCard (Card card) {
-        super(card.getRawJson());
+    public GiftCard(Card card) {
+        super(card);
     }
 
     public String retrieveFullCode() throws AuthorizationException, CouldNotFindObjectException, IOException {
@@ -46,11 +45,11 @@ public class GiftCard extends LightrailCard {
     }
 
     public static GiftCard create(String programId, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return create (programId, initialValue, null);
+        return create(programId, initialValue, null);
     }
 
     public static GiftCard create(String programId, int initialValue, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return create(programId, initialValue, null,null, metadata);
+        return create(programId, initialValue, null, null, metadata);
     }
 
     public static GiftCard create(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
@@ -72,7 +71,7 @@ public class GiftCard extends LightrailCard {
             throw new CouldNotFindObjectException("This cardId is not associated with a Gift Card.");
     }
 
-    public static CardDetails retrieveCardDetailsByCode (String code) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static CardDetails retrieveCardDetailsByCode(String code) throws AuthorizationException, CouldNotFindObjectException, IOException {
         return APICore.Cards.retrieveCardDetailsByCode(code);
     }
 }

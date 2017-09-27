@@ -54,9 +54,22 @@ public class LightrailTransactionTest {
 
         LightrailTransaction retrievedTransaction = LightrailTransaction.Retrieve.byCardIdAndTransactionId(cardId, transactionId);
         assertEquals(baseUserSuppliedId + "-by-card", retrievedTransaction.getUserSuppliedId());
+        //try finding by the wrong id
+//        try {
+//            LightrailTransaction.Retrieve.byCardIdAndTransactionId(cardId, transactionId + "DOESNT_EXIST");
+//        } catch (Exception e) {
+//            assert e instanceof CouldNotFindObjectException;
+//        }
 
         retrievedTransaction = LightrailTransaction.Retrieve.byCardIdAndUserSuppliedId(cardId, baseUserSuppliedId + "-by-card");
         assertEquals(transactionId, retrievedTransaction.getTransactionId());
+
+        //try finding by the wrong id
+        try {
+            LightrailTransaction.Retrieve.byCardIdAndUserSuppliedId(cardId, baseUserSuppliedId + "-by-card"+"DOESNT_EXIST");
+        } catch (Exception e) {
+            assert e instanceof CouldNotFindObjectException;
+        }
 
         RequestParameters retrieveParams = new RequestParameters();
         retrieveParams.put(LightrailConstants.Parameters.CARD_ID, cardId);
@@ -69,6 +82,13 @@ public class LightrailTransactionTest {
         retrieveParams.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, baseUserSuppliedId + "-by-card");
         retrievedTransaction = LightrailTransaction.Retrieve.retrieve(retrieveParams);
         assertEquals(transactionId, retrievedTransaction.getTransactionId());
+
+        //try finding by the wrong id
+        try {
+            LightrailTransaction.Retrieve.byCodeAndUserSuppliedId(code, baseUserSuppliedId + "-by-card"+"DOESNT_EXIST");
+        } catch (Exception e) {
+            assert e instanceof CouldNotFindObjectException;
+        }
 
 
         //create by giving parameters: code

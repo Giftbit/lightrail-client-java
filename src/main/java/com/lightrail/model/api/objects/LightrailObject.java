@@ -3,6 +3,7 @@ package com.lightrail.model.api.objects;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.lightrail.exceptions.BadParameterException;
 
 import java.lang.reflect.Field;
 
@@ -30,12 +31,15 @@ public class LightrailObject {
                 jsonRootAnnotation = superclass.getAnnotation(JsonObjectRoot.class);
                 superclass = superclass.getSuperclass();
             }
+            String jsonRootName="";
             if (jsonRootAnnotation != null) {
-                String jsonRootName = jsonRootAnnotation.value();
+                jsonRootName = jsonRootAnnotation.value();
                 if (!"".equals(jsonRootName)) {
                     jsonObject = (JsonObject) jsonObject.get(jsonRootName);
                 }
             }
+            if (jsonObject == null)
+                throw new BadParameterException(String.format("Invalid JSON object (must have '%s' key).", jsonRootName));
             Field[] fields = myClass.getFields();
             Gson gson = new Gson();
             for (Field field : fields) {

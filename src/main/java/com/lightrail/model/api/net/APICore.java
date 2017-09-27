@@ -13,7 +13,6 @@ import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.Map;
 
 
 public class APICore {
@@ -64,12 +63,11 @@ public class APICore {
             APIError error = new APIError(responseString);
             String errorMessage = responseString;
             String errorMessageCode = "";
-            if (error != null) {
-                if (error.getMessage() != null)
-                    errorMessage = error.getMessage();
-                if (error.getMessageCode() != null)
-                    errorMessageCode = error.getMessageCode();
-            }
+            if (error.getMessage() != null)
+                errorMessage = error.getMessage();
+            if (error.getMessageCode() != null)
+                errorMessageCode = error.getMessageCode();
+
             switch (responseCode) {
                 case 401:
                 case 403:
@@ -96,7 +94,7 @@ public class APICore {
 
     public static final class Transactions {
 
-        public static Transaction createTransactionByCode(String code, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+        public static Transaction createTransactionByCode(String code, RequestParameters transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_TRANSACTION_BY_CODE, code);
             String bodyJsonString = new Gson().toJson(transactionParams);
             String rawAPIResponse = Core.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
@@ -104,7 +102,7 @@ public class APICore {
         }
 
         public static Transaction createTransactionByCard(String cardId,
-                                                          Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+                                                          RequestParameters transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_TRANSACTION_BY_CARD, cardId);
             String bodyJsonString = new Gson().toJson((transactionParams));
             String rawAPIResponse = Core.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
@@ -112,13 +110,14 @@ public class APICore {
         }
 
         public static Transaction simulateTransactionByCard(String cardId,
-                                                        Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+                                                            RequestParameters transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.SIMULATE_TRANSACTION_BY_CARD, cardId);
             String bodyJsonString = new Gson().toJson(transactionParams);
             String rawAPIResponse = Core.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
             return new Transaction(rawAPIResponse);
         }
-        public static Transaction simulateTransactionByCode(String code, Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+
+        public static Transaction simulateTransactionByCode(String code, RequestParameters transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.SIMULATE_TRANSACTION_BY_CODE, code);
             String bodyJsonString = new Gson().toJson(transactionParams);
             String rawAPIResponse = Core.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
@@ -128,7 +127,7 @@ public class APICore {
         public static Transaction actionOnTransaction(String cardId,
                                                       String transactionId,
                                                       String action,
-                                                      Map<String, Object> transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
+                                                      RequestParameters transactionParams) throws IOException, InsufficientValueException, AuthorizationException, CouldNotFindObjectException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.ACTION_ON_TRANSACTION, cardId, transactionId, action);
             String bodyJsonString = new Gson().toJson((transactionParams));
             String rawAPIResponse = Core.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
@@ -192,7 +191,7 @@ public class APICore {
             }
         }
 
-        public static Card createCard(Map<String, Object> createCardParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        public static Card createCard(RequestParameters createCardParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_CARD);
             String bodyJsonString = new Gson().toJson((createCardParams));
             try {
@@ -221,7 +220,7 @@ public class APICore {
             }
         }
 
-        public static Transaction actionOnCard(String cardId, String action, Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        public static Transaction actionOnCard(String cardId, String action, RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.ACTION_ON_CARD, cardId, action);
             String bodyJsonString = new Gson().toJson((params));
 
@@ -233,7 +232,7 @@ public class APICore {
             }
         }
 
-        public static Card cancelCard(String cardId, Map<String, Object> params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        public static Card cancelCard(String cardId, RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.CANCEL_CARD, cardId);
             String bodyJsonString = new Gson().toJson((params));
 
@@ -258,7 +257,7 @@ public class APICore {
 
     public static final class Contact {
 
-        public static com.lightrail.model.api.objects.Contact createContact(Map<String, Object> createContactParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        public static com.lightrail.model.api.objects.Contact createContact(RequestParameters createContactParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_CONTACT);
             String bodyJsonString = new Gson().toJson((createContactParams));
             try {
