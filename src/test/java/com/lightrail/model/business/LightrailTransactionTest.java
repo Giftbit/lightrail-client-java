@@ -54,6 +54,12 @@ public class LightrailTransactionTest {
 
         LightrailTransaction retrievedTransaction = LightrailTransaction.Retrieve.byCardIdAndTransactionId(cardId, transactionId);
         assertEquals(baseUserSuppliedId + "-by-card", retrievedTransaction.getUserSuppliedId());
+        //try finding by the wrong id
+//        try {
+//            LightrailTransaction.Retrieve.byCardIdAndTransactionId(cardId, transactionId + "DOESNT_EXIST");
+//        } catch (Exception e) {
+//            assert e instanceof CouldNotFindObjectException;
+//        }
 
         retrievedTransaction = LightrailTransaction.Retrieve.byCardIdAndUserSuppliedId(cardId, baseUserSuppliedId + "-by-card");
         assertEquals(transactionId, retrievedTransaction.getTransactionId());

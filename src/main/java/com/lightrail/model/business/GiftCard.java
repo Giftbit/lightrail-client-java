@@ -2,6 +2,7 @@ package com.lightrail.model.business;
 
 
 import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.objects.Card;
@@ -19,7 +20,7 @@ public class GiftCard extends LightrailCard {
     }
 
     public GiftCard(Card card) {
-        super(card.getRawJson());
+        super(card);
     }
 
     public String retrieveFullCode() throws AuthorizationException, CouldNotFindObjectException, IOException {

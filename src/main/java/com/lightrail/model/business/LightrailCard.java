@@ -16,6 +16,9 @@ class LightrailCard extends Card {
     public LightrailCard(String jsonObject) {
         super(jsonObject);
     }
+    public LightrailCard(Card card) {
+        super(card.getRawJson());
+    }
 
     public CardDetails retrieveCardDetails () throws AuthorizationException, CouldNotFindObjectException, IOException {
         return APICore.Cards.retrieveCardDetailsByCardId(this.cardId);
