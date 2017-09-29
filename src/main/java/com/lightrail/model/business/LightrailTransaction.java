@@ -302,7 +302,7 @@ public class LightrailTransaction extends Transaction {
                 } else if (cardId != null && transactionId != null) {
                     return byCardIdAndTransactionId(cardId, transactionId);
                 } else {
-                    throw new BadParameterException("Not enough information to retrieveByCardId the transaction."); // todo: more ways to retrieveByCardId
+                    throw new BadParameterException("Not enough information to retrieveByCardId the transaction.");
                 }
             } catch (InsufficientValueException e) {//never happens
                 throw new RuntimeException(e);

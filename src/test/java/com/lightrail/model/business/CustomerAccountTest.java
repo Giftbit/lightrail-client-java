@@ -57,7 +57,7 @@ public class CustomerAccountTest {
         assertEquals(LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD, accountCard.getCardType());
         assertEquals(customerAccountId, accountCard.getContactId());
 
-        //retrieveByCardId again
+        //retrieve again
         customerAccountId = customerAccount.getContactId();
         customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
         assert customerAccount.getAvailableCurrencies().contains(currency);
@@ -84,14 +84,6 @@ public class CustomerAccountTest {
         assertEquals(initialBalance + chargeValue, customerAccount.retrieveMaximumValue(currency));
         charge.capture();
         assertEquals(initialBalance + chargeValue, customerAccount.retrieveMaximumValue(currency));
-
-//        LightrailCustomerAccount.delete(customerAccountId);
-//        try {
-//            customerAccount = LightrailCustomerAccount.retrieveByCardId(customerAccountId);
-//        } catch (Exception e) {
-//            assertEquals(CouldNotFindObjectException.class.getName(), e.getClass().getName());
-//        }
-
     }
 
     @Test
@@ -116,7 +108,7 @@ public class CustomerAccountTest {
         assertEquals(1, customerAccount.getAvailableCurrencies().size());
 
 
-        //retrieveByCardId the account
+        //retrieve the account
         String customerAccountId = customerAccount.getContactId();
         customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
 
@@ -126,7 +118,7 @@ public class CustomerAccountTest {
         assert customerAccount.getAvailableCurrencies().contains(currency);
 
 
-        //retrieveByCardId again
+        //retrieve again
         customerAccountId = customerAccount.getContactId();
         customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
         assert customerAccount.getAvailableCurrencies().contains(currency);
