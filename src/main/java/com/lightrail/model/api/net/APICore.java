@@ -201,10 +201,19 @@ public class APICore {
             }
         }
 
-        public static Card retrieveCard(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
-            String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_CARD, cardId);
+        public static Card retrieveCardByCardId(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+            String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_CARD_BY_CARD_ID, cardId);
             try {
                 return new Card(Core.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null));
+            } catch (InsufficientValueException e) { //never happens
+                throw new RuntimeException(e);
+            }
+        }
+
+        public static Card retrieveCardByUserSuppliedId(String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException{
+            String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_CARD_BY_USERSUPPLIED_ID, userSuppliedId);
+            try {
+                return new CardSearchResult(Core.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null)).getOneCard();
             } catch (InsufficientValueException e) { //never happens
                 throw new RuntimeException(e);
             }
@@ -253,6 +262,8 @@ public class APICore {
                 throw new RuntimeException(e);
             }
         }
+
+
     }
 
     public static final class Contact {

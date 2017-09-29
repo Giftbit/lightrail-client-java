@@ -36,7 +36,7 @@ public class CustomerAccountTest {
         assertEquals(0, customerAccount.getAvailableCurrencies().size());
 
 
-        //retrieve the account
+        //retrieveByCardId the account
         String customerAccountId = customerAccount.getContactId();
         customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
 
@@ -53,11 +53,11 @@ public class CustomerAccountTest {
 
         String accountCardId = customerAccount.getCardFor(currency).getCardId();
 
-        AccountCard accountCard = AccountCard.retrieve(accountCardId);
+        AccountCard accountCard = AccountCard.retrieveByCardId(accountCardId);
         assertEquals(LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD, accountCard.getCardType());
         assertEquals(customerAccountId, accountCard.getContactId());
 
-        //retrieve again
+        //retrieveByCardId again
         customerAccountId = customerAccount.getContactId();
         customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
         assert customerAccount.getAvailableCurrencies().contains(currency);
@@ -87,7 +87,7 @@ public class CustomerAccountTest {
 
 //        LightrailCustomerAccount.delete(customerAccountId);
 //        try {
-//            customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
+//            customerAccount = LightrailCustomerAccount.retrieveByCardId(customerAccountId);
 //        } catch (Exception e) {
 //            assertEquals(CouldNotFindObjectException.class.getName(), e.getClass().getName());
 //        }
@@ -116,7 +116,7 @@ public class CustomerAccountTest {
         assertEquals(1, customerAccount.getAvailableCurrencies().size());
 
 
-        //retrieve the account
+        //retrieveByCardId the account
         String customerAccountId = customerAccount.getContactId();
         customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
 
@@ -126,7 +126,7 @@ public class CustomerAccountTest {
         assert customerAccount.getAvailableCurrencies().contains(currency);
 
 
-        //retrieve again
+        //retrieveByCardId again
         customerAccountId = customerAccount.getContactId();
         customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
         assert customerAccount.getAvailableCurrencies().contains(currency);

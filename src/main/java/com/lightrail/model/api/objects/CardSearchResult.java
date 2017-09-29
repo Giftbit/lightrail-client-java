@@ -1,6 +1,8 @@
 package com.lightrail.model.api.objects;
 
 import com.google.gson.Gson;
+import com.lightrail.exceptions.BadParameterException;
+import com.lightrail.exceptions.CouldNotFindObjectException;
 
 import java.util.List;
 
@@ -28,6 +30,15 @@ public class CardSearchResult extends LightrailObject{
             }
             card.setRawJson(cardJsonString);
         }
+    }
+
+    public Card getOneCard() throws CouldNotFindObjectException {
+        if (cards.length == 1)
+            return cards[0];
+        else if (cards.length > 1)
+            throw new BadParameterException("Search results include more than one Card.");
+        else
+            throw new CouldNotFindObjectException("Card does not exists.");
     }
 }
 

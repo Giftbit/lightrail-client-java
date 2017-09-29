@@ -245,6 +245,8 @@ public class LightrailTransaction extends Transaction {
 
     public static final class Simulate {
 
+        //todo: simulate by contact
+
         public static LightrailTransaction byCardId(String cardId, int value, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
             return byCardId(cardId, value, currency, null);
         }
@@ -300,7 +302,7 @@ public class LightrailTransaction extends Transaction {
                 } else if (cardId != null && transactionId != null) {
                     return byCardIdAndTransactionId(cardId, transactionId);
                 } else {
-                    throw new BadParameterException("Not enough information to retrieve the transaction."); // todo: more ways to retrieve
+                    throw new BadParameterException("Not enough information to retrieveByCardId the transaction."); // todo: more ways to retrieveByCardId
                 }
             } catch (InsufficientValueException e) {//never happens
                 throw new RuntimeException(e);
