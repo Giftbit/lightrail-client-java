@@ -36,7 +36,7 @@ public class CustomerAccountTest {
         assertEquals(0, customerAccount.getAvailableCurrencies().size());
 
 
-        //retrieveByCardId the account
+        //retrieve the account
         String customerAccountId = customerAccount.getContactId();
         customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
 
