@@ -36,7 +36,8 @@ public final class LightrailConstants {
             public static final String RETRIEVE_CONTACT_CARDS = "cards?contactId=%s&cardType=ACCOUNT_CARD";
 
             public static final String CREATE_CARD = "cards";
-            public static final String RETRIEVE_CARD = "cards/%s";
+            public static final String RETRIEVE_CARD_BY_CARD_ID = "cards/%s";
+            public static final String RETRIEVE_CARD_BY_USERSUPPLIED_ID = "cards?userSuppliedId=%s";
             public static final String CANCEL_CARD = "cards/%s/cancel";
             public static final String RETRIEVE_FULL_CODE = "cards/%s/fullcode";
             public static final String ACTION_ON_CARD = "cards/%s/%s";

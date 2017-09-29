@@ -2,7 +2,6 @@ package com.lightrail.model.business;
 
 
 import com.lightrail.exceptions.AuthorizationException;
-import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.objects.Card;
@@ -63,11 +62,20 @@ public class GiftCard extends LightrailCard {
         return new GiftCard(LightrailCard.create(params));
     }
 
-    public static GiftCard retrieve(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Card card = LightrailCard.retrieve(cardId);
-        if (LightrailConstants.Parameters.CARD_TYPE_GIFT_CARD.equals(card.getCardType()))
-            return new GiftCard(card);
-        else
+    public static GiftCard retrieveByUserSuppliedId(String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        Card card = LightrailCard.retrieveByUserSupplied(userSuppliedId);
+        makeSureCardTypeIsCorrect(card);
+        return new GiftCard(card);
+    }
+
+    public static GiftCard retrieveByCardId(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        Card card = LightrailCard.retrieveByCardId(cardId);
+        makeSureCardTypeIsCorrect(card);
+        return new GiftCard(card);
+    }
+
+    private static void makeSureCardTypeIsCorrect(Card card) throws CouldNotFindObjectException {
+        if (!LightrailConstants.Parameters.CARD_TYPE_GIFT_CARD.equals(card.getCardType()))
             throw new CouldNotFindObjectException("This cardId is not associated with a Gift Card.");
     }
 

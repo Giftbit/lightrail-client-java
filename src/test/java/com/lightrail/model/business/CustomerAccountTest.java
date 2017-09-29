@@ -53,7 +53,7 @@ public class CustomerAccountTest {
 
         String accountCardId = customerAccount.getCardFor(currency).getCardId();
 
-        AccountCard accountCard = AccountCard.retrieve(accountCardId);
+        AccountCard accountCard = AccountCard.retrieveByCardId(accountCardId);
         assertEquals(LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD, accountCard.getCardType());
         assertEquals(customerAccountId, accountCard.getContactId());
 
@@ -84,14 +84,6 @@ public class CustomerAccountTest {
         assertEquals(initialBalance + chargeValue, customerAccount.retrieveMaximumValue(currency));
         charge.capture();
         assertEquals(initialBalance + chargeValue, customerAccount.retrieveMaximumValue(currency));
-
-//        LightrailCustomerAccount.delete(customerAccountId);
-//        try {
-//            customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
-//        } catch (Exception e) {
-//            assertEquals(CouldNotFindObjectException.class.getName(), e.getClass().getName());
-//        }
-
     }
 
     @Test

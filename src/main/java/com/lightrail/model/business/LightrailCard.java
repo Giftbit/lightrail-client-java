@@ -8,8 +8,6 @@ import com.lightrail.model.api.net.APICore;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 class LightrailCard extends Card {
 
@@ -54,8 +52,12 @@ class LightrailCard extends Card {
         return transaction;
     }
 
-    public static Card retrieve(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return APICore.Cards.retrieveCard(cardId);
+    public static Card retrieveByCardId(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        return APICore.Cards.retrieveCardByCardId(cardId);
+    }
+
+    public static Card retrieveByUserSupplied(String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        return APICore.Cards.retrieveCardByUserSuppliedId(userSuppliedId);
     }
 
     static Card create(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {

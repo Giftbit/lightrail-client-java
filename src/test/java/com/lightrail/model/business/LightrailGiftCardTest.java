@@ -39,6 +39,10 @@ public class LightrailGiftCardTest {
 
         String fullCode = createdGiftCard.retrieveFullCode();
         String cardId = createdGiftCard.getCardId();
+        String userSuppliedId = createdGiftCard.getUserSuppliedId();
+
+        assertEquals(userSuppliedId, GiftCard.retrieveByCardId(cardId).getUserSuppliedId());
+        assertEquals(cardId, GiftCard.retrieveByUserSuppliedId(userSuppliedId).getCardId());
 
         LightrailTransaction fund = LightrailTransaction.Create.byCardId(cardId, 200, currency);
 
@@ -61,7 +65,7 @@ public class LightrailGiftCardTest {
         assertEquals(chargeTxId, retrievedCharge.getTransactionId());
 
 
-        GiftCard retrievedGiftCard = GiftCard.retrieve(cardId);
+        GiftCard retrievedGiftCard = GiftCard.retrieveByCardId(cardId);
         assertEquals(createdGiftCard.getDateCreated(), retrievedGiftCard.getDateCreated());
         assertEquals(createdGiftCard.getCurrency(), retrievedGiftCard.getCurrency());
         assertEquals(fullCode, retrievedGiftCard.retrieveFullCode());
