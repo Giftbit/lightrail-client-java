@@ -2,7 +2,7 @@
 
 # Lightrail Client Library
 
-Lightrail is a modern platform for digital account credits, gift cards, promotions, and points —to learn more, visit [Lightrail](https://www.lightrail.com/). This client library makes it possible to easily integrate with the Lightrail API using Java. If you are looking for specific use-cases or other languages, check out the *Integrations* section [Lightrail API documentation](https://www.lightrail.com/docs/).
+Lightrail is a modern platform for digital account credits, gift cards, promotions, and points —to learn more, visit [Lightrail](https://www.lightrail.com/). This client library makes it possible to easily integrate with the Lightrail API using Java. If you are looking for specific use-cases or other languages, check out the *Integrations* section of the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 ## Features ##
 
