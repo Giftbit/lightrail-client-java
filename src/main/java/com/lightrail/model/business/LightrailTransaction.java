@@ -204,7 +204,7 @@ public class LightrailTransaction extends Transaction {
                     LightrailConstants.Parameters.CURRENCY
             ), transactionParams);
 
-            transactionParams = LightrailCustomerAccount.handleContact(transactionParams);
+            transactionParams = LightrailContact.handleContact(transactionParams);
 
             makeSureValueOfPendingTransactionIsNegative(transactionParams);
 
@@ -245,7 +245,21 @@ public class LightrailTransaction extends Transaction {
 
     public static final class Simulate {
 
-        //todo: simulate by contact
+        public static LightrailTransaction pendingByContact(String contactId, int value, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+            return pendingByContact(contactId, value, currency, null);
+        }
+
+        public static LightrailTransaction pendingByContact(String contactId, int value, String currency, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+            return byContact(contactId, value, currency, true, metadata);
+        }
+
+        public static LightrailTransaction byContact(String contactId, int value, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+            return byContact(contactId, value, currency, null);
+        }
+
+        public static LightrailTransaction byContact(String contactId, int value, String currency, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+            return byContact(contactId, value, currency, false, metadata);
+        }
 
         public static LightrailTransaction byCardId(String cardId, int value, String currency) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
             return byCardId(cardId, value, currency, null);
@@ -281,6 +295,16 @@ public class LightrailTransaction extends Transaction {
             } else {
                 return Create.create(transactionParams, true);
             }
+        }
+        private static LightrailTransaction byContact(String contactId, int value, String currency, boolean pending, Metadata metadata) throws AuthorizationException, CouldNotFindObjectException, InsufficientValueException, IOException {
+            RequestParameters transactionParams = new RequestParameters();
+            transactionParams.put(LightrailConstants.Parameters.CONTACT, contactId);
+            transactionParams.put(LightrailConstants.Parameters.VALUE, value);
+            transactionParams.put(LightrailConstants.Parameters.CURRENCY, currency);
+            transactionParams.put(LightrailConstants.Parameters.PENDING, pending);
+            if (metadata != null && !metadata.isEmpty())
+                transactionParams.put(LightrailConstants.Parameters.METADATA, metadata);
+            return simulate(transactionParams);
         }
     }
 
