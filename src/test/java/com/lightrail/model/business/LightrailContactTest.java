@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 import java.io.IOException;
 import java.util.Properties;
 
-public class CustomerAccountTest {
+public class LightrailContactTest {
 
     @Test
     public void walkThroughHappyPathTest() throws AuthorizationException, CouldNotFindObjectException, IOException, CurrencyMismatchException, InsufficientValueException {
@@ -28,7 +28,7 @@ public class CustomerAccountTest {
         String firstName = "Test";
         String lastName = "McTestFace";
 
-        LightrailCustomerAccount customerAccount = LightrailCustomerAccount.create(email, firstName, lastName);
+        LightrailContact customerAccount = LightrailContact.create(email, firstName, lastName);
 
         assertEquals(email, customerAccount.getEmail());
         assertEquals(firstName, customerAccount.getFirstName());
@@ -38,7 +38,7 @@ public class CustomerAccountTest {
 
         //retrieve the account
         String customerAccountId = customerAccount.getContactId();
-        customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
+        customerAccount = LightrailContact.retrieve(customerAccountId);
 
         assertEquals(email, customerAccount.getEmail());
         assertEquals(firstName, customerAccount.getFirstName());
@@ -59,7 +59,7 @@ public class CustomerAccountTest {
 
         //retrieve again
         customerAccountId = customerAccount.getContactId();
-        customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
+        customerAccount = LightrailContact.retrieve(customerAccountId);
         assert customerAccount.getAvailableCurrencies().contains(currency);
         assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
 
@@ -100,7 +100,7 @@ public class CustomerAccountTest {
         int initialBalance = 500;
 
 
-        LightrailCustomerAccount customerAccount = LightrailCustomerAccount.create(email, firstName, lastName, currency, initialBalance);
+        LightrailContact customerAccount = LightrailContact.create(email, firstName, lastName, currency, initialBalance);
 
         assertEquals(email, customerAccount.getEmail());
         assertEquals(firstName, customerAccount.getFirstName());
@@ -110,7 +110,7 @@ public class CustomerAccountTest {
 
         //retrieve the account
         String customerAccountId = customerAccount.getContactId();
-        customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
+        customerAccount = LightrailContact.retrieve(customerAccountId);
 
         assertEquals(email, customerAccount.getEmail());
         assertEquals(firstName, customerAccount.getFirstName());
@@ -120,7 +120,7 @@ public class CustomerAccountTest {
 
         //retrieve again
         customerAccountId = customerAccount.getContactId();
-        customerAccount = LightrailCustomerAccount.retrieve(customerAccountId);
+        customerAccount = LightrailContact.retrieve(customerAccountId);
         assert customerAccount.getAvailableCurrencies().contains(currency);
         assertEquals(initialBalance, customerAccount.retrieveMaximumValue());
 
@@ -148,7 +148,7 @@ public class CustomerAccountTest {
 
     }
 
-    private LightrailCustomerAccount createCustomerAccount(int initialBalance, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    private LightrailContact createCustomerAccount(int initialBalance, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Properties properties = TestParams.getProperties();
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 
@@ -156,7 +156,7 @@ public class CustomerAccountTest {
         String firstName = "Test";
         String lastName = "McTestFace";
 
-        LightrailCustomerAccount customerAccount = LightrailCustomerAccount.create(email, firstName, lastName, currency, initialBalance);
+        LightrailContact customerAccount = LightrailContact.create(email, firstName, lastName, currency, initialBalance);
         return customerAccount;
     }
 
@@ -166,7 +166,7 @@ public class CustomerAccountTest {
         int initialBalance = 500;
         String currency = "USD";
 
-        LightrailCustomerAccount customerAccount = createCustomerAccount(initialBalance, currency);
+        LightrailContact customerAccount = createCustomerAccount(initialBalance, currency);
         String contactId = customerAccount.getContactId();
 
         int amount = 100;

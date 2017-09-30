@@ -14,14 +14,14 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-public class LightrailCustomerAccount extends Contact {
+public class LightrailContact extends Contact {
     private Map<String, AccountCard> cardForCurrency = new HashMap<>();
 
-    public LightrailCustomerAccount(String jsonObject) {
+    public LightrailContact(String jsonObject) {
         super(jsonObject);
     }
 
-    public LightrailCustomerAccount(Contact contact) {
+    public LightrailContact(Contact contact) {
         super(contact.getRawJson());
     }
 
@@ -41,11 +41,11 @@ public class LightrailCustomerAccount extends Contact {
         cardForCurrency.put(card.getCurrency(), card);
     }
 
-    public LightrailCustomerAccount addCurrency(String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailContact addCurrency(String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
         return addCurrency(currency, 0);
     }
 
-    public LightrailCustomerAccount addCurrency(String currency, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailContact addCurrency(String currency, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
         RequestParameters cardParams = new RequestParameters();
         cardParams.put(LightrailConstants.Parameters.CONTACT_ID, getContactId());
         cardParams.put(LightrailConstants.Parameters.CURRENCY, currency);
@@ -54,7 +54,7 @@ public class LightrailCustomerAccount extends Contact {
         return addCurrency(cardParams);
     }
 
-    public LightrailCustomerAccount addCurrency(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailContact addCurrency(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
                 LightrailConstants.Parameters.CURRENCY
         ), params);
@@ -128,7 +128,7 @@ public class LightrailCustomerAccount extends Contact {
         return getCardFor(currency).retrieveMaximumValue();
     }
 
-    AccountCard getCardFor(String currency) {
+    public AccountCard getCardFor(String currency) {
         AccountCard cardObject = cardForCurrency.get(currency);
         if (cardObject == null)
             throw new BadParameterException(String.format("Currency %s is not defined for this account.", currency));
@@ -136,14 +136,14 @@ public class LightrailCustomerAccount extends Contact {
             return cardObject;
     }
 
-    public static LightrailCustomerAccount create(String email, String firstName, String lastName, String defaultCurrency, int initialBalance) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static LightrailContact create(String email, String firstName, String lastName, String defaultCurrency, int initialBalance) throws AuthorizationException, CouldNotFindObjectException, IOException {
         return create(email, firstName, lastName).
                 addCurrency(defaultCurrency, initialBalance);
     }
 
-    public static LightrailCustomerAccount create(String email, String firstName, String lastName) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static LightrailContact create(String email, String firstName, String lastName) throws AuthorizationException, CouldNotFindObjectException, IOException {
         if (email == null || email.isEmpty())
-            throw new BadParameterException("Need to provide an email address for the new LightrailCustomerAccount.");
+            throw new BadParameterException("Need to provide an email address for the new LightrailContact.");
 
         RequestParameters customerAccountParams = new RequestParameters();
         customerAccountParams.put(LightrailConstants.Parameters.EMAIL, email);
@@ -155,19 +155,19 @@ public class LightrailCustomerAccount extends Contact {
         return create(customerAccountParams);
     }
 
-    public static LightrailCustomerAccount create(RequestParameters customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static LightrailContact create(RequestParameters customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
         LightrailConstants.Parameters.requireParameters(Arrays.asList(
                 LightrailConstants.Parameters.EMAIL)
                 , customerAccountParams);
 
         customerAccountParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(customerAccountParams);
         Contact contactObject = APICore.Contact.createContact(customerAccountParams);
-        return new LightrailCustomerAccount(contactObject);
+        return new LightrailContact(contactObject);
     }
 
-    public static LightrailCustomerAccount retrieve(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public static LightrailContact retrieve(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Contact contactObject = APICore.Contact.retrieveContact(customerAccountId);
-        LightrailCustomerAccount customerAccount = new LightrailCustomerAccount(contactObject);
+        LightrailContact customerAccount = new LightrailContact(contactObject);
 
         CardSearchResult cards = APICore.Cards.retrieveCardsOfContact(customerAccountId);
         for (Card card : cards.getCards()) {
@@ -192,7 +192,7 @@ public class LightrailCustomerAccount extends Contact {
 
         if (contactId != null) {
             if (requestedCurrency != null && !requestedCurrency.isEmpty()) {
-                LightrailCustomerAccount account = retrieve(contactId);
+                LightrailContact account = retrieve(contactId);
                 String cardId = account.getCardFor(requestedCurrency).getCardId();
                 chargeParamsCopy.put(LightrailConstants.Parameters.CARD_ID, cardId);
             } else {
