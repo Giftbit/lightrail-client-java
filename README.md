@@ -52,7 +52,7 @@ To pass more parameters such as `userSuppliedId`, you can use the generic `creat
 
 #### Retrieving the Gift Code
 
-To retrieve the `fullCode` of a Gift Card, call the `retrieveFullCode()` method on a `GiftCard` object. Usually, you make this call after creating the Gift Card to email the Gift Code to the recipient of the Gift Card. We advise that you refrain from persisting the `fullcode` in your system and retrieve it from the API whenever you need it.
+To retrieve the `fullCode` of a Gift Card, call the `retrieveFullCode()` method on a `GiftCard` object. Usually, you make this call after creating the Gift Card to email the Gift Code to the gift recipient. We advise that you refrain from persisting the `fullcode` in your system and retrieve it from the API whenever you need it.
 
 ```java
 String programId = "...";
@@ -64,7 +64,7 @@ String fullCode = newGiftCard.retrieveFullCode();
 
 #### Retrieving Gift Cards
 
-To retrieve an exiting Gift Card, use one of the `retrieve()` methods. 
+To retrieve an existing Gift Card, use one of the `retrieve()` methods. 
 
 ```java
 GiftCard existingGiftCard = GiftCard.retrieveByCardId("<cardId>");
@@ -104,6 +104,7 @@ To get the exact value of a Gift Card in the context of a transaction you can us
 ```java
 String fullcode = "...";
 int orderValue = 20455;
+String currency = "USD";
 Metadata metadata = new Metadata();
 //fill in the metadata
 LightrailTransaction simulatedTx = 
@@ -116,7 +117,6 @@ int availableValue = 0 - simulatedTx.getValue();
 To create a Transaction on a Gift Card use a suitable methods in `LightrailTransaction.Create`. For example:
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
 String fullcode = "...";
 int orderValue = 20455;
 String currency = "USD";
@@ -126,7 +126,7 @@ LightrailTransaction tx =
   LightrailTransaction.Create.byCode(fullcode, orderValue, currency, metadata);
 ```
 
-Note that Lightrail does not support currency exchange and the currency provided to these methods must match the currency of the card.
+Note that Lightrail does not support currency exchange and the currency provided to these methods must match the currency of the Card.
 
 #### Authorize-Capture
 
@@ -173,7 +173,7 @@ existingGiftCard.freeze();
 existingGiftCard.unfreeze();
 ```
 
-Note that freezing and unfreezing a card are special transactions and the corresponding `LightrailTransaction` object will be returned by the these methods.
+Note that freezing and unfreezing a card are special transactions and the corresponding `LightrailTransaction` object will be returned by these methods.
 
 ### Account Credits
 
@@ -243,17 +243,13 @@ Alternatively, you can use one of the `byContact` methods in `LightrailTransacti
 String contactId = contact.getContactId();
 Metadata metadata = new Metadata();
 //fill in the metadata
-LightrailTransaction tx = LightrailTransaction.Create.byContact(contactId,
-                                                                200,
-                                                                "USD",
-                                                                metadata);
+LightrailTransaction tx = LightrailTransaction.Create.byContact(contactId, 200, "USD", metadata);
 ```
 
 To create a pending Transaction, use one of the `pendingByContact` methods in `LightrailTransaction.Create`. You need to call `capture()` or `doVoid()` on the resulting `LightrailTransaction` object later.
 
 ```java
-LightrailTransaction tx = LightrailTransaction.Create
-  											  .pendingByContact("<contactId",100,"USD");
+LightrailTransaction tx = LightrailTransaction.Create.pendingByContact("<contactId",100,"USD");
 //later        
 tx.capture();
 //or        
