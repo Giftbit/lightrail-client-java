@@ -2,7 +2,7 @@
 
 # Lightrail Client Library
 
-Lightrail is a modern platform for digital account credits, gift cards, promotions, and points —to learn more, visit [Lightrail](https://www.lightrail.com/). This client library makes it possible to easily integrate with the Lightrail API using Java. If you are looking for specific use-cases or other languages, check out the *Integrations* section of the [Lightrail API documentation](https://www.lightrail.com/docs/).
+Lightrail is a modern platform for digital account credits, gift cards, promotions, and points —to learn more, visit [Lightrail](https://www.lightrail.com/). The goal of this client library is to facilitate integrating with the Lightrail API in Java. If you are looking for specific use-cases or other languages, check out the *Integrations* section of the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 ## Features ##
 
@@ -11,7 +11,7 @@ The following features are supported in this version:
 - Gift Cards: create, retrieve, balance-check, and create/simulate transactions.
 - Account Credits: create, retrieve, balance-check, and create/simulate transactions.
 
-Note that the Lightrail API supports many other features and we are working on covering them in this library. For a complete picture of Lightrail API features check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 
+Note that the Lightrail API supports many other features and we are still working on covering them in this library. For a complete list of Lightrail API features check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 
 
 ## Usage ##
 
@@ -23,16 +23,13 @@ Lightrail.apiKey = "<your lightrail API key>";
 
 ### Gift Cards
 
-A Lightrail gift card is a virtual device for issuing gift values. Each Gift Card has a specific `currency`, a `cardId`, as well as a `fullCode`, which is a unique unguessable alphanumeric string, usually released to the gift recipient in confidence. The recipient of the gift card can present the `fullCode` to redeem the gift value. For further discussion on cards and codes see the [Lightrail API documentation](https://www.lightrail.com/docs/).
+A Lightrail Gift Card is a virtual device for issuing gift values. Each Gift Card has a specific `currency`, a `cardId`, as well as a `fullCode`, which is a unique unguessable alphanumeric string, usually released to the gift recipient in confidence. The recipient of the Gift Card can present the `fullCode` to redeem the gift value. For further discussion on Gift Cards check out the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 #### Creating Gift Cards
 
-Gift Cards are created as part of a Gift Card Program. You can set up a Gift Card Program using the Lightrail [Web App](https://www.lightrail.com). Once you have a Gift Card Program, you can use its `programId` for creating Gift Cards in that program.
-
-To create a Gift Card, call one of the `create()` methods in the `GiftCard` class. For example:
+Gift Cards are created as part of a Gift Card Program. You can set up a Gift Card Program using the Lightrail [Web App](https://www.lightrail.com). Once you have a Gift Card Program, you need to provide its `programId` for creating Gift Cards in that program. To create a Gift Card, call one of the `create()` methods in the `GiftCard` class. For example:
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
 String programId = "...";
 int initialValue = 400;
 GiftCard newGiftCard = GiftCard.create(programId, initialValue);
@@ -51,14 +48,13 @@ GiftCard newGiftCard = GiftCard.create(programId,
                                        metadata);
 ```
 
-To pass more parameters such as `userSuppliedId`, you can use the generic `create()` method which accepts a `RequestParameters` object, which inherits from `Map<String,Object>`.
+To pass more parameters such as `userSuppliedId`, you can use the generic `create()` method which accepts a `RequestParameters` object, a subtype of `Map<String,Object>`).
 
-#### Retrieving the Full Code
+#### Retrieving the Gift Code
 
-To retrieve the `fullCode` of a Gift Card, call the `retrieveFullCode()` method on a `GiftCard` object. Usually you make this call after creating the Gift Card to email this value to the recipient of the Gift Card; we advise that you refrain from persisting the `fullcode` in your system.
+To retrieve the `fullCode` of a Gift Card, call the `retrieveFullCode()` method on a `GiftCard` object. Usually, you make this call after creating the Gift Card to email the Gift Code to the recipient of the Gift Card. We advise that you refrain from persisting the `fullcode` in your system and retrieve it from the API whenever you need it.
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
 String programId = "...";
 int initialValue = 400;
 GiftCard newGiftCard = GiftCard.create(programId, initialValue);
@@ -71,7 +67,6 @@ String fullCode = newGiftCard.retrieveFullCode();
 To retrieve an exiting Gift Card, use one of the `retrieve()` methods. 
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
 GiftCard existingGiftCard = GiftCard.retrieveByCardId("<cardId>");
 //
 GiftCard existingGiftCard = GiftCard.retrieveByUserSuppliedId("<userSuppliedId>");
@@ -79,11 +74,9 @@ GiftCard existingGiftCard = GiftCard.retrieveByUserSuppliedId("<userSuppliedId>"
 
 #### Card Details
 
-To get details of the available value and promotions on a Gift Card, call the `retrieveCardDetails()`method.
+To get details of the available value and promotions on a Gift Card, call the `retrieveCardDetails()`method. The principal value of the Card as well as its attached promotions are returned in the `CardDetails` object.
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
-//...
 CardDetails cardDetails = giftCard.retrieveCardDetails();
 for (ValueStore valueStore : cardDetails.getValueStores()) {
    if("ACTIVE".equals(valueStore.getState()))
@@ -103,15 +96,12 @@ CardDetails cardDetails = GiftCard.retrieveCardDetailsByCode(fullcode);
 To get the maximum possible value of a Gift Card, use the `retrieveMaximumValue()` method. Note that not all of this value is available for every transaction as there might be some conditional Promotions attached to the Card which are only unlocked under certain conditions. 
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
-//...
 int maximumValue = giftCard.retrieveMaximumValue();
 ```
 
 To get the exact value of a Gift Card in the context of a transaction you can use one of the `simulate` methods in the `Transaction` class and check the `value` of the returned simulated transaction. Note that this value shows the maximum drawdown transaction value that will go through for this Card in that context, so it is negative.
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
 String fullcode = "...";
 int orderValue = 20455;
 Metadata metadata = new Metadata();
@@ -143,7 +133,6 @@ Note that Lightrail does not support currency exchange and the currency provided
 To create a `pending` Transaction, use one of the methods in `LightrailTransaction.Create` with `pending` in its name. You should later call one of the available `capture()` or `doVoid()` methods on the returned pending Transaction object to either collect the pending Transaction or cancel it:
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
 String fullcode = "...";
 int orderValue = 20455;
 String currency = "USD";
@@ -151,7 +140,7 @@ Metadata metadata = new Metadata();
 //fill in the metadata
 LightrailTransaction pendingTx = 
   LightrailTransaction.Create.pendingByCode(fullcode, orderValue, currency, metadata);
-//later on:
+//later:
 LightrailTransaction capturedTx = pendingTx.capture();
 //or
 LightrailTransaction voidedTx = pendingTx.cancel();
@@ -164,27 +153,23 @@ Note that `capture()` and `doVoid()` return a new `LightrailTransaction` object.
 To undo a drawdown Transaction, call one of the the `refund()` methods on the Transaction object. Note that `refund()` returns a new `LightrailTransaction` object.  
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
-String fullcode = "...";
-int orderValue = 20455;
-String currency = "USD";
-Metadata metadata = new Metadata();
-//fill in the metadata
+String cardId = "...";
+String transactionId = "...";
 LightrailTransaction tx = 
-  LightrailTransaction.Create.byCode(fullcode, orderValue, currency, metadata);
-//later on:
+  LightrailTransaction.Retrieve.byCardIdAndTransactionId(cardId, transactionId);
+//later:
 LightrailTransaction refundTx = tx.refund();
 ```
 
 #### Freezing and Unfreezing Cards
 
-Freezing a card will suspend its value until it is unfrozen. This is a suitable method for when you are investigating potential fraud. 
+Freezing a card will suspend its value until it is unfrozen. This is a suitable method for investigating potential fraud. 
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
-GiftCard existingGiftCard = GiftCard.retrieveByCardId("<cardId>");
+String cardId = "...";
+GiftCard existingGiftCard = GiftCard.retrieveByCardId(cardId);
 existingGiftCard.freeze();
-//later on:
+//later:
 existingGiftCard.unfreeze();
 ```
 
@@ -192,19 +177,17 @@ Note that freezing and unfreezing a card are special transactions and the corres
 
 ### Account Credits
 
-The `LightrailContact` class provides a the functionality to support account credit use-cases. For further discussion on Account Cards check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 
+The `LightrailContact` class provides the functionality to support account credit use-cases. For further discussion on Account Cards check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 
 
 #### Creating Contacts
 
-To create a new customer account, call `CustomerAccount.create()`:
+To create a new customer account, call `LightrailContact.create()`:
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
 String email = "test@test.ca";
 String firstName = "Test";
 String lastName = "McTest";
 LightrailContact contact = LightrailContact.create(email, firstName, lastName);
-String contactId = contact.getContactId();
 ```
 
 #### Retrieving Customer Accounts
@@ -217,26 +200,25 @@ String contactId = contact.getContactId();
 LightrailContact contact = LightrailContact.retrieve(contactId);
 ```
 
-After creating a contact, define the currencies it should support. Each currency will be tracked and stored separately by a different Account Card. For example, you can specify that a Contact will have USD and CAD values, each with a $5 initial balance:
+After creating a contact, you need to define the currencies it should support. Each currency will be tracked and stored separately by a different Account Card. For example, you can specify that a Contact will have USD and CAD accounts, each with a $5 initial balance:
 
 ```java
+LightrailContact contact = LightrailContact.create(email, firstName, lastName);
 contact.addCurrency("USD", 500)
-               .addCurrency("CAD", 500);
+       .addCurrency("CAD", 500);
 ```
 
 #### Maximum Value and Balance-Checking
 
-The `retrieveMaximumValue()` methods of a `LightrailContact` object return the maximum possible value of the corresponding Account Card:
+The `retrieveMaximumValue()` methods of a `LightrailContact` object return the maximum value of the account in a given currency. Note that when using conditional promotions, some portions of this value might only be available under certain conditions.
 
 ```java
 int maximumValue = contact.retrieveMaximumValue("USD");
 ```
 
-To get the precise value an Account Card can contribute to a specific Transaction, use one of the simulate `byContact`  methods in `Transaction.Simulate`. 
+To get the precise value a Contact can contribute to a specific Transaction, use one of the simulate `byContact`  methods in `Transaction.Simulate`. 
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
-//...
 String contactId = contact.getContactId();
 int txValue = 20455;
 String currency = "USD";
@@ -249,7 +231,7 @@ int availableValue = 0 - simulatedTx.getValue();
 
 #### Transactions
 
-To transact against an Contact, call one of the `createTransaction` methods in `LightrailContact`. 
+To transact against a Contact, call one of the `createTransaction` methods in `LightrailContact`. 
 
 ```java
 LightrailTransaction tx = contact.createTransaction(100, "USD");
@@ -258,7 +240,6 @@ LightrailTransaction tx = contact.createTransaction(100, "USD");
 Alternatively, you can use one of the `byContact` methods in `LightrailTransaction.Create`:
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
 String contactId = contact.getContactId();
 Metadata metadata = new Metadata();
 //fill in the metadata
@@ -271,22 +252,18 @@ LightrailTransaction tx = LightrailTransaction.Create.byContact(contactId,
 To create a pending Transaction, use one of the `pendingByContact` methods in `LightrailTransaction.Create`. You need to call `capture()` or `doVoid()` on the resulting `LightrailTransaction` object later.
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
-LightrailTransaction tx = LightrailTransaction
-  							.Create.pendingByContact("<contactId",
-                                                     100,
-                                                     "USD");
-//later on        
+LightrailTransaction tx = LightrailTransaction.Create
+  											  .pendingByContact("<contactId",100,"USD");
+//later        
 tx.capture();
 //or        
 tx.doVoid();
 ```
 
 #### Single-Currency Accounts
-For simpler cases where only one currency is defined for the Contact, you can use a simpler interface for interacting with it without having to specify the currency for each and every call. For example, if you have a points program (for which the standard currency code is `XXX` ) you can use the simpler methods as the following:
+For simpler cases where only one currency is defined for the Contact, you can use a simpler interface without having to specify the currency for each and every call. For example, if you have a points program (for which the standard currency code is `XXX` ) you can use these simpler methods as the following:
 
 ```java
-Lightrail.apiKey = "<your lightrail API key>";
 String email = "test@test.ca";
 String firstName = "Test";
 String lastName = "McTest";
@@ -298,15 +275,15 @@ LightrailContact customerAccount = LightrailContact.create(email,
                                                          lastName, 
                                                          currency, 
                                                          initialBalance);
-//later on
-LightrailTransaction charge = customerAccount.createPendingTransaction(-300);
-//later on
-charge.capture();
+//later 
+LightrailTransaction tx = customerAccount.createPendingTransaction(-300);
+//later 
+tx.capture();
 //or        
 tx.doVoid();
 ```
 
-Note that if there is more than one currency defined for the account these calls will throw a `BadParameterException`.
+Note that if the Contact has more than one currency, these calls will throw a `BadParameterException`.
 
 ## Related Projects
 
