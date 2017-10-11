@@ -23,7 +23,7 @@ Lightrail.apiKey = "<your lightrail API key>";
 
 ### Gift Cards
 
-A Lightrail Gift Card is a virtual device for issuing gift values. Each Gift Card has a specific `currency`, a `cardId`, as well as a `fullCode`, which is a unique unguessable alphanumeric string, usually released to the gift recipient in confidence. The recipient of the Gift Card can present the `fullCode` to redeem the gift value. For further discussion on Gift Cards check out the [Lightrail API documentation](https://www.lightrail.com/docs/).
+A Lightrail Gift Card is a virtual device for issuing gift values. Each Gift Card has a specific `currency`, a `cardId`, as well as a `fullCode`, which is a unique unguessable alphanumeric string, usually released to the gift recipient in confidence. The recipient of the Gift Card can present the `fullCode` to redeem the gift value. For further discussion of Gift Cards check out the [Lightrail API documentation](https://www.lightrail.com/docs/).
 
 #### Creating Gift Cards
 
@@ -177,7 +177,7 @@ Note that freezing and unfreezing a card are special transactions and the corres
 
 ### Account Credits
 
-The `LightrailContact` class provides the functionality to support account credit use-cases. For further discussion on Account Cards check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 
+The `LightrailContact` class provides the functionality to support account credit use-cases. For further discussion of Account Cards check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 
 
 #### Creating Contacts
 
