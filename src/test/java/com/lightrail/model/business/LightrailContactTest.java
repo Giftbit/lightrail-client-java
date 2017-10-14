@@ -30,11 +30,19 @@ public class LightrailContactTest {
 
         LightrailContact customerAccount = LightrailContact.create(email, firstName, lastName);
 
+        String contactId = customerAccount.getContactId();
+        String userSuppliedId = customerAccount.getUserSuppliedId();
+
         assertEquals(email, customerAccount.getEmail());
         assertEquals(firstName, customerAccount.getFirstName());
         assertEquals(lastName, customerAccount.getLastName());
         assertEquals(0, customerAccount.getAvailableCurrencies().size());
 
+        customerAccount = LightrailContact.retrieve(contactId);
+        assertEquals(userSuppliedId, customerAccount.getUserSuppliedId());
+
+        customerAccount = LightrailContact.retrieveByUserSuppliedId(userSuppliedId);
+        assertEquals(contactId, customerAccount.getContactId());
 
         //retrieve the account
         String customerAccountId = customerAccount.getContactId();
@@ -168,6 +176,7 @@ public class LightrailContactTest {
 
         LightrailContact customerAccount = createCustomerAccount(initialBalance, currency);
         String contactId = customerAccount.getContactId();
+        String contactUserSuppliedId = customerAccount.getUserSuppliedId();
 
         int amount = 100;
 
@@ -186,6 +195,22 @@ public class LightrailContactTest {
         LightrailTransaction fund = LightrailTransaction.Create.create(params);
         assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
 
+        //---------------------------------------------------------
+        params = new RequestParameters();
+        params.put("shopperId", contactUserSuppliedId);
+        params.put("currency", currency);
+        params.put("value", 0 - amount);
+
+        LightrailTransaction.Create.create(params);
+        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+
+        params = new RequestParameters();
+        params.put("shopperId", contactUserSuppliedId);
+        params.put("currency", currency);
+        params.put("value", amount);
+        fund = LightrailTransaction.Create.create(params);
+        assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
+        //---------------------------------------------------------
         params = new RequestParameters();
         params.put("contact", contactId);
         params.put("currency", currency);

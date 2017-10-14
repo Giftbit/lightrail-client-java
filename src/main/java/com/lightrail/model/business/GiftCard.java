@@ -23,7 +23,7 @@ public class GiftCard extends LightrailCard {
     }
 
     public String retrieveFullCode() throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return APICore.Cards.retrieveCardsFullCode(getCardId()).getCode();
+        return APICore.Cards.retrieveFullCode(getCardId()).getCode();
     }
 
     public static GiftCard create(String programId, int initialValue, String startDate, String expiryDate) throws AuthorizationException, CouldNotFindObjectException, IOException {
@@ -80,6 +80,6 @@ public class GiftCard extends LightrailCard {
     }
 
     public static CardDetails retrieveCardDetailsByCode(String code) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return APICore.Cards.retrieveCardDetailsByCode(code);
+        return APICore.Cards.retrieveDetailsByCode(code);
     }
 }

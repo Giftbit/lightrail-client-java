@@ -37,7 +37,7 @@ public class LightrailContact extends Contact {
         }
     }
 
-    private void setCard (AccountCard card) {
+    private void loadCard(AccountCard card) {
         cardForCurrency.put(card.getCurrency(), card);
     }
 
@@ -161,19 +161,29 @@ public class LightrailContact extends Contact {
                 , customerAccountParams);
 
         customerAccountParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(customerAccountParams);
-        Contact contactObject = APICore.Contact.createContact(customerAccountParams);
+        Contact contactObject = APICore.Contacts.create(customerAccountParams);
         return new LightrailContact(contactObject);
     }
 
-    public static LightrailContact retrieve(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        Contact contactObject = APICore.Contact.retrieveContact(customerAccountId);
-        LightrailContact customerAccount = new LightrailContact(contactObject);
-
-        CardSearchResult cards = APICore.Cards.retrieveCardsOfContact(customerAccountId);
+    private static void loadCards(LightrailContact contact) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        CardSearchResult cards = APICore.Cards.retrieveCardsOfContact(contact.getContactId());
         for (Card card : cards.getCards()) {
             if (LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD.equals(card.getCardType()))
-                customerAccount.setCard(new AccountCard(card));
+                contact.loadCard(new AccountCard(card));
         }
+    }
+
+    public static LightrailContact retrieve(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        Contact contactObject = APICore.Contacts.retrieve(customerAccountId);
+        LightrailContact customerAccount = new LightrailContact(contactObject);
+        loadCards(customerAccount);
+        return customerAccount;
+    }
+
+    public static LightrailContact retrieveByUserSuppliedId(String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        Contact contactObject = APICore.Contacts.retrieveByUserSuppliedId(userSuppliedId);
+        LightrailContact customerAccount = new LightrailContact(contactObject);
+        loadCards(customerAccount);
         return customerAccount;
     }
 
@@ -181,18 +191,24 @@ public class LightrailContact extends Contact {
         RequestParameters params = new RequestParameters();
         params.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, userSuppliedId);
 
-        APICore.Cards.cancelCard(cardId, params);
+        APICore.Cards.cancel(cardId, params);
     }
 
     public static RequestParameters handleContact(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
         RequestParameters chargeParamsCopy = new RequestParameters(params);
 
         String contactId = (String) chargeParamsCopy.remove(LightrailConstants.Parameters.CONTACT);
+        String shopperId = (String) chargeParamsCopy.remove(LightrailConstants.Parameters.SHOPPER_ID);
         String requestedCurrency = (String) chargeParamsCopy.get(LightrailConstants.Parameters.CURRENCY);
 
-        if (contactId != null) {
+        if (contactId != null || shopperId != null) {
             if (requestedCurrency != null && !requestedCurrency.isEmpty()) {
-                LightrailContact account = retrieve(contactId);
+                LightrailContact account;
+                if (contactId != null) {
+                    account = retrieve(contactId);
+                } else {
+                    account = retrieveByUserSuppliedId(shopperId);
+                }
                 String cardId = account.getCardFor(requestedCurrency).getCardId();
                 chargeParamsCopy.put(LightrailConstants.Parameters.CARD_ID, cardId);
             } else {
