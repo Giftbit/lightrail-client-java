@@ -19,7 +19,7 @@ class LightrailCard extends Card {
     }
 
     public CardDetails retrieveCardDetails () throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return APICore.Cards.retrieveCardDetailsByCardId(this.cardId);
+        return APICore.Cards.retrieveDetailsByCardId(this.cardId);
     }
 
     public int retrieveMaximumValue () throws IOException, AuthorizationException, CouldNotFindObjectException {
@@ -53,11 +53,11 @@ class LightrailCard extends Card {
     }
 
     public static Card retrieveByCardId(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return APICore.Cards.retrieveCardByCardId(cardId);
+        return APICore.Cards.retrieveByCardId(cardId);
     }
 
     public static Card retrieveByUserSupplied(String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return APICore.Cards.retrieveCardByUserSuppliedId(userSuppliedId);
+        return APICore.Cards.retrieveByUserSuppliedId(userSuppliedId);
     }
 
     static Card create(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
@@ -65,6 +65,6 @@ class LightrailCard extends Card {
                 LightrailConstants.Parameters.USER_SUPPLIED_ID
         ), params);
 
-        return APICore.Cards.createCard(params);
+        return APICore.Cards.create(params);
     }
 }

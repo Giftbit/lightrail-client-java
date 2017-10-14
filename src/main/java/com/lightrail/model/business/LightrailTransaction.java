@@ -216,15 +216,15 @@ public class LightrailTransaction extends Transaction {
             LightrailTransaction transaction;
             if (code != null && !code.isEmpty()) {
                 if (simulate) {
-                    transaction = new LightrailTransaction(APICore.Transactions.simulateTransactionByCode(code, transactionParams));
+                    transaction = new LightrailTransaction(APICore.Transactions.simulateByCode(code, transactionParams));
                 } else {
-                    transaction = new LightrailTransaction(APICore.Transactions.createTransactionByCode(code, transactionParams));
+                    transaction = new LightrailTransaction(APICore.Transactions.createByCode(code, transactionParams));
                 }
             } else if (cardId != null && !cardId.isEmpty()) {
                 if (simulate) {
-                    transaction = new LightrailTransaction(APICore.Transactions.simulateTransactionByCard(cardId, transactionParams));
+                    transaction = new LightrailTransaction(APICore.Transactions.simulateByCardId(cardId, transactionParams));
                 } else {
-                    transaction = new LightrailTransaction(APICore.Transactions.createTransactionByCard(cardId, transactionParams));
+                    transaction = new LightrailTransaction(APICore.Transactions.createByCardId(cardId, transactionParams));
                 }
             } else
                 throw new BadParameterException("Must provide either a 'code', a 'cardId', or a valid 'contact'.");
@@ -334,19 +334,19 @@ public class LightrailTransaction extends Transaction {
         }
 
         public static LightrailTransaction byCardIdAndUserSuppliedId(String cardId, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
-            return new LightrailTransaction(APICore.Transactions.retrieveTransactionByCardIdAndUserSuppliedId(cardId, userSuppliedId));
+            return new LightrailTransaction(APICore.Transactions.retrieveByCardIdAndUserSuppliedId(cardId, userSuppliedId));
         }
 
         public static LightrailTransaction byCardIdAndTransactionId(String cardId, String transactionId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
-            return new LightrailTransaction(APICore.Transactions.retrieveTransactionByCardIdAndTransactionId(cardId, transactionId));
+            return new LightrailTransaction(APICore.Transactions.retrieveByCardIdAndTransactionId(cardId, transactionId));
         }
 
         public static LightrailTransaction byCodeAndUserSuppliedId(String code, String userSuppliedId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
-            return new LightrailTransaction(APICore.Transactions.retrieveTransactionByCodeAndUserSuppliedId(code, userSuppliedId));
+            return new LightrailTransaction(APICore.Transactions.retrieveByCodeAndUserSuppliedId(code, userSuppliedId));
         }
 
         public static LightrailTransaction byCodeAndTransactionId(String code, String transactionId) throws AuthorizationException, IOException, InsufficientValueException, CouldNotFindObjectException {
-            return new LightrailTransaction(APICore.Transactions.retrieveTransactionByCodeAndTransactionId(code, transactionId));
+            return new LightrailTransaction(APICore.Transactions.retrieveByCodeAndTransactionId(code, transactionId));
         }
     }
 
