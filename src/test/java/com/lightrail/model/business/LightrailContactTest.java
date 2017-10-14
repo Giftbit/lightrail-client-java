@@ -201,8 +201,14 @@ public class LightrailContactTest {
         params.put("currency", currency);
         params.put("value", 0 - amount);
 
+        LightrailTransaction simulatedTransaction = LightrailTransaction.Simulate.simulate(params);
+
+        assertEquals(0-amount, simulatedTransaction.getValue().intValue());
+
         LightrailTransaction.Create.create(params);
         assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+
+
 
         params = new RequestParameters();
         params.put("shopperId", contactUserSuppliedId);
