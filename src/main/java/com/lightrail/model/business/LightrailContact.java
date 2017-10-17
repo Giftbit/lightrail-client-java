@@ -37,6 +37,10 @@ public class LightrailContact extends Contact {
         }
     }
 
+    public String getShopperId() {
+        return getUserSuppliedId();
+    }
+
     private void loadCard(AccountCard card) {
         cardForCurrency.put(card.getCurrency(), card);
     }

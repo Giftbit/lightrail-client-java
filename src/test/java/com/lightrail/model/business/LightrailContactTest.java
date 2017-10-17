@@ -174,9 +174,9 @@ public class LightrailContactTest {
         int initialBalance = 500;
         String currency = "USD";
 
-        LightrailContact customerAccount = createCustomerAccount(initialBalance, currency);
-        String contactId = customerAccount.getContactId();
-        String contactUserSuppliedId = customerAccount.getUserSuppliedId();
+        LightrailContact contact = createCustomerAccount(initialBalance, currency);
+        String contactId = contact.getContactId();
+        String contactUserSuppliedId = contact.getUserSuppliedId();
 
         int amount = 100;
 
@@ -186,14 +186,14 @@ public class LightrailContactTest {
         params.put("value", 0 - amount);
 
         LightrailTransaction.Create.create(params);
-        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance - amount, contact.retrieveMaximumValue(currency));
 
         params = new RequestParameters();
         params.put("contact", contactId);
         params.put("currency", currency);
         params.put("value", amount);
         LightrailTransaction fund = LightrailTransaction.Create.create(params);
-        assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance, contact.retrieveMaximumValue(currency));
 
         //---------------------------------------------------------
         params = new RequestParameters();
@@ -205,17 +205,16 @@ public class LightrailContactTest {
 
         assertEquals(0-amount, simulatedTransaction.getValue().intValue());
 
+        simulatedTransaction = LightrailTransaction.Simulate.byShopperId(contact.getShopperId(), 0-amount, currency);
+
+        assertEquals(0-amount, simulatedTransaction.getValue().intValue());
+
+
         LightrailTransaction.Create.create(params);
-        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance - amount, contact.retrieveMaximumValue(currency));
 
-
-
-        params = new RequestParameters();
-        params.put("shopperId", contactUserSuppliedId);
-        params.put("currency", currency);
-        params.put("value", amount);
-        fund = LightrailTransaction.Create.create(params);
-        assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
+        fund = LightrailTransaction.Create.byShopperId(contactUserSuppliedId, amount, currency);
+        assertEquals(initialBalance, contact.retrieveMaximumValue(currency));
         //---------------------------------------------------------
         params = new RequestParameters();
         params.put("contact", contactId);
@@ -224,9 +223,9 @@ public class LightrailContactTest {
         params.put("pending", true);
 
         LightrailTransaction charge = LightrailTransaction.Create.create(params);
-        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance - amount, contact.retrieveMaximumValue(currency));
         charge.doVoid();
-        assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance, contact.retrieveMaximumValue(currency));
 
         params = new RequestParameters();
         params.put("contact", contactId);
@@ -235,33 +234,33 @@ public class LightrailContactTest {
         params.put("pending", true);
 
         charge = LightrailTransaction.Create.create(params);
-        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance - amount, contact.retrieveMaximumValue(currency));
         charge.capture();
-        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance - amount, contact.retrieveMaximumValue(currency));
 
         LightrailTransaction transaction = LightrailTransaction.Create.byContact(contactId, amount, currency);
-        assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
-        assertEquals(customerAccount.getCardFor(currency).getCardId(), transaction.getCardId());
+        assertEquals(initialBalance, contact.retrieveMaximumValue(currency));
+        assertEquals(contact.getCardFor(currency).getCardId(), transaction.getCardId());
 
 
         transaction = LightrailTransaction.Create.byContact(contactId, 0 - amount, currency);
-        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
-        assertEquals(customerAccount.getCardFor(currency).getCardId(), transaction.getCardId());
+        assertEquals(initialBalance - amount, contact.retrieveMaximumValue(currency));
+        assertEquals(contact.getCardFor(currency).getCardId(), transaction.getCardId());
 
 
         transaction = LightrailTransaction.Create.byContact(contactId, amount, currency);
-        assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
-        assertEquals(customerAccount.getCardFor(currency).getCardId(), transaction.getCardId());
+        assertEquals(initialBalance, contact.retrieveMaximumValue(currency));
+        assertEquals(contact.getCardFor(currency).getCardId(), transaction.getCardId());
 
         charge = LightrailTransaction.Create.pendingByContact(contactId, 0 - amount, currency);
-        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance - amount, contact.retrieveMaximumValue(currency));
         charge.doVoid();
-        assertEquals(initialBalance, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance, contact.retrieveMaximumValue(currency));
 
         charge = LightrailTransaction.Create.pendingByContact(contactId, 0 - amount, currency);
-        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance - amount, contact.retrieveMaximumValue(currency));
         charge.capture();
-        assertEquals(initialBalance - amount, customerAccount.retrieveMaximumValue(currency));
+        assertEquals(initialBalance - amount, contact.retrieveMaximumValue(currency));
 
     }
 }
