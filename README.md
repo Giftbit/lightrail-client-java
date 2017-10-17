@@ -244,7 +244,7 @@ To get the exact value of a Gift Card in the context of a transaction you can us
 
 ```java
 String fullcode = "...";
-int orderValue = 20455;
+int orderValue = -20455;
 String currency = "USD";
 Metadata metadata = new Metadata();
 //fill in the metadata
@@ -259,7 +259,7 @@ To create a Transaction on a Gift Card use a suitable methods in `LightrailTrans
 
 ```java
 String fullcode = "...";
-int orderValue = 20455;
+int orderValue = -20455;
 String currency = "USD";
 Metadata metadata = new Metadata();
 //fill in the metadata
@@ -275,7 +275,7 @@ To create a `pending` Transaction, use one of the methods in `LightrailTransacti
 
 ```java
 String fullcode = "...";
-int orderValue = 20455;
+int orderValue = -20455;
 String currency = "USD";
 Metadata metadata = new Metadata();
 //fill in the metadata
