@@ -8,8 +8,8 @@ Lightrail is a modern platform for digital account credits, gift cards, promotio
 
 The following features are supported in this version:
 
-- Gift Cards: create, retrieve, balance-check, and create/simulate transactions.
 - Account Credits: create, retrieve, balance-check, and create/simulate transactions.
+- Gift Cards: create, retrieve, balance-check, and create/simulate transactions.
 
 Note that the Lightrail API supports many other features and we are still working on covering them in this library. For a complete list of Lightrail API features check out the [Lightrail API documentation](https://www.lightrail.com/docs/). 
 
@@ -49,6 +49,7 @@ LightrailContact contact = LightrailContact.retrieve(contactId);
 After creating a contact, you need to define the currencies it should support. Each currency will be tracked and stored separately by a different Account Card. For example, you can specify that a Contact will have USD and CAD accounts, each with a $5 initial balance:
 
 ```java
+//...
 LightrailContact contact = LightrailContact.create(email, firstName, lastName);
 contact.addCurrency("USD", 500)
        .addCurrency("CAD", 500);
@@ -62,16 +63,20 @@ The `retrieveMaximumValue()` methods of a `LightrailContact` object return the m
 int maximumValue = contact.retrieveMaximumValue("USD");
 ```
 
-To get the precise value a Contact can contribute to a specific Transaction, use one of the simulate `byContact`  methods in `Transaction.Simulate`. 
+To get the precise value a Contact can contribute to a specific Transaction, use one of the `byContact` or `byShopperId` methods in `Transaction.Simulate`. 
 
 ```java
 String contactId = contact.getContactId();
-int txValue = 20455;
+int txValue = -20455;
 String currency = "USD";
 Metadata metadata = new Metadata();
 //fill in the metadata
 LightrailTransaction simulatedTx = 
-  LightrailTransaction.Simulate.byContact(contactId, txValue, currency, metadata)
+  LightrailTransaction.Simulate.byContact(contactId, txValue, currency, metadata);
+//or
+String shopperId = contact.getShopperId();
+LightrailTransaction simulatedTx = 
+  LightrailTransaction.Simulate.byShopperId(shopperId, txValue, currency, metadata);
 int availableValue = 0 - simulatedTx.getValue();
 ```
 
@@ -80,24 +85,24 @@ int availableValue = 0 - simulatedTx.getValue();
 To transact against a Contact, call one of the `createTransaction` methods in `LightrailContact`. 
 
 ```java
-LightrailTransaction tx = contact.createTransaction(100, "USD");
+LightrailTransaction tx = contact.createTransaction(-200, "USD");
 ```
 
-Alternatively, you can use one of the `byContact` methods in `LightrailTransaction.Create`:
+Alternatively, you can use one of the `byContact` or `byShopperId` methods in `LightrailTransaction.Create`. The former needs the `contactId` and the latter needs the `userSuppliedId` of the Contact in question, also known as `shopperId`.
 
 ```java
-String contactId = contact.getContactId();
+String shopperId = contact.getShopperId();
 Metadata metadata = new Metadata();
 //fill in the metadata
-LightrailTransaction tx = LightrailTransaction.Create.byContact(contactId, 200, "USD", metadata);
+LightrailTransaction tx = LightrailTransaction.Create.byShopperId(shopperId, -200, "USD", metadata);
 ```
 
 #### Authorize-Capture
 
-To create a pending Transaction, use one of the `pendingByContact` methods in `LightrailTransaction.Create`. You need to call `capture()` or `doVoid()` on the resulting `LightrailTransaction` object later.
+To create a pending Transaction, use one of the `pendingByContact` or `pendingByShopperId` methods in `LightrailTransaction.Create`. You need to call `capture()` or `doVoid()` on the resulting `LightrailTransaction` object later.
 
 ```java
-LightrailTransaction tx = LightrailTransaction.Create.pendingByContact("<contactId>",100,"USD");
+LightrailTransaction tx = LightrailTransaction.Create.pendingByContact("<contactId>", -100, "USD");
 //later        
 tx.capture();
 //or        
@@ -108,26 +113,25 @@ Note that `capture()` and `doVoid()` return a new `LightrailTransaction` object.
 
 #### Refunding
 
-To undo a drawdown Transaction, call one of the the `refund()` methods on the Transaction object. Note that `refund()` returns a new `LightrailTransaction` object.  
+To undo a drawdown Transaction, call one of the the `refund()` methods on the Transaction object. You can retrieve the Transaction object using a suitable `retrieve` method from `LightrailTransaction`. Note that `refund()` returns a new `LightrailTransaction` object.  
 
 ```java
-String cardId = "...";
+String cardId = contact.getCardFor("USD").getCardId();
 String txId = "...";
 LightrailTransaction tx = LightrailTransaction.Retrieve.byCardIdAndTransactionId(cardId, txId);
 //later:
 LightrailTransaction refundTx = tx.refund();
 ```
 
-#### Freezing and Unfreezing Cards
+#### Freezing and Unfreezing Accounts
 
-Freezing a card will suspend its value until it is unfrozen. This is a suitable method for investigating potential fraud. 
+Freezing an account suspends its value until it is unfrozen. This is a suitable method for investigating potential fraud. To freeze or unfreeze an Account, get the corresponding Account Card and call its `freeze()` or `unfreeze()` method.
 
 ```java
-String cardId = "...";
-AccountCard existingGiftCard = AccountCard.retrieveByCardId(cardId);
-existingGiftCard.freeze();
+AccountCard accCard = contact.getCardFor("USD");
+accCard.freeze();
 //later:
-existingGiftCard.unfreeze();
+accCard.unfreeze();
 ```
 
 Note that freezing and unfreezing a card are special transactions and the corresponding `LightrailTransaction` object will be returned by these methods.
@@ -143,13 +147,13 @@ String lastName = "McTest";
 String currency = "XXX";
 int initialBalance = 500;
 
-LightrailContact customerAccount = LightrailContact.create(email,
-                                                         firstName, 
-                                                         lastName, 
-                                                         currency, 
-                                                         initialBalance);
+LightrailContact contact = LightrailContact.create(email,
+                                                   firstName, 
+                                                   lastName, 
+                                                   currency, 
+                                                   initialBalance);
 //later 
-LightrailTransaction tx = customerAccount.createPendingTransaction(-300);
+LightrailTransaction tx = contact.createPendingTransaction(-300);
 //later 
 tx.capture();
 //or        
@@ -324,7 +328,7 @@ You can add this library as a dependency in your `maven` `POM` file as:
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-client</artifactId>
-  <version>2.0.1-SNAPSHOT</version>
+  <version>2.0.1</version>
 </dependency>
 ```
 
