@@ -352,12 +352,17 @@ This library requires `Java 1.7` or later.
 
 ## Dependencies ##
 
-The only dependency of this library is `gson`. 
+The only dependencies of this library are `gson` and `jsonwebtoken`. 
 ```xml
 <dependency>
   <groupId>com.google.code.gson</groupId>
   <artifactId>gson</artifactId>
   <version>2.2.4</version>
+</dependency>
+<dependency>
+  <groupId>io.jsonwebtoken</groupId>
+  <artifactId>jjwt</artifactId>
+  <version>0.9.0</version>
 </dependency>
 ```
 If your project already depends on a different version, make sure the versions 
@@ -376,7 +381,8 @@ The following dependency is also necessary if you want to run the unit tests.
 
 ### 2.0.1
 
-- Supporting `shopperId` for an easier checkout process for Account Cards.
+- Supporting `shopperId` for an easier checkout process for Account Cards. 
+- Client Token Factory for issuing JWTs for certain endpoints.
 
 ### 2.0.0
 
