@@ -9,4 +9,8 @@ public class RequestParameters extends HashMap<String, Object> {
     public RequestParameters (RequestParameters requestParameters) {
         super(requestParameters);
     }
+    public RequestParameters (HashMap<String, Object> params) {
+        super();
+        this.putAll(params);
+    }
 }
