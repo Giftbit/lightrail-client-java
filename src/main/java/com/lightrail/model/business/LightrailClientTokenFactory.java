@@ -15,10 +15,7 @@ import java.util.Map;
 
 public class LightrailClientTokenFactory {
 
-    public LightrailClientTokenFactory() {
-    }
-
-    String generate(String shopperId, Long validityInMs) throws IOException {
+    public static String generate(String shopperId, Long validityInMs) throws IOException {
 
         JwtBuilder builder = Jwts.builder();
         String apiKey = Lightrail.apiKey;
