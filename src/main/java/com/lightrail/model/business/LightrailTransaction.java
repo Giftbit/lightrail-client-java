@@ -231,6 +231,10 @@ public class LightrailTransaction extends Transaction {
                     LightrailConstants.Parameters.CURRENCY
             ), transactionParams);
 
+            //accept non-upper-case currency
+            transactionParams.put(LightrailConstants.Parameters.CURRENCY,
+                    transactionParams.get(LightrailConstants.Parameters.CURRENCY).toString().toUpperCase());
+
             transactionParams = LightrailContact.handleContact(transactionParams);
 
             makeSureValueOfPendingTransactionIsNegative(transactionParams);
