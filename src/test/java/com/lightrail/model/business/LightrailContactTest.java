@@ -202,7 +202,10 @@ public class LightrailContactTest {
         params.put("value", 0 - amount);
 
         LightrailTransaction simulatedTransaction = LightrailTransaction.Simulate.simulate(params);
+        assertEquals(0-amount, simulatedTransaction.getValue().intValue());
 
+        params.put("currency", currency.toLowerCase());
+        simulatedTransaction = LightrailTransaction.Simulate.simulate(params);
         assertEquals(0-amount, simulatedTransaction.getValue().intValue());
 
         simulatedTransaction = LightrailTransaction.Simulate.byShopperId(contact.getShopperId(), 0-amount, currency);
