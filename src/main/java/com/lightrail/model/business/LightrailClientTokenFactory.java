@@ -15,7 +15,7 @@ import java.util.Map;
 
 public class LightrailClientTokenFactory {
 
-    public static String generate(String shopperId, Long validityInMs) throws IOException {
+    public static String generate(String shopperId, Integer validitySeconds) throws IOException {
 
         JwtBuilder builder = Jwts.builder();
         String apiKey = Lightrail.apiKey;
@@ -34,7 +34,7 @@ public class LightrailClientTokenFactory {
         String gui = jsonObject.get("g").getAsJsonObject().get("gui").getAsString();
 
         Map<String, Object> claims = new HashMap<String, Object>();
-        Long iat = System.currentTimeMillis();
+        Long iat = System.currentTimeMillis()/1000;
         claims.put("iat", iat);
         claims.put("shopperId", shopperId);
 
@@ -42,8 +42,8 @@ public class LightrailClientTokenFactory {
         gClaims.put("gui", gui);
         claims.put("g", gClaims);
 
-        if (validityInMs != null) {
-            Long exp = iat + validityInMs;
+        if (validitySeconds != null) {
+            Long exp = iat + validitySeconds;
             claims.put("exp", exp);
         }
         return builder.setClaims(claims)

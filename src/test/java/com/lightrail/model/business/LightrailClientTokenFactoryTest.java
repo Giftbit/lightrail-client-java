@@ -16,7 +16,7 @@ public class LightrailClientTokenFactoryTest {
         Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
         Lightrail.clientSecret = properties.getProperty("lightrail.clientSecret");
 
-        String jwt = LightrailClientTokenFactory.generate("alice", 5000L);
+        String jwt = LightrailClientTokenFactory.generate("alice", 50);
         Jwts.parser().setSigningKey("secret".getBytes("UTF-8")).parse(jwt);
     }
 }
