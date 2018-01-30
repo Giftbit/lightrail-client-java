@@ -1,0 +1,140 @@
+{
+  "shopperId": "this-is-a-shopper-id",
+  "contactId": "this-is-a-contact-id",
+  "userSuppliedId": "this-is-a-user-supplied-id",
+  "accountCardId": "this-is-an-account-card-id",
+  "cardId": "this-is-a-card-id",
+  "currency": "ABC",
+  "endpoints": {
+    "contacts": "contacts",
+    "contactsSearch": "contacts?",
+    "cards": "cards",
+    "cardsSearch": "cards?",
+    "accountCardsSearch": "cards?cardType=ACCOUNT_CARD"
+  },
+  "jsonResponses": {
+    "contactsSearchOneResult": {
+      "contacts": [
+        {
+          "contactId": "this-is-a-contact-id"
+        }
+      ]
+    },
+    "contactResult": {
+      "contact": {
+        "contactId": "this-is-a-contact-id"
+      }
+    },
+    "contactsSearchNoResults": {
+      "contacts": []
+    },
+    "accountCardsSearchOneResult": {
+      "cards": [
+        {
+          "cardId": "",
+          "cardType": "ACCOUNT_CARD"
+        }
+      ]
+    },
+    "accountCardsSearchNoResults": {
+      "cards": []
+    },
+    "accountCard": {
+      "card": {
+        "cardId": "this-is-a-card-id",
+        "contactId": "this-is-a-contact-id",
+        "userSuppliedId": "this-is-a-user-supplied-id"
+      }
+    }
+  },
+  "requestResponseCombos": {
+    "contactsSearchNoResults": {
+      "httpMethod": "get",
+      "endpoint": "contacts?",
+      "response": {
+        "contacts": []
+      }
+    },
+    "contactsSearchOneResult": {
+      "httpMethod": "get",
+      "endpoint": "contacts?",
+      "response": {
+        "contacts": [
+          {
+            "contactId": "this-is-a-contact-id"
+          }
+        ]
+      }
+    },
+    "contactGet": {
+      "httpMethod": "get",
+      "endpoint": "contacts",
+      "response": {
+        "contact": {
+          "contactId": "this-is-a-contact-id"
+        }
+      }
+    },
+    "contactCreate": {
+      "httpMethod": "post",
+      "endpoint": "contacts",
+      "response": {
+        "contact": {
+          "contactId": "this-is-a-contact-id"
+        }
+      }
+    },
+    "accountCardSearchNoResults": {
+      "httpMethod": "get",
+      "endpoint": "cards?cardType=ACCOUNT_CARD",
+      "response": {
+        "cards": []
+      }
+    },
+    "accountCardSearchOneResult": {
+      "httpMethod": "get",
+      "endpoint": "cards?cardType=ACCOUNT_CARD",
+      "response": {
+        "cards": [
+          {
+            "cardId": "this-is-a-card-id"
+          }
+        ]
+      }
+    },
+    "accountCardGet": {
+      "httpMethod": "get",
+      "endpoint": "cards/",
+      "response": {
+        "card": {
+          "cardId": "this-is-a-card-id"
+        }
+      }
+    },
+    "accountCardCreate": {
+      "httpMethod": "post",
+      "endpoint": "cards",
+      "response": {
+        "card": {
+          "cardId": "this-is-a-card-id",
+          "cardType": "ACCOUNT_CARD",
+          "contactId": "this-is-a-contact-id",
+          "currency": "ABC"
+        }
+      }
+    },
+    "contactsError404": {
+      "httpMethod": "get",
+      "endpoint": "contacts/",
+      "response": {
+        "status": 404,
+        "message": "Couldn't find the contact",
+        "messageCode": "SomeContactNotFound"
+      }
+    }
+  },
+  "errorNames": {
+    "LightrailArgumentError": "LightrailArgumentError",
+    "CouldNotFindObjectError": "CouldNotFindObjectError"
+  }
+}
