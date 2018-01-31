@@ -1,11 +1,19 @@
 package com.lightrail.feature;
 
 import com.google.gson.*;
-import com.google.gson.JsonObject;
+import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.CouldNotFindObjectException;
+import com.lightrail.exceptions.CurrencyMismatchException;
+import com.lightrail.exceptions.InsufficientValueException;
+import java.io.IOException;
+import com.lightrail.helpers.LightrailConstants;
+import com.lightrail.model.api.net.APICore;
 import cucumber.api.java.en.Given;
 
 import java.io.FileReader;
 import java.util.*;
+
+import static org.mockito.Mockito.*;
 
 
 public class AccountStepdefs {
@@ -44,6 +52,25 @@ public class AccountStepdefs {
 //            end
 
             System.out.println("method: " + reqResDetails.get("httpMethod") + " endpoint: " + reqResDetails.get("endpoint") + " response: " + reqResDetails.get("response"));
+            System.out.println("Testing mocking...");
+            testRealMocking(reqResDetails.get("response"));
+
         }
+    }
+
+    private void testRealMocking(JsonElement response) throws AuthorizationException, CouldNotFindObjectException, IOException, CurrencyMismatchException, InsufficientValueException {
+        System.out.println("MOCKITO-ING");
+        APICore.Core apiCoreMock = mock(APICore.Core.class);
+
+        when(apiCoreMock.getRawAPIResponse(LightrailConstants.API.Endpoints.CREATE_CARD, LightrailConstants.API.REQUEST_METHOD_POST, "some string")).thenReturn("true");
+
+        System.out.println(apiCoreMock.getRawAPIResponse(LightrailConstants.API.Endpoints.CREATE_CARD, LightrailConstants.API.REQUEST_METHOD_POST, "some string"));
+
+    }
+
+    private void expectToCallEndpointAndReceiveResult(String method, String endpoint, JsonElement response) {
+        System.out.println("Setting up expectation to call & receive result...");
+
+
     }
 }
