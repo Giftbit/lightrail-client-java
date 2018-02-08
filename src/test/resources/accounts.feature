@@ -1,6 +1,6 @@
 Feature: Account Card
 
-# NOTE These are tags. Scenarios are tagged individually by adding these right above the Scenario def like this:
+# NOTE These are tags. Scenarios are tagged individually by adding these right above the #Scenario def like this:
 @account_creation @by_shopper_id
 
 Scenario: Create by shopperId
@@ -15,7 +15,7 @@ When a contact exists and has an account: requires minimum parameters [shopperId
 When a contact doesn't exist: requires minimum parameters [shopperId, currency, userSuppliedId] and makes the following REST requests: [contactsSearchNoResults, contactCreate, accountCardSearchNoResults, accountCardCreate]
 
 
-@account_creation @by_contact_id
+@account_creation @by_contact_id @only_this_one
 
 Scenario: Create by contactId
 When a contact exists but has no account: requires minimum parameters [contactId, currency, userSuppliedId] and makes the following REST requests: [contactGet, accountCardSearchNoResults, accountCardCreate]
@@ -23,7 +23,7 @@ When a contact exists but has no account: requires minimum parameters [contactId
 When a contact exists and has an account: requires minimum parameters [contactId, currency, userSuppliedId] and makes the following REST requests: [contactGet, accountCardSearchOneResult]
 
 
-@account_creation @by_contact_id @only_this_one
+@account_creation @by_contact_id
 
 Scenario: Create by contactId - expecting errors
 When a contact doesn't exist: requires minimum parameters [contactId, currency, userSuppliedId] and makes the following REST requests: [contactsError404] and throws the following error: [CouldNotFindObjectError]

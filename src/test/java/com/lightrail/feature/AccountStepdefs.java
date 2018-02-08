@@ -1,24 +1,31 @@
 package com.lightrail.feature;
 
-import com.google.gson.*;
-import com.lightrail.exceptions.AuthorizationException;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.lightrail.exceptions.CouldNotFindObjectException;
-import com.lightrail.exceptions.CurrencyMismatchException;
-import com.lightrail.exceptions.InsufficientValueException;
-import java.io.IOException;
-import com.lightrail.helpers.LightrailConstants;
+import com.lightrail.model.Lightrail;
 import com.lightrail.model.api.net.APICore;
+import com.lightrail.model.api.net.DefaultNetworkProvider;
+import com.lightrail.model.api.net.NetworkProvider;
+import com.lightrail.model.business.LightrailContact;
 import cucumber.api.java.en.Given;
 
 import java.io.FileReader;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.regex.Pattern;
 
-import static org.mockito.Mockito.*;
+import static org.junit.Assert.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
 
 public class AccountStepdefs {
     @Given("^a contact .*\\s*exists?\\s*.*: requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\](?: and throws the following error: \\[(.[^\\]]+)\\])?$")
     public void contact_does_or_does_not_exist(String minimumParams, String expectedRequestsAndResponses, String errorName) throws Throwable {
+        Lightrail.apiKey = "123";
         JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
 
         String[] minParamKeys = minimumParams.split(", ");
@@ -33,44 +40,40 @@ public class AccountStepdefs {
             reqResCollection.put(reqResKeys[index], jsonVariables.get("requestResponseCombos").getAsJsonObject().get(reqResKeys[index]));
         }
 
-
-        System.out.println("LOOPING OVER REQRES:");
+        NetworkProvider npMock = mock(DefaultNetworkProvider.class);//, new DefaultJsonAnswer());
+        APICore.setNetworkProvider(npMock);
 
 
         for (String name : reqResCollection.keySet()) {
             String reqResKey = name.toString();
             JsonObject reqResDetails = reqResCollection.get(reqResKey).getAsJsonObject();
 
-//            if /error/ regex matches reqResKey
-//              expect to make call and receive error:
-//                  method: reqResDetails.get("httpMethod")
-//                  endpoint: reqResDetails.get("endpoint")
-//                  reqResDetails: reqResDetails.get("httpMethod")
-//                  errorName: errorName
-//            else
-//              expect to make call and receive response
-//            end
+            String endpoint = reqResDetails.get("endpoint").getAsString();
+            String method = reqResDetails.get("httpMethod").getAsString();
+            String response = reqResDetails.get("response").toString();
 
-            System.out.println("method: " + reqResDetails.get("httpMethod") + " endpoint: " + reqResDetails.get("endpoint") + " response: " + reqResDetails.get("response"));
-            System.out.println("Testing mocking...");
-            testRealMocking(reqResDetails.get("response"));
+            System.out.println("SETTING UP MOCK EXPECTATION for: " + reqResKey + "  " + endpoint + "  " + response);
 
+            if (Pattern.compile("(?i)error").matcher(reqResKey).find()) {
+                when(npMock.getRawAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenThrow(new CouldNotFindObjectException(""));
+//            } else if (Pattern.compile("(?i)contact").matcher(reqResKey).find()) {
+//                when(npMock.getRawAPIResponse(contains("contacts"), matches("(?i)" + "get"), (String) any())).thenReturn("{\"contact\":{\"contactId\":\"contact-12345\"}}");
+//            } else if (Pattern.compile("(?i)card").matcher(reqResKey).find()) {
+//                when(npMock.getRawAPIResponse(contains("cards"), matches("(?i)" + "get"), (String) any())).thenReturn("{\"cards\":[]}");
+//            }
+            } else {
+                when(npMock.getRawAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenReturn(reqResDetails.get("response").toString());
+//                when(npMock.getRawAPIResponse((String) any(), (String) any(), (String) any())).thenReturn(reqResDetails.get("response").toString());
+            }
+        }
+
+        // todo: generate body string?
+
+        try {
+            LightrailContact.retrieve(minParams.get("contactId").getAsString());//.addCurrency(minParams.get("currency").getAsString());
+        } catch (CouldNotFindObjectException e) {
+            assertEquals(e.getMessage(), "");
         }
     }
 
-    private void testRealMocking(JsonElement response) throws AuthorizationException, CouldNotFindObjectException, IOException, CurrencyMismatchException, InsufficientValueException {
-        System.out.println("MOCKITO-ING");
-        APICore.Core apiCoreMock = mock(APICore.Core.class);
-
-        when(apiCoreMock.getRawAPIResponse(LightrailConstants.API.Endpoints.CREATE_CARD, LightrailConstants.API.REQUEST_METHOD_POST, "some string")).thenReturn("true");
-
-        System.out.println(apiCoreMock.getRawAPIResponse(LightrailConstants.API.Endpoints.CREATE_CARD, LightrailConstants.API.REQUEST_METHOD_POST, "some string"));
-
-    }
-
-    private void expectToCallEndpointAndReceiveResult(String method, String endpoint, JsonElement response) {
-        System.out.println("Setting up expectation to call & receive result...");
-
-
-    }
 }
