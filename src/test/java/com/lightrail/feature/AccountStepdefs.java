@@ -17,10 +17,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.ArgumentMatchers.*;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.contains;
+import static org.mockito.ArgumentMatchers.matches;
+import static org.mockito.Mockito.*;
 
 
 public class AccountStepdefs {
@@ -63,12 +63,19 @@ public class AccountStepdefs {
         // todo: generate body string?
 
         try {
-//            LightrailContact.retrieve(minParams.get("contactId").getAsString()).addCurrency(minParams.get("currency").getAsString());
             AccountCard.create(minParams);
-            // todo verify mock
         } catch (CouldNotFindObjectException e) {
-            assertEquals(e.getMessage(), "");
-            // todo verify mock
+        }
+
+        for (String name : reqResCollection.keySet()) {
+            String reqResKey = name.toString();
+            JsonObject reqResDetails = reqResCollection.get(reqResKey).getAsJsonObject();
+
+            String endpoint = reqResDetails.get("endpoint").getAsString();
+            String method = reqResDetails.get("httpMethod").getAsString();
+
+
+            verify(npMock, times(1)).getRawAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any());
         }
     }
 
