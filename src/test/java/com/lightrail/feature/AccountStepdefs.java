@@ -53,8 +53,6 @@ public class AccountStepdefs {
             String method = reqResDetails.get("httpMethod").getAsString();
             String response = reqResDetails.get("response").toString();
 
-            System.out.println("SETTING UP MOCK EXPECTATION for: " + reqResKey + "  " + endpoint + "  " + response);
-
             if (Pattern.compile("(?i)error").matcher(reqResKey).find()) {
                 when(npMock.getRawAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenThrow(new CouldNotFindObjectException(""));  // todo: this exception needs to match the `errorName` passed in from the feature file
             } else {

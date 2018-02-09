@@ -148,7 +148,6 @@ public class APICore {
 
         public static Card retrieveAccountCardByContactIdAndCurrency(String contactId, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_ACCOUNT_CARD_BY_CURRENCY, contactId, currency);
-            System.out.println("About to try to retrieve card by contactid and currency: " + urlSuffix);
             try {
                 return new AccountCard(new CardSearchResult(networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null)).getOneCard().getRawJson());
             } catch (InsufficientValueException e) { //never happens
