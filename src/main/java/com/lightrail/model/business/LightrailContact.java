@@ -180,14 +180,14 @@ public class LightrailContact extends Contact {
     public static LightrailContact retrieve(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Contact contactObject = APICore.Contacts.retrieve(customerAccountId);
         LightrailContact customerAccount = new LightrailContact(contactObject);
-        loadCards(customerAccount);
+//        loadCards(customerAccount);   // todo this should be extracted - doesn't need to be part of default get-contact flow
         return customerAccount;
     }
 
     public static LightrailContact retrieveByUserSuppliedId(String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Contact contactObject = APICore.Contacts.retrieveByUserSuppliedId(userSuppliedId);
         LightrailContact customerAccount = new LightrailContact(contactObject);
-        loadCards(customerAccount);
+//        loadCards(customerAccount);   // todo this should be extracted - doesn't need to be part of default get-contact flow
         return customerAccount;
     }
 
