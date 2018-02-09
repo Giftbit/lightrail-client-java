@@ -6,6 +6,7 @@ import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.objects.*;
+import com.lightrail.model.business.AccountCard;
 
 import java.io.IOException;
 
@@ -140,6 +141,16 @@ public class APICore {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_CARD_BY_USERSUPPLIED_ID, userSuppliedId);
             try {
                 return new CardSearchResult(networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null)).getOneCard();
+            } catch (InsufficientValueException e) { //never happens
+                throw new RuntimeException(e);
+            }
+        }
+
+        public static Card retrieveAccountCardByContactIdAndCurrency(String contactId, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
+            String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_ACCOUNT_CARD_BY_CURRENCY, contactId, currency);
+            System.out.println("About to try to retrieve card by contactid and currency: " + urlSuffix);
+            try {
+                return new AccountCard(new CardSearchResult(networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null)).getOneCard().getRawJson());
             } catch (InsufficientValueException e) { //never happens
                 throw new RuntimeException(e);
             }
