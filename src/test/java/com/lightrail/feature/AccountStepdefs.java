@@ -8,7 +8,8 @@ import com.lightrail.model.Lightrail;
 import com.lightrail.model.api.net.APICore;
 import com.lightrail.model.api.net.DefaultNetworkProvider;
 import com.lightrail.model.api.net.NetworkProvider;
-import com.lightrail.model.business.LightrailContact;
+import com.lightrail.model.api.objects.RequestParameters;
+import com.lightrail.model.business.AccountCard;
 import cucumber.api.java.en.Given;
 
 import java.io.FileReader;
@@ -29,9 +30,9 @@ public class AccountStepdefs {
         JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
 
         String[] minParamKeys = minimumParams.split(", ");
-        Map<String, JsonElement> minParams = new HashMap<>();
+        RequestParameters minParams = new RequestParameters();
         for (int index = 0; index < minParamKeys.length; index++) {
-            minParams.put(minParamKeys[index], jsonVariables.get(minParamKeys[index]));
+            minParams.put(minParamKeys[index], jsonVariables.get(minParamKeys[index]).getAsString());
         }
 
         String[] reqResKeys = expectedRequestsAndResponses.split(", ");
@@ -55,24 +56,21 @@ public class AccountStepdefs {
             System.out.println("SETTING UP MOCK EXPECTATION for: " + reqResKey + "  " + endpoint + "  " + response);
 
             if (Pattern.compile("(?i)error").matcher(reqResKey).find()) {
-                when(npMock.getRawAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenThrow(new CouldNotFindObjectException(""));
-//            } else if (Pattern.compile("(?i)contact").matcher(reqResKey).find()) {
-//                when(npMock.getRawAPIResponse(contains("contacts"), matches("(?i)" + "get"), (String) any())).thenReturn("{\"contact\":{\"contactId\":\"contact-12345\"}}");
-//            } else if (Pattern.compile("(?i)card").matcher(reqResKey).find()) {
-//                when(npMock.getRawAPIResponse(contains("cards"), matches("(?i)" + "get"), (String) any())).thenReturn("{\"cards\":[]}");
-//            }
+                when(npMock.getRawAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenThrow(new CouldNotFindObjectException(""));  // todo: this exception needs to match the `errorName` passed in from the feature file
             } else {
                 when(npMock.getRawAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenReturn(reqResDetails.get("response").toString());
-//                when(npMock.getRawAPIResponse((String) any(), (String) any(), (String) any())).thenReturn(reqResDetails.get("response").toString());
             }
         }
 
         // todo: generate body string?
 
         try {
-            LightrailContact.retrieve(minParams.get("contactId").getAsString());//.addCurrency(minParams.get("currency").getAsString());
+//            LightrailContact.retrieve(minParams.get("contactId").getAsString()).addCurrency(minParams.get("currency").getAsString());
+            AccountCard.create(minParams);
+            // todo verify mock
         } catch (CouldNotFindObjectException e) {
             assertEquals(e.getMessage(), "");
+            // todo verify mock
         }
     }
 

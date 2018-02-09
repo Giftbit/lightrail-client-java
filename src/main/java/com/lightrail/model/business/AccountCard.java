@@ -1,8 +1,10 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
+import com.lightrail.model.api.net.APICore;
 import com.lightrail.model.api.objects.Card;
 import com.lightrail.model.api.objects.RequestParameters;
 
@@ -23,11 +25,30 @@ public class AccountCard extends LightrailCard {
                 LightrailConstants.Parameters.CONTACT_ID, LightrailConstants.Parameters.CURRENCY
         ), params);
 
+        LightrailContact contact = LightrailContact.retrieve(params.get("contactId").toString());
+
+        AccountCard account = null;
+        if (contact != null) {
+            try {
+                account = retrieveByContactIdAndCurrency(contact.contactId, params.get("currency").toString());
+                return account;
+            } catch (CouldNotFindObjectException e) {
+                account = null;
+            } catch (BadParameterException e) {
+                account = null;
+            }
+        }
+
         params = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(params);
         params.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
 
         return new AccountCard(LightrailCard.create(params));
     }
+
+    public static AccountCard retrieveByContactIdAndCurrency(String contactId, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        return (AccountCard) APICore.Cards.retrieveAccountCardByContactIdAndCurrency(contactId, currency);
+    }
+
 
     public static AccountCard retrieveByUserSuppliedId(String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Card card = LightrailCard.retrieveByUserSupplied(userSuppliedId);
