@@ -128,6 +128,16 @@ public class APICore {
             }
         }
 
+        public static Card create(RequestParamsCreateAccountByContactId createCardParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+            String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_CARD);
+            String bodyJsonString = new Gson().toJson((createCardParams));
+            try {
+                return new Card(networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString));
+            } catch (InsufficientValueException e) { //never happens
+                throw new RuntimeException(e);
+            }
+        }
+
         public static Card retrieveByCardId(String cardId) throws AuthorizationException, CouldNotFindObjectException, IOException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_CARD_BY_CARD_ID, cardId);
             try {

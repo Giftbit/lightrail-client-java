@@ -1,5 +1,6 @@
 package com.lightrail.feature;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -8,7 +9,7 @@ import com.lightrail.model.Lightrail;
 import com.lightrail.model.api.net.APICore;
 import com.lightrail.model.api.net.DefaultNetworkProvider;
 import com.lightrail.model.api.net.NetworkProvider;
-import com.lightrail.model.api.objects.RequestParameters;
+import com.lightrail.model.api.objects.RequestParamsCreateAccountByContactId;
 import com.lightrail.model.business.AccountCard;
 import cucumber.api.java.en.Given;
 
@@ -30,10 +31,11 @@ public class AccountStepdefs {
         JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
 
         String[] minParamKeys = minimumParams.split(", ");
-        RequestParameters minParams = new RequestParameters();
+        JsonObject miniParams = new JsonObject();
         for (int index = 0; index < minParamKeys.length; index++) {
-            minParams.put(minParamKeys[index], jsonVariables.get(minParamKeys[index]).getAsString());
+            miniParams.add(minParamKeys[index], jsonVariables.get(minParamKeys[index]));
         }
+        RequestParamsCreateAccountByContactId minParams = new RequestParamsCreateAccountByContactId(new Gson().toJson(miniParams));
 
         String[] reqResKeys = expectedRequestsAndResponses.split(", ");
         Map<String, JsonElement> reqResCollection = new HashMap<>();

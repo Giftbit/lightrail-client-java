@@ -6,10 +6,9 @@ import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.net.APICore;
 import com.lightrail.model.api.objects.Card;
-import com.lightrail.model.api.objects.RequestParameters;
+import com.lightrail.model.api.objects.RequestParamsCreateAccountByContactId;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class AccountCard extends LightrailCard {
     public AccountCard(String jsonObject) {
@@ -20,17 +19,41 @@ public class AccountCard extends LightrailCard {
         super(card.getRawJson());
     }
 
-    public static AccountCard create(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-                LightrailConstants.Parameters.CONTACT_ID, LightrailConstants.Parameters.CURRENCY
-        ), params);
+//    RE-WRITING THIS METHOD TO USE DTO TO VERIFY PARAMS: must add contactId, currency, userSuppliedId; cardType & initialValue have sensible defaults
+//    TODO: ensure all checks/replacements still work as planned
+//
+//    public static AccountCard create(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+//                LightrailConstants.Parameters.CONTACT_ID, LightrailConstants.Parameters.CURRENCY
+//        ), params);
+//
+//        LightrailContact contact = LightrailContact.retrieve(params.get("contactId").toString());
+//
+//        AccountCard account = null;
+//        if (contact != null) {
+//            try {
+//                account = retrieveByContactIdAndCurrency(contact.contactId, params.get("currency").toString());
+//                return account;
+//            } catch (CouldNotFindObjectException e) {
+//                account = null;
+//            } catch (BadParameterException e) {
+//                account = null;
+//            }
+//        }
+//
+//        params = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(params);
+//        params.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
+//
+//        return new AccountCard(LightrailCard.create(params));
+//    }
 
-        LightrailContact contact = LightrailContact.retrieve(params.get("contactId").toString());
+    public static AccountCard create(RequestParamsCreateAccountByContactId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        LightrailContact contact = LightrailContact.retrieve(params.contactId.toString());
 
         AccountCard account = null;
         if (contact != null) {
             try {
-                account = retrieveByContactIdAndCurrency(contact.contactId, params.get("currency").toString());
+                account = retrieveByContactIdAndCurrency(contact.contactId, params.currency.toString());
                 return account;
             } catch (CouldNotFindObjectException e) {
                 account = null;
@@ -39,8 +62,7 @@ public class AccountCard extends LightrailCard {
             }
         }
 
-        params = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(params);
-        params.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
+        params.cardType = LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD;
 
         return new AccountCard(LightrailCard.create(params));
     }

@@ -2,11 +2,8 @@ package com.lightrail.model.business;
 
 import com.lightrail.exceptions.*;
 import com.lightrail.helpers.LightrailConstants;
-import com.lightrail.model.api.objects.Card;
-import com.lightrail.model.api.objects.CardSearchResult;
-import com.lightrail.model.api.objects.Contact;
 import com.lightrail.model.api.net.APICore;
-import com.lightrail.model.api.objects.RequestParameters;
+import com.lightrail.model.api.objects.*;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -50,26 +47,36 @@ public class LightrailContact extends Contact {
     }
 
     public LightrailContact addCurrency(String currency, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        RequestParameters cardParams = new RequestParameters();
-        cardParams.put(LightrailConstants.Parameters.CONTACT_ID, getContactId());
-        cardParams.put(LightrailConstants.Parameters.CURRENCY, currency);
-        cardParams.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
-        cardParams.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
+//        RequestParameters cardParams = new RequestParameters();
+//        cardParams.put(LightrailConstants.Parameters.CONTACT_ID, getContactId());
+//        cardParams.put(LightrailConstants.Parameters.CURRENCY, currency);
+//        cardParams.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
+//        cardParams.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
+//        return addCurrency(cardParams);
+
+
+        RequestParamsCreateAccountByContactId cardParams = null;
+        cardParams.cardType = LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD;
+        cardParams.currency = currency;
+        cardParams.contactId = contactId;
+        cardParams.userSuppliedId = contactId + currency + "-account";
+
         return addCurrency(cardParams);
     }
 
-    public LightrailContact addCurrency(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-                LightrailConstants.Parameters.CURRENCY
-        ), params);
+    //    public LightrailContact addCurrency(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+    public LightrailContact addCurrency(RequestParamsCreateAccountByContactId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+//                LightrailConstants.Parameters.CURRENCY
+//        ), params);
 
-        String cardType = (String) params.get(LightrailConstants.Parameters.CARD_TYPE);
-        if (cardType == null)
-            params.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
-        else if (! LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD.equals(cardType))
-            throw new BadParameterException(String.format("Card Type must be set to ACCOUNT_CARD for creating a new account card. (Given: %s).",cardType));
+//        String cardType = (String) params.get(LightrailConstants.Parameters.CARD_TYPE);
+//        if (cardType == null)
+//            params.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
+//        else if (!LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD.equals(cardType))
+//            throw new BadParameterException(String.format("Card Type must be set to ACCOUNT_CARD for creating a new account card. (Given: %s).", cardType));
 
-        String currency = (String) params.get(LightrailConstants.Parameters.CURRENCY);
+        String currency = (String) params.currency;
         AccountCard card = AccountCard.create(params);
         cardForCurrency.put(currency, card);
         return this;
@@ -128,7 +135,7 @@ public class LightrailContact extends Contact {
         return retrieveMaximumValue(getDefaultCurrency());
     }
 
-    public int retrieveMaximumValue (String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
+    public int retrieveMaximumValue(String currency) throws AuthorizationException, CurrencyMismatchException, CouldNotFindObjectException, IOException {
         return getCardFor(currency).retrieveMaximumValue();
     }
 

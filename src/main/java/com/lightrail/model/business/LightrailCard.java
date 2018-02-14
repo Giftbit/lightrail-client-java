@@ -3,17 +3,17 @@ package com.lightrail.model.business;
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
-import com.lightrail.model.api.objects.*;
 import com.lightrail.model.api.net.APICore;
+import com.lightrail.model.api.objects.*;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 class LightrailCard extends Card {
 
     public LightrailCard(String jsonObject) {
         super(jsonObject);
     }
+
     public LightrailCard(Card card) {
         super(card.getRawJson());
     }
@@ -61,9 +61,18 @@ class LightrailCard extends Card {
     }
 
     static Card create(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-                LightrailConstants.Parameters.USER_SUPPLIED_ID
-        ), params);
+//        TODO: Re-write checks/replacements after refactoring to use dto
+//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+//                LightrailConstants.Parameters.USER_SUPPLIED_ID
+//        ), params);
+
+        return APICore.Cards.create(params);
+    }
+
+    static Card create(RequestParamsCreateAccountByContactId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+//                LightrailConstants.Parameters.USER_SUPPLIED_ID
+//        ), params);
 
         return APICore.Cards.create(params);
     }
