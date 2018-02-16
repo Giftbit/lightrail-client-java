@@ -1,5 +1,8 @@
 package com.lightrail.model.business;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonPrimitive;
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
@@ -7,6 +10,7 @@ import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.net.APICore;
 import com.lightrail.model.api.objects.Card;
 import com.lightrail.model.api.objects.RequestParamsCreateAccountByContactId;
+import com.lightrail.model.api.objects.RequestParamsCreateAccountByShopperId;
 
 import java.io.IOException;
 
@@ -65,6 +69,17 @@ public class AccountCard extends LightrailCard {
         params.cardType = LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD;
 
         return new AccountCard(LightrailCard.create(params));
+    }
+
+    public static AccountCard create(RequestParamsCreateAccountByShopperId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        LightrailContact contact = LightrailContact.retrieveByUserSuppliedId(params.shopperId.toString());
+        String jsonStringParams = new Gson().toJson(params);
+        JsonObject jsonParams = new Gson().fromJson(jsonStringParams, JsonObject.class);
+        jsonParams.add("contactId", new JsonPrimitive(contact.contactId));
+
+        RequestParamsCreateAccountByContactId contactIdParams = new RequestParamsCreateAccountByContactId(jsonParams.toString());
+
+        return new AccountCard(LightrailCard.create(contactIdParams));
     }
 
     public static AccountCard retrieveByContactIdAndCurrency(String contactId, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {

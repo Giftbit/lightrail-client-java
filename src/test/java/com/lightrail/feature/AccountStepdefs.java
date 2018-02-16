@@ -11,7 +11,9 @@ import com.lightrail.model.Lightrail;
 import com.lightrail.model.api.net.APICore;
 import com.lightrail.model.api.net.DefaultNetworkProvider;
 import com.lightrail.model.api.net.NetworkProvider;
+import com.lightrail.model.api.objects.LightrailObject;
 import com.lightrail.model.api.objects.RequestParamsCreateAccountByContactId;
+import com.lightrail.model.api.objects.RequestParamsCreateAccountByShopperId;
 import com.lightrail.model.business.AccountCard;
 import cucumber.api.java.en.Given;
 
@@ -33,32 +35,41 @@ public class AccountStepdefs {
         Lightrail.apiKey = "123";
         JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
 
-        RequestParamsCreateAccountByContactId minParams = getContactIdParams(minimumParams, jsonVariables);
         Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses, jsonVariables);
 
-        NetworkProvider npMock = mock(DefaultNetworkProvider.class);//, new DefaultJsonAnswer());
+        NetworkProvider npMock = mock(DefaultNetworkProvider.class);
         APICore.setNetworkProvider(npMock);
 
         setReqResExpectations(reqResCollection, npMock);
 
-        try {
-            AccountCard.create(minParams);
-        } catch (CouldNotFindObjectException e) {
+        LightrailObject minParams = null;
+        if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
+            JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
+            minParams = new RequestParamsCreateAccountByContactId(new Gson().toJson(jsonParams));
+            try {
+                AccountCard.create((RequestParamsCreateAccountByContactId) minParams);
+            } catch (CouldNotFindObjectException e) {
+            }
+        } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
+            JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
+            minParams = new RequestParamsCreateAccountByShopperId(new Gson().toJson(jsonParams));
+            try {
+                AccountCard.create((RequestParamsCreateAccountByShopperId) minParams);
+            } catch (CouldNotFindObjectException e) {
+            }
         }
 
         verifyMock(reqResCollection, npMock);
     }
 
 
-    private RequestParamsCreateAccountByContactId getContactIdParams(String minimumParams, JsonObject jsonVariables) {
+    private JsonObject getJsonParams(String minimumParams, JsonObject jsonVariables) {
         String[] minParamKeys = minimumParams.split(", ");
         JsonObject miniParams = new JsonObject();
         for (int index = 0; index < minParamKeys.length; index++) {
             miniParams.add(minParamKeys[index], jsonVariables.get(minParamKeys[index]));
         }
-
-        RequestParamsCreateAccountByContactId minParams = new RequestParamsCreateAccountByContactId(new Gson().toJson(miniParams));
-        return minParams;
+        return miniParams;
     }
 
     private Map<String, JsonElement> getReqResCollection(String expectedRequestsAndResponses, JsonObject jsonVariables) {
