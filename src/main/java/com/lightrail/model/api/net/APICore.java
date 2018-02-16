@@ -240,7 +240,7 @@ public class APICore {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_CONTACT_BY_USERSUPPLIED_ID, userSuppliedId);
             try {
                 String rawAPIResponse = networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null);
-                return new ContactSearchResult(networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null)).getOneContact();
+                return new ContactSearchResult(rawAPIResponse).getOneContact();
             } catch (InsufficientValueException e) { //never happens
                 throw new RuntimeException(e);
             }
