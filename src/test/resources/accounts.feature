@@ -1,7 +1,7 @@
 Feature: Account Card
 
 # NOTE These are tags. Scenarios are tagged individually by adding these right above the #Scenario def like this:
-  @account_creation @by_shopper_id
+  @account_creation @by_shopper_id @only_this_one
 
   Scenario: Create by shopperId
   # NOTE Each of these lines (steps) can start with any of the keywords (Given, When, Then, And, But or *). They're completely interchangeable.

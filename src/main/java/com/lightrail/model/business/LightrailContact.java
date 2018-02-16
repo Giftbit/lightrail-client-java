@@ -193,9 +193,10 @@ public class LightrailContact extends Contact {
 
     public static LightrailContact retrieveByUserSuppliedId(String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Contact contactObject = APICore.Contacts.retrieveByUserSuppliedId(userSuppliedId);
-        LightrailContact customerAccount = new LightrailContact(contactObject);
+//        LightrailContact customerAccount = new LightrailContact(contactObject);
 //        loadCards(customerAccount);   // todo this should be extracted - doesn't need to be part of default get-contact flow
-        return customerAccount;
+//        return customerAccount;
+        return new LightrailContact(contactObject);
     }
 
     private static void cancelCard(String cardId, String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {

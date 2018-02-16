@@ -77,7 +77,14 @@ public class AccountCard extends LightrailCard {
         JsonObject jsonParams = new Gson().fromJson(jsonStringParams, JsonObject.class);
         jsonParams.add("contactId", new JsonPrimitive(contact.contactId));
 
-        RequestParamsCreateAccountByContactId contactIdParams = new RequestParamsCreateAccountByContactId(jsonParams.toString());
+        AccountCard existingCard = null;
+        try {
+            existingCard = retrieveByContactIdAndCurrency(contact.contactId, jsonParams.get("currency").getAsString());
+            return existingCard;
+        } catch (CouldNotFindObjectException e) {
+        }
+
+        RequestParamsCreateAccountByContactId contactIdParams = new RequestParamsCreateAccountByContactId(jsonParams.get("rawJson").getAsString());
 
         return new AccountCard(LightrailCard.create(contactIdParams));
     }
