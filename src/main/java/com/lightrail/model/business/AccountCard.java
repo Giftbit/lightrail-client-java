@@ -72,21 +72,27 @@ public class AccountCard extends LightrailCard {
     }
 
     public static AccountCard create(RequestParamsCreateAccountByShopperId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        LightrailContact contact = LightrailContact.retrieveByUserSuppliedId(params.shopperId.toString());
+        LightrailContact contact;
+        try {
+            contact = LightrailContact.retrieveByUserSuppliedId(params.shopperId);
+        } catch (CouldNotFindObjectException ignored) {
+            JsonObject jsonContactParams = new Gson().fromJson("{\"userSuppliedId\":\"" + params.shopperId + "\"}", JsonObject.class);
+
+            RequestParametersCreateContact contactParams = new RequestParametersCreateContact(jsonContactParams.toString());
+            contact = LightrailContact.create(contactParams);
+        }
         String jsonStringParams = new Gson().toJson(params);
         JsonObject jsonParams = new Gson().fromJson(jsonStringParams, JsonObject.class);
         jsonParams.add("contactId", new JsonPrimitive(contact.contactId));
 
-        AccountCard existingCard = null;
         try {
-            existingCard = retrieveByContactIdAndCurrency(contact.contactId, jsonParams.get("currency").getAsString());
-            return existingCard;
-        } catch (CouldNotFindObjectException e) {
+            return retrieveByContactIdAndCurrency(contact.contactId, jsonParams.get("currency").getAsString());
+        } catch (CouldNotFindObjectException ignored) {
+            RequestParamsCreateAccountByContactId contactIdParams = new RequestParamsCreateAccountByContactId(jsonParams.get("rawJson").getAsString());
+
+            return new AccountCard(LightrailCard.create(contactIdParams));
         }
 
-        RequestParamsCreateAccountByContactId contactIdParams = new RequestParamsCreateAccountByContactId(jsonParams.get("rawJson").getAsString());
-
-        return new AccountCard(LightrailCard.create(contactIdParams));
     }
 
     public static AccountCard retrieveByContactIdAndCurrency(String contactId, String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {

@@ -7,6 +7,7 @@ import com.lightrail.exceptions.InsufficientValueException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.objects.*;
 import com.lightrail.model.business.AccountCard;
+import com.lightrail.model.business.RequestParametersCreateContact;
 
 import java.io.IOException;
 
@@ -215,6 +216,17 @@ public class APICore {
     public static final class Contacts {
 
         public static Contact create(RequestParameters createContactParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+            String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_CONTACT);
+            String bodyJsonString = new Gson().toJson((createContactParams));
+            try {
+                String rawAPIResponse = networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
+                return new Contact(rawAPIResponse);
+            } catch (InsufficientValueException e) { //never happens
+                throw new RuntimeException(e);
+            }
+        }
+
+        public static Contact create(RequestParametersCreateContact createContactParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_CONTACT);
             String bodyJsonString = new Gson().toJson((createContactParams));
             try {

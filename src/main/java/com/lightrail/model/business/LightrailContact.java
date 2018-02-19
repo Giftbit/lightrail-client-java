@@ -166,10 +166,22 @@ public class LightrailContact extends Contact {
         return create(customerAccountParams);
     }
 
+    public static LightrailContact create(RequestParametersCreateContact customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+// todo: improve verification step - userSuppliedId aka shopperId is only required param
+//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+//                LightrailConstants.Parameters.EMAIL)
+//                , customerAccountParams);
+
+        customerAccountParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(customerAccountParams);
+        Contact contactObject = APICore.Contacts.create(customerAccountParams);
+        return new LightrailContact(contactObject);
+    }
+
     public static LightrailContact create(RequestParameters customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-                LightrailConstants.Parameters.EMAIL)
-                , customerAccountParams);
+// todo: improve verification step - userSuppliedId aka shopperId is only required param
+//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+//                LightrailConstants.Parameters.EMAIL)
+//                , customerAccountParams);
 
         customerAccountParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(customerAccountParams);
         Contact contactObject = APICore.Contacts.create(customerAccountParams);

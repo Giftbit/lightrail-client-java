@@ -1,10 +1,11 @@
 package com.lightrail.helpers;
 
+import com.google.gson.Gson;
 import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.model.Lightrail;
 import com.lightrail.model.api.objects.RequestParameters;
+import com.lightrail.model.business.RequestParametersCreateContact;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -67,6 +68,7 @@ public final class LightrailConstants {
 
             public static final String TYPE_PENDING = "PENDING_CREATE";
         }
+
         public final class Cards {
             public static final String FREEZE = "freeze";
             public static final String UNFREEZE = "unfreeze";
@@ -116,12 +118,23 @@ public final class LightrailConstants {
                     throw new BadParameterException(String.format("Missing Parameter: %s.", paramName));
             }
         }
+
         public static RequestParameters addDefaultUserSuppliedIdIfNotProvided(RequestParameters params) {
             RequestParameters paramsCopy = new RequestParameters(params);
             String userSuppliedId = (String) paramsCopy.get(LightrailConstants.Parameters.USER_SUPPLIED_ID);
             if (userSuppliedId == null) {
                 userSuppliedId = UUID.randomUUID().toString();
                 paramsCopy.put(LightrailConstants.Parameters.USER_SUPPLIED_ID, userSuppliedId);
+            }
+            return paramsCopy;
+        }
+
+        public static RequestParametersCreateContact addDefaultUserSuppliedIdIfNotProvided(RequestParametersCreateContact params) {
+            RequestParametersCreateContact paramsCopy = new RequestParametersCreateContact(new Gson().toJson(params));
+            String userSuppliedId = paramsCopy.userSuppliedId;
+            if (userSuppliedId == null) {
+                userSuppliedId = UUID.randomUUID().toString();
+                paramsCopy.userSuppliedId = userSuppliedId;
             }
             return paramsCopy;
         }
