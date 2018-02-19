@@ -15,6 +15,8 @@ import com.lightrail.model.api.objects.RequestParamsCreateAccountByShopperId;
 import java.io.IOException;
 
 public class AccountCard extends LightrailCard {
+
+
     public AccountCard(String jsonObject) {
         super(jsonObject);
     }
@@ -52,6 +54,19 @@ public class AccountCard extends LightrailCard {
 //    }
 
     public static AccountCard create(RequestParamsCreateAccountByContactId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        if (params == null) {
+            throw new BadParameterException("Cannot create Account with params: null");
+        }
+        if (params.contactId == null) {
+            throw new BadParameterException("Missing parameter for account creation: contactId");
+        }
+        if (params.currency == null) {
+            throw new BadParameterException("Missing parameter for account creation: currency");
+        }
+        if (params.userSuppliedId == null) {
+            throw new BadParameterException("Missing parameter for account creation: userSuppliedId");
+        }
+
         LightrailContact contact = LightrailContact.retrieve(params.contactId.toString());
 
         AccountCard account = null;
@@ -72,6 +87,20 @@ public class AccountCard extends LightrailCard {
     }
 
     public static AccountCard create(RequestParamsCreateAccountByShopperId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+        if (params == null) {
+            throw new BadParameterException("Cannot create Account with params: null");
+        }
+        if (params.shopperId == null) {
+            throw new BadParameterException("Missing parameter for account creation: shopperId");
+        }
+        if (params.currency == null) {
+            throw new BadParameterException("Missing parameter for account creation: currency");
+        }
+        if (params.userSuppliedId == null) {
+            throw new BadParameterException("Missing parameter for account creation: userSuppliedId");
+        }
+
+
         LightrailContact contact;
         try {
             contact = LightrailContact.retrieveByUserSuppliedId(params.shopperId);

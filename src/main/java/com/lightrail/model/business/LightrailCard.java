@@ -1,6 +1,7 @@
 package com.lightrail.model.business;
 
 import com.lightrail.exceptions.AuthorizationException;
+import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.net.APICore;
@@ -61,18 +62,18 @@ class LightrailCard extends Card {
     }
 
     static Card create(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-//        TODO: Re-write checks/replacements after refactoring to use dto
-//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-//                LightrailConstants.Parameters.USER_SUPPLIED_ID
-//        ), params);
+        if (params.get("userSuppliedId ") == null) {
+            throw new BadParameterException("Missing parameter for card creation: userSuppliedId");
+        }
+
 
         return APICore.Cards.create(params);
     }
 
     static Card create(RequestParamsCreateAccountByContactId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-//                LightrailConstants.Parameters.USER_SUPPLIED_ID
-//        ), params);
+        if (params.userSuppliedId == null) {
+            throw new BadParameterException("Missing parameter for card creation: userSuppliedId");
+        }
 
         return APICore.Cards.create(params);
     }
