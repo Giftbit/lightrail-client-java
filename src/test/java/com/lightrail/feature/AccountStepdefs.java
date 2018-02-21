@@ -59,10 +59,7 @@ public class AccountStepdefs {
         } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
             JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
             minParams = new RequestParamsCreateAccountByShopperId(new Gson().toJson(jsonParams));
-            try {
-                AccountCard.create((RequestParamsCreateAccountByShopperId) minParams);
-            } catch (CouldNotFindObjectException e) {
-            }
+            AccountCard.create((RequestParamsCreateAccountByShopperId) minParams);
         }
 
         verifyMock(reqResCollection, npMock);
