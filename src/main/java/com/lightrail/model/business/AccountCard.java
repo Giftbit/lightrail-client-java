@@ -69,21 +69,18 @@ public class AccountCard extends LightrailCard {
 
         LightrailContact contact = LightrailContact.retrieve(params.contactId.toString());
 
-        AccountCard account = null;
         if (contact != null) {
             try {
-                account = retrieveByContactIdAndCurrency(contact.contactId, params.currency.toString());
-                return account;
-            } catch (CouldNotFindObjectException e) {
-                account = null;
-            } catch (BadParameterException e) {
-                account = null;
+                return retrieveByContactIdAndCurrency(contact.contactId, params.currency.toString());
+            } catch (CouldNotFindObjectException ignored) {
+                // if the account doesn't exist yet, that's fine, the next step creates one
             }
+            params.cardType = LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD;
+            return new AccountCard(LightrailCard.create(params));
+        } else {
+            throw new BadParameterException("Could not find the Contact for that contactId: " + params.contactId);
         }
 
-        params.cardType = LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD;
-
-        return new AccountCard(LightrailCard.create(params));
     }
 
     public static AccountCard create(RequestParamsCreateAccountByShopperId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
