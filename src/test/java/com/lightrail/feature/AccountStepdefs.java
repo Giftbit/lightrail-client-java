@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
 import static org.mockito.ArgumentMatchers.matches;
@@ -46,9 +47,14 @@ public class AccountStepdefs {
         if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
             JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
             minParams = new RequestParamsCreateAccountByContactId(new Gson().toJson(jsonParams));
+            boolean exceptionThrown = false;
             try {
                 AccountCard.create((RequestParamsCreateAccountByContactId) minParams);
-            } catch (CouldNotFindObjectException e) {
+            } catch (CouldNotFindObjectException ignored) {
+                exceptionThrown = true;
+            }
+            if (errorName != null) {
+                assertEquals(true, exceptionThrown);
             }
         } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
             JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
