@@ -20,6 +20,9 @@
 //    @Test
 //    public void walkThroughHappyPathTest() throws AuthorizationException, CouldNotFindObjectException, IOException, CurrencyMismatchException, InsufficientValueException {
 //
+//        throw new Exception("To run this test, it must be updated with the revised contact creation/retrieval logic: account cards are no longer loaded automatically in LightrailContact.retrieve() or LightrailContact.retrieveByUserSuppliedId(), they must be fetched after the contact has been retrieved by calling LightrailContact.retrieveContactAccounts({{contact}})");
+//
+//
 //        Properties properties = TestParams.getProperties();
 //        Lightrail.apiKey = properties.getProperty("lightrail.testApiKey");
 //
