@@ -114,8 +114,7 @@ public class AccountCard extends LightrailCard {
         try {
             return retrieveByContactIdAndCurrency(contact.contactId, jsonParams.get("currency").getAsString());
         } catch (CouldNotFindObjectException ignored) {
-            RequestParamsCreateAccountByContactId contactIdParams = new RequestParamsCreateAccountByContactId(jsonParams.get("rawJson").getAsString());
-
+            RequestParamsCreateAccountByContactId contactIdParams = new RequestParamsCreateAccountByContactId(params, contact.contactId);
             return new AccountCard(LightrailCard.create(contactIdParams));
         }
 
