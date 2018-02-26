@@ -2,7 +2,6 @@ package com.lightrail.model.business;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.lightrail.exceptions.AuthorizationException;
 import com.lightrail.exceptions.BadParameterException;
 import com.lightrail.exceptions.CouldNotFindObjectException;
@@ -16,6 +15,9 @@ import java.io.IOException;
 
 public class AccountCard extends LightrailCard {
 
+    public AccountCard() {
+        super();
+    }
 
     public AccountCard(String jsonObject) {
         super(jsonObject);
@@ -67,11 +69,11 @@ public class AccountCard extends LightrailCard {
             throw new BadParameterException("Missing parameter for account creation: userSuppliedId");
         }
 
-        LightrailContact contact = LightrailContact.retrieve(params.contactId.toString());
+        LightrailContact contact = LightrailContact.retrieve(params.contactId);
 
         if (contact != null) {
             try {
-                return retrieveByContactIdAndCurrency(contact.contactId, params.currency.toString());
+                return retrieveByContactIdAndCurrency(contact.contactId, params.currency);
             } catch (CouldNotFindObjectException ignored) {
                 // if the account doesn't exist yet, that's fine, the next step creates one
             }
@@ -107,15 +109,13 @@ public class AccountCard extends LightrailCard {
             RequestParametersCreateContact contactParams = new RequestParametersCreateContact(jsonContactParams.toString());
             contact = LightrailContact.create(contactParams);
         }
-        String jsonStringParams = new Gson().toJson(params);
-        JsonObject jsonParams = new Gson().fromJson(jsonStringParams, JsonObject.class);
-        jsonParams.add("contactId", new JsonPrimitive(contact.contactId));
 
         try {
-            return retrieveByContactIdAndCurrency(contact.contactId, jsonParams.get("currency").getAsString());
+            return retrieveByContactIdAndCurrency(contact.contactId, params.currency);
         } catch (CouldNotFindObjectException ignored) {
             RequestParamsCreateAccountByContactId contactIdParams = new RequestParamsCreateAccountByContactId(params, contact.contactId);
-            return new AccountCard(LightrailCard.create(contactIdParams));
+            Card card = LightrailCard.create(contactIdParams);
+            return new Gson().fromJson(new Gson().toJson(card), AccountCard.class);
         }
 
     }
