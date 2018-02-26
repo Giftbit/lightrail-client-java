@@ -259,7 +259,6 @@ public class APICore {
 
         public static Contact retrieve(String contactId) throws AuthorizationException, CouldNotFindObjectException, IOException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.RETRIEVE_CONTACT, contactId);
-            System.out.println(urlSuffix);
             try {
                 String rawAPIResponse = networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_GET, null);
                 JsonElement jsonContact = gson.fromJson(rawAPIResponse, JsonObject.class).get("contact");

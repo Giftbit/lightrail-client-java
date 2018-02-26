@@ -15,18 +15,7 @@ public class ContactSearchResult extends LightrailObject {
         return contacts;
     }
 
-    public ContactSearchResult(String jsonObject) {
-//        super(jsonObject);
-//        for (Contact contact : contacts) {
-//            String contactJsonString = new Gson().toJson(contact);
-//            Class<? extends LightrailObject> myClass = Contact.class;
-//            JsonObjectRoot jsonRootAnnotation = myClass.getAnnotation(JsonObjectRoot.class);
-//            if (jsonRootAnnotation != null) {
-//                String jsonRootName = jsonRootAnnotation.value();
-//                contactJsonString = String.format("{\"" + jsonRootName + "\":%s}", contactJsonString);
-//            }
-//            contact.setRawJson(contactJsonString);
-//        }
+    public ContactSearchResult() {
     }
 
     public Contact getOneContact() throws CouldNotFindObjectException {
