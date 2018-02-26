@@ -1,10 +1,12 @@
 package com.lightrail.model.api.objects;
 
 
+import com.google.gson.Gson;
+
 import java.util.List;
 
 @JsonObjectRoot("card")
-public class Card extends LightrailObject{
+public class Card extends LightrailObject {
     public String cardId;
     public String userSuppliedId;
     public String contactId;
@@ -44,9 +46,11 @@ public class Card extends LightrailObject{
         return categories;
     }
 
-    public Card (String jsonObject) {
-        super(jsonObject);
+    public Card(String jsonObject) {
+        new Gson().fromJson(jsonObject, Card.class);
+    }
 
+    public Card() {
     }
 
 }
