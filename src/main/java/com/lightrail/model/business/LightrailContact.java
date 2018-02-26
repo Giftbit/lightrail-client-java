@@ -1,5 +1,6 @@
 package com.lightrail.model.business;
 
+import com.google.gson.Gson;
 import com.lightrail.exceptions.*;
 import com.lightrail.helpers.LightrailConstants;
 import com.lightrail.model.api.net.APICore;
@@ -196,13 +197,13 @@ public class LightrailContact extends Contact {
 
     public static LightrailContact retrieve(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Contact contactObject = APICore.Contacts.retrieve(customerAccountId);
-        LightrailContact customerAccount = new LightrailContact(contactObject);
+        LightrailContact customerAccount = new Gson().fromJson(new Gson().toJson(contactObject), LightrailContact.class);
         return customerAccount;
     }
 
     public static LightrailContact retrieveByUserSuppliedId(String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Contact contactObject = APICore.Contacts.retrieveByUserSuppliedId(userSuppliedId);
-        return new LightrailContact(contactObject);
+        return new Gson().fromJson(new Gson().toJson(contactObject), LightrailContact.class);
     }
 
     public static void retrieveContactAccounts(LightrailContact contact) throws AuthorizationException, CouldNotFindObjectException, IOException {
