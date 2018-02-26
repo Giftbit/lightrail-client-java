@@ -39,49 +39,49 @@ public class LightrailContact extends Contact {
         return getUserSuppliedId();
     }
 
-    private void loadCard(AccountCard card) {
-        cardForCurrency.put(card.getCurrency(), card);
-    }
+//    private void loadCard(AccountCard card) {
+//        cardForCurrency.put(card.getCurrency(), card);
+//    }
 
-    public LightrailContact addCurrency(String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return addCurrency(currency, 0);
-    }
-
-    public LightrailContact addCurrency(String currency, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
-//        RequestParameters cardParams = new RequestParameters();
-//        cardParams.put(LightrailConstants.Parameters.CONTACT_ID, getContactId());
-//        cardParams.put(LightrailConstants.Parameters.CURRENCY, currency);
-//        cardParams.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
-//        cardParams.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
+//    public LightrailContact addCurrency(String currency) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        return addCurrency(currency, 0);
+//    }
+//
+//    public LightrailContact addCurrency(String currency, int initialValue) throws AuthorizationException, CouldNotFindObjectException, IOException {
+////        RequestParameters cardParams = new RequestParameters();
+////        cardParams.put(LightrailConstants.Parameters.CONTACT_ID, getContactId());
+////        cardParams.put(LightrailConstants.Parameters.CURRENCY, currency);
+////        cardParams.put(LightrailConstants.Parameters.INITIAL_VALUE, initialValue);
+////        cardParams.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
+////        return addCurrency(cardParams);
+//
+//
+//        RequestParamsCreateAccountByContactId cardParams = null;
+//        cardParams.cardType = LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD;
+//        cardParams.currency = currency;
+//        cardParams.contactId = contactId;
+//        cardParams.userSuppliedId = contactId + currency + "-account";
+//
 //        return addCurrency(cardParams);
-
-
-        RequestParamsCreateAccountByContactId cardParams = null;
-        cardParams.cardType = LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD;
-        cardParams.currency = currency;
-        cardParams.contactId = contactId;
-        cardParams.userSuppliedId = contactId + currency + "-account";
-
-        return addCurrency(cardParams);
-    }
-
-    //    public LightrailContact addCurrency(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-    public LightrailContact addCurrency(RequestParamsCreateAccountByContactId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
-//        LightrailConstants.Parameters.requireParameters(Arrays.asList(
-//                LightrailConstants.Parameters.CURRENCY
-//        ), params);
-
-//        String cardType = (String) params.get(LightrailConstants.Parameters.CARD_TYPE);
-//        if (cardType == null)
-//            params.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
-//        else if (!LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD.equals(cardType))
-//            throw new BadParameterException(String.format("Card Type must be set to ACCOUNT_CARD for creating a new account card. (Given: %s).", cardType));
-
-        String currency = (String) params.currency;
-        AccountCard card = AccountCard.create(params);
-        cardForCurrency.put(currency, card);
-        return this;
-    }
+//    }
+//
+//    //    public LightrailContact addCurrency(RequestParameters params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//    public LightrailContact addCurrency(RequestParamsCreateAccountByContactId params) throws AuthorizationException, CouldNotFindObjectException, IOException {
+////        LightrailConstants.Parameters.requireParameters(Arrays.asList(
+////                LightrailConstants.Parameters.CURRENCY
+////        ), params);
+//
+////        String cardType = (String) params.get(LightrailConstants.Parameters.CARD_TYPE);
+////        if (cardType == null)
+////            params.put(LightrailConstants.Parameters.CARD_TYPE, LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD);
+////        else if (!LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD.equals(cardType))
+////            throw new BadParameterException(String.format("Card Type must be set to ACCOUNT_CARD for creating a new account card. (Given: %s).", cardType));
+//
+//        String currency = (String) params.currency;
+//        AccountCard card = AccountCard.create(params);
+//        cardForCurrency.put(currency, card);
+//        return this;
+//    }
 
     public LightrailTransaction createPendingTransaction(int value) throws InsufficientValueException, AuthorizationException, CouldNotFindObjectException, IOException {
         getCardFor(getDefaultCurrency());
@@ -148,10 +148,10 @@ public class LightrailContact extends Contact {
             return cardObject;
     }
 
-    public static LightrailContact create(String email, String firstName, String lastName, String defaultCurrency, int initialBalance) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        return create(email, firstName, lastName).
-                addCurrency(defaultCurrency, initialBalance);
-    }
+//    public static LightrailContact create(String email, String firstName, String lastName, String defaultCurrency, int initialBalance) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        return create(email, firstName, lastName).
+//                addCurrency(defaultCurrency, initialBalance);
+//    }
 
     public static LightrailContact create(String email, String firstName, String lastName) throws AuthorizationException, CouldNotFindObjectException, IOException {
         if (email == null || email.isEmpty())
@@ -187,13 +187,13 @@ public class LightrailContact extends Contact {
         return new LightrailContact(contactObject);
     }
 
-    private static void loadCards(LightrailContact contact) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        CardSearchResult cards = APICore.Cards.retrieveCardsOfContact(contact.getContactId());
-        for (Card card : cards.getCards()) {
-            if (LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD.equals(card.getCardType()))
-                contact.loadCard(new AccountCard(card));
-        }
-    }
+//    private static void loadCards(LightrailContact contact) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        CardSearchResult cards = APICore.Cards.retrieveCardsOfContact(contact.getContactId());
+//        for (Card card : cards.getCards()) {
+//            if (LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD.equals(card.getCardType()))
+//                contact.loadCard(new AccountCard(card));
+//        }
+//    }
 
     public static LightrailContact retrieve(String customerAccountId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         Contact contactObject = APICore.Contacts.retrieve(customerAccountId);
@@ -206,9 +206,9 @@ public class LightrailContact extends Contact {
         return new Gson().fromJson(new Gson().toJson(contactObject), LightrailContact.class);
     }
 
-    public static void retrieveContactAccounts(LightrailContact contact) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        loadCards(contact);
-    }
+//    public static void retrieveContactAccounts(LightrailContact contact) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        loadCards(contact);
+//    }
 
     private static void cancelCard(String cardId, String userSuppliedId) throws AuthorizationException, CouldNotFindObjectException, IOException {
         RequestParameters params = new RequestParameters();
