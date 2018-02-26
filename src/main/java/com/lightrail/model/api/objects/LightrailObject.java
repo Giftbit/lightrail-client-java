@@ -11,15 +11,18 @@ public class LightrailObject {
 
     String rawJson;
 
+    public void setRawJson(String rawJson) {
+        this.rawJson = rawJson;
+    }
+
     public String getRawJson() {
-        return rawJson;
-    }
-    public void setRawJson(String rawJson) {this.rawJson = rawJson;}
-
-    LightrailObject(){
+        return new Gson().toJson(this);
     }
 
-    public LightrailObject (String jsonString) {
+    LightrailObject() {
+    }
+
+    public LightrailObject(String jsonString) {
         try {
             this.rawJson = jsonString;
             JsonObject jsonObject = (JsonObject) new Gson().fromJson(jsonString, JsonElement.class);
@@ -31,7 +34,7 @@ public class LightrailObject {
                 jsonRootAnnotation = superclass.getAnnotation(JsonObjectRoot.class);
                 superclass = superclass.getSuperclass();
             }
-            String jsonRootName="";
+            String jsonRootName = "";
             if (jsonRootAnnotation != null) {
                 jsonRootName = jsonRootAnnotation.value();
                 if (!"".equals(jsonRootName)) {
