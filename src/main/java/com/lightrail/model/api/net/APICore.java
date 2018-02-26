@@ -233,17 +233,17 @@ public class APICore {
 
         static Gson gson = new Gson();
 
-        public static Contact create(RequestParameters createContactParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
-            String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_CONTACT);
-            String bodyJsonString = gson.toJson(createContactParams);
-            try {
-                String rawAPIResponse = networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
-                JsonObject jsonContact = gson.fromJson(rawAPIResponse, JsonObject.class);
-                return gson.fromJson(jsonContact.get("contact").getAsString(), Contact.class);
-            } catch (InsufficientValueException e) { //never happens
-                throw new RuntimeException(e);
-            }
-        }
+//        public static Contact create(RequestParameters createContactParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//            String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_CONTACT);
+//            String bodyJsonString = gson.toJson(createContactParams);
+//            try {
+//                String rawAPIResponse = networkProvider.getRawAPIResponse(urlSuffix, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
+//                JsonObject jsonContact = gson.fromJson(rawAPIResponse, JsonObject.class);
+//                return gson.fromJson(jsonContact.get("contact").getAsString(), Contact.class);
+//            } catch (InsufficientValueException e) { //never happens
+//                throw new RuntimeException(e);
+//            }
+//        }
 
         public static Contact create(RequestParametersCreateContact createContactParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
             String urlSuffix = String.format(LightrailConstants.API.Endpoints.CREATE_CONTACT);

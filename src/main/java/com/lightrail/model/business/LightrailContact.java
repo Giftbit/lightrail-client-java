@@ -153,19 +153,19 @@ public class LightrailContact extends Contact {
 //                addCurrency(defaultCurrency, initialBalance);
 //    }
 
-    public static LightrailContact create(String email, String firstName, String lastName) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        if (email == null || email.isEmpty())
-            throw new BadParameterException("Need to provide an email address for the new LightrailContact.");
-
-        RequestParameters customerAccountParams = new RequestParameters();
-        customerAccountParams.put(LightrailConstants.Parameters.EMAIL, email);
-        if (firstName != null)
-            customerAccountParams.put(LightrailConstants.Parameters.FIRST_NAME, firstName);
-        if (lastName != null)
-            customerAccountParams.put(LightrailConstants.Parameters.LAST_NAME, lastName);
-
-        return create(customerAccountParams);
-    }
+//    public static LightrailContact create(String email, String firstName, String lastName) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        if (email == null || email.isEmpty())
+//            throw new BadParameterException("Need to provide an email address for the new LightrailContact.");
+//
+//        RequestParameters customerAccountParams = new RequestParameters();
+//        customerAccountParams.put(LightrailConstants.Parameters.EMAIL, email);
+//        if (firstName != null)
+//            customerAccountParams.put(LightrailConstants.Parameters.FIRST_NAME, firstName);
+//        if (lastName != null)
+//            customerAccountParams.put(LightrailConstants.Parameters.LAST_NAME, lastName);
+//
+//        return create(customerAccountParams);
+//    }
 
     public static LightrailContact create(RequestParametersCreateContact customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
         if (customerAccountParams.userSuppliedId == null) {
@@ -177,15 +177,15 @@ public class LightrailContact extends Contact {
         return new LightrailContact(contactObject);
     }
 
-    public static LightrailContact create(RequestParameters customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
-        if (customerAccountParams.get("userSuppliedId") == null) {
-            throw new BadParameterException("Missing parameter for contact creation: userSuppliedId");
-        }
-
-        customerAccountParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(customerAccountParams);
-        Contact contactObject = APICore.Contacts.create(customerAccountParams);
-        return new LightrailContact(contactObject);
-    }
+//    public static LightrailContact create(RequestParameters customerAccountParams) throws AuthorizationException, CouldNotFindObjectException, IOException {
+//        if (customerAccountParams.get("userSuppliedId") == null) {
+//            throw new BadParameterException("Missing parameter for contact creation: userSuppliedId");
+//        }
+//
+//        customerAccountParams = LightrailConstants.Parameters.addDefaultUserSuppliedIdIfNotProvided(customerAccountParams);
+//        Contact contactObject = APICore.Contacts.create(customerAccountParams);
+//        return new LightrailContact(contactObject);
+//    }
 
 //    private static void loadCards(LightrailContact contact) throws AuthorizationException, CouldNotFindObjectException, IOException {
 //        CardSearchResult cards = APICore.Cards.retrieveCardsOfContact(contact.getContactId());
