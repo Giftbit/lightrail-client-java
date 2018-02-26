@@ -46,7 +46,7 @@ public class AccountStepdefs {
         LightrailObject minParams = null;
         if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
             JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
-            minParams = new RequestParamsCreateAccountByContactId(new Gson().toJson(jsonParams));
+            minParams = new Gson().fromJson(jsonParams.toString(), RequestParamsCreateAccountByContactId.class);
             boolean exceptionThrown = false;
             try {
                 AccountCard.create((RequestParamsCreateAccountByContactId) minParams);
@@ -58,7 +58,7 @@ public class AccountStepdefs {
             }
         } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
             JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
-            minParams = new RequestParamsCreateAccountByShopperId(new Gson().toJson(jsonParams));
+            minParams = new Gson().fromJson(jsonParams.toString(), RequestParamsCreateAccountByShopperId.class);
             AccountCard.create((RequestParamsCreateAccountByShopperId) minParams);
         }
 
