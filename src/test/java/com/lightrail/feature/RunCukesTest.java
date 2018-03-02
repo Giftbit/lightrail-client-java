@@ -1,4 +1,4 @@
-package com.lightrail.old.feature;
+package com.lightrail.feature;
 
 
 import cucumber.api.CucumberOptions;
@@ -7,5 +7,5 @@ import org.junit.runner.RunWith;
 
 @RunWith(Cucumber.class)
 @CucumberOptions(features = ".", glue = "com.lightrail.feature", plugin = {"pretty"})
-public class _RunCukesTest {
+public class RunCukesTest {
 }
