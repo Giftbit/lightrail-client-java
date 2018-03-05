@@ -6,6 +6,13 @@ public class LightrailClient {
     public static String apiKey;
     public static String sharedSecret;
 
+    public LightrailClient(String apiKey, String sharedSecret) throws LightrailException {
+        this.apiKey = apiKey;
+        this.sharedSecret = sharedSecret;
+        verifyApiKey();
+        verifySharedSecret();
+    }
+
     public static void verifyApiKey() throws LightrailException {
         if (apiKey == null) {
             throw new LightrailException("API key is not set");
