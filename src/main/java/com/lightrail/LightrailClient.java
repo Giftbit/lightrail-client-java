@@ -1,5 +1,6 @@
 package com.lightrail;
 
+import com.google.gson.Gson;
 import com.lightrail.model.LightrailException;
 import com.lightrail.network.DefaultNetworkProvider;
 import com.lightrail.network.NetworkProvider;
@@ -8,7 +9,9 @@ public class LightrailClient {
     public String apiKey;
     public String sharedSecret;
 
-    public final NetworkProvider networkProvider;
+    public Gson gson = new Gson();
+
+    public NetworkProvider networkProvider;
     public final Accounts accounts;
     public final Contacts contacts;
     public final Cards cards;
