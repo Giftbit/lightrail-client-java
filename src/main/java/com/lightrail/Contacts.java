@@ -54,8 +54,12 @@ public class Contacts {
     }
 
     private Contact getSingleContactFromJson(String jsonResponse) {
-        JsonElement jsonContact = lr.gson.fromJson(jsonResponse, JsonObject.class).get("contact");
-        return lr.gson.fromJson(lr.gson.toJson(jsonContact), Contact.class);
+        try {
+            JsonElement jsonContact = lr.gson.fromJson(jsonResponse, JsonObject.class).get("contact");
+            return lr.gson.fromJson(lr.gson.toJson(jsonContact), Contact.class);
+        } catch (NullPointerException e) {
+            return null;
+        }
     }
 
     private Contact getFirstContactResultFromJson(String jsonResponse) {

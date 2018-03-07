@@ -78,8 +78,14 @@ public class Accounts {
             contact = lr.contacts.create(params.shopperId);
         }
 
+        try {
+            return lr.cards.retrieveAccountCardByContactIdAndCurrency(contact.contactId, params.currency);
+        } catch (LightrailException ignored) {
+            // if the account doesn't exist yet, that's fine, the next step creates one
+        }
+
         CreateAccountCardByContactIdParams contactIdParams = new CreateAccountCardByContactIdParams(params, contact.contactId);
-        return create(contactIdParams);
+        return lr.cards.create(contactIdParams);
     }
 
 
