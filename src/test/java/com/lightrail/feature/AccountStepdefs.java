@@ -36,18 +36,24 @@ public class AccountStepdefs {
 
         setReqResExpectations(reqResCollection, lr);
 
+        JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
+
         if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
-            JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
             CreateAccountCardByContactIdParams minParams = lr.gson.fromJson(jsonParams.toString(), CreateAccountCardByContactIdParams.class);
             boolean exceptionThrown = false;
 
-            lr.accounts.create(minParams);
+            try {
+                lr.accounts.create(minParams);
+            } catch (LightrailException e) {
+                exceptionThrown = true;
+            }
 
             if (errorName != null) {
                 assertEquals(true, exceptionThrown);
+            } else {
+                assertEquals(false, exceptionThrown);
             }
         } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
-            JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
             CreateAccountCardByShopperIdParams minParams = lr.gson.fromJson(jsonParams.toString(), CreateAccountCardByShopperIdParams.class);
             lr.accounts.create(minParams);
         }
