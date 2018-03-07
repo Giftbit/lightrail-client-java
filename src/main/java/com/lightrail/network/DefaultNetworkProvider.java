@@ -1,6 +1,5 @@
 package com.lightrail.network;
 
-import com.lightrail.LightrailClient;
 import com.lightrail.model.LightrailException;
 import com.lightrail.utils.LightrailConstants;
 
@@ -10,12 +9,12 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class DefaultNetworkProvider implements NetworkProvider {
-    public String getAPIResponse(String urlSuffix, String requestMethod, String body) throws LightrailException, IOException {
+    public String getAPIResponse(String apiKey, String urlSuffix, String requestMethod, String body) throws LightrailException, IOException {
         URL requestURL = new URL(LightrailConstants.API.apiBaseURL + urlSuffix);
         HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
         httpsURLConnection.setRequestProperty(
                 LightrailConstants.API.AUTHORIZATION_HEADER_NAME,
-                LightrailConstants.API.AUTHORIZATION_TOKEN_TYPE + " " + LightrailClient.apiKey);
+                LightrailConstants.API.AUTHORIZATION_TOKEN_TYPE + " " + apiKey);
         httpsURLConnection.setRequestMethod(requestMethod);
 
         if (body != null) {

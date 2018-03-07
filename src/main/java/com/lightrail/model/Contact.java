@@ -7,14 +7,4 @@ public class Contact {
     public String firstName;
     public String lastName;
     public String dateCreated;
-
-//    public static Contact create() {
-//    }  // todo write fn
-//
-//    public static Contact retrieveByShopperId() {
-//    }
-//
-//    public static Contact retrieveById() {
-//    }
-
 }

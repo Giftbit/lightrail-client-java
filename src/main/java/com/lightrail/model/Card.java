@@ -8,8 +8,6 @@ public class Card {
     public String cardType;
     public String currency;
 
-//    public static Card create() {
-//    }
 //
 //    public static Card retrieveById(String cardId) {
 //    }

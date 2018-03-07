@@ -1,19 +1,33 @@
 package com.lightrail;
 
 import com.lightrail.model.LightrailException;
+import com.lightrail.network.DefaultNetworkProvider;
+import com.lightrail.network.NetworkProvider;
 
 public class LightrailClient {
     public String apiKey;
     public String sharedSecret;
-    public final Accounts accounts;
 
-    public LightrailClient(String apiKey, String sharedSecret) throws LightrailException {
+    public final NetworkProvider networkProvider;
+    public final Accounts accounts;
+    public final Contacts contacts;
+    public final Cards cards;
+
+    public LightrailClient(String apiKey, String sharedSecret, NetworkProvider np) throws LightrailException {
         this.apiKey = apiKey;
         this.sharedSecret = sharedSecret;
         verifyApiKey();
         verifySharedSecret();
 
-        this.accounts = new Accounts();
+        this.networkProvider = np;
+
+        this.accounts = new Accounts(this);
+        this.contacts = new Contacts(this);
+        this.cards = new Cards(this);
+    }
+
+    public LightrailClient(String apiKey, String sharedSecret) throws LightrailException {
+        this(apiKey, sharedSecret, new DefaultNetworkProvider());
     }
 
     public void verifyApiKey() throws LightrailException {
