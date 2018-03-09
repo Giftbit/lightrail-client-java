@@ -85,5 +85,17 @@ public class Accounts {
         return lr.cards.create(contactIdParams);
     }
 
+    public Card retrieveByContactIdAndCurrency(String contactId, String currency) throws IOException, LightrailException {
+        return lr.cards.retrieveAccountCardByContactIdAndCurrency(contactId, currency);
+    }
+
+    public Card retrieveByShopperIdAndCurrency(String shopperId, String currency) throws IOException, LightrailException {
+        Contact contact = lr.contacts.retrieveByShopperId(shopperId);
+        if (contact == null) {
+            return null;
+        }
+        String contactId = contact.contactId;
+        return lr.cards.retrieveAccountCardByContactIdAndCurrency(contactId, currency);
+    }
 
 }

@@ -29,8 +29,15 @@ Feature: Account Card
   @account_retrieval
 
   Scenario: Retrieve by shopperId
+    When ACCOUNT_RETRIEVAL a contact exists: requires minimum parameters [shopperId, currency] and makes the following REST requests: [contactsSearchOneResult]
+    When ACCOUNT_RETRIEVAL a contact doesn't exist: requires minimum parameters [shopperId, currency] and makes the following REST requests: [contactsSearchNoResults]
+
+
+  @account_retrieval
 
   Scenario: Retrieve by contactId
+    When ACCOUNT_RETRIEVAL a contact exists: requires minimum parameters [contactId, currency] and makes the following REST requests: [accountCardSearchOneResult]
+    When ACCOUNT_RETRIEVAL a contact doesn't exist: requires minimum parameters [contactId, currency] and makes the following REST requests: [accountCardSearchNoResults]
 
 
   @account_details

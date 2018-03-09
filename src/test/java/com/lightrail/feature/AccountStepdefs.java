@@ -59,6 +59,27 @@ public class AccountStepdefs {
         verifyMock(reqResCollection, lr);
     }
 
+    @Given("^ACCOUNT_RETRIEVAL a contact .*\\s*exists?\\s*.*: requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\](?: and throws the following error: \\[(.[^\\]]+)\\])?$")
+    public void accountRetrieval(String minimumParams, String expectedRequestsAndResponses, String errorName) throws Throwable {
+        JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
+        Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses, jsonVariables);
+        LightrailClient lr = new LightrailClient("123", "123", mock(DefaultNetworkProvider.class));
+        setReqResExpectations(reqResCollection, lr);
+        JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
+
+        String currency = jsonParams.get("currency").getAsString();
+
+        if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
+            String contactId = jsonParams.get("contactId").getAsString();
+            lr.accounts.retrieveByContactIdAndCurrency(contactId, currency);
+        } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
+            String shopperId = jsonParams.get("shopperId").getAsString();
+            lr.accounts.retrieveByShopperIdAndCurrency(shopperId, currency);
+        }
+
+        verifyMock(reqResCollection, lr);
+    }
+
 
     private JsonObject getJsonParams(String minimumParams, JsonObject jsonVariables) {
         String[] minParamKeys = minimumParams.split(", ");
