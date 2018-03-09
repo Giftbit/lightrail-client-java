@@ -9,7 +9,7 @@ public class LightrailClient {
     public String apiKey;
     public String sharedSecret;
 
-    public Gson gson = new Gson();
+    protected final Gson gson = new Gson();
 
     public NetworkProvider networkProvider;
     public final Accounts accounts;

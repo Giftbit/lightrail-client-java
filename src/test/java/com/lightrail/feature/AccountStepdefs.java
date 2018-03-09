@@ -1,5 +1,6 @@
 package com.lightrail.feature;
 
+import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -24,6 +25,8 @@ import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.*;
 
 public class AccountStepdefs {
+    Gson gson = new Gson();
+
     @Given("^ACCOUNT_CREATION a contact .*\\s*exists?\\s*.*: requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\](?: and throws the following error: \\[(.[^\\]]+)\\])?$")
     public void accountCreation(String minimumParams, String expectedRequestsAndResponses, String errorName) throws Throwable {
 
@@ -34,7 +37,7 @@ public class AccountStepdefs {
         JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
 
         if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
-            CreateAccountCardByContactIdParams minParams = lr.gson.fromJson(jsonParams.toString(), CreateAccountCardByContactIdParams.class);
+            CreateAccountCardByContactIdParams minParams = gson.fromJson(jsonParams.toString(), CreateAccountCardByContactIdParams.class);
             boolean exceptionThrown = false;
 
             try {
@@ -49,7 +52,7 @@ public class AccountStepdefs {
                 assertEquals(false, exceptionThrown);
             }
         } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
-            CreateAccountCardByShopperIdParams minParams = lr.gson.fromJson(jsonParams.toString(), CreateAccountCardByShopperIdParams.class);
+            CreateAccountCardByShopperIdParams minParams = gson.fromJson(jsonParams.toString(), CreateAccountCardByShopperIdParams.class);
             lr.accounts.create(minParams);
         }
 
