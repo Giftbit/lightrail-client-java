@@ -40,10 +40,10 @@ public class Accounts {
         Contact contact = lr.contacts.retrieve(params.contactId);
 
         if (contact != null) {
-            try {
-                return lr.cards.retrieveAccountCardByContactIdAndCurrency(contact.contactId, params.currency);
-            } catch (LightrailException ignored) {
-                // if the account doesn't exist yet, that's fine, the next step creates one
+
+            Card card = lr.cards.retrieveAccountCardByContactIdAndCurrency(contact.contactId, params.currency);
+            if (card != null) {
+                return card;
             }
             params.cardType = LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD;
             return lr.cards.create(params);
@@ -71,17 +71,14 @@ public class Accounts {
             throw new LightrailException(format("Cannot create account with cardType '%s'", params.cardType));
         }
 
-        Contact contact;
-        try {
-            contact = lr.contacts.retrieveByUserSuppliedId(params.shopperId);
-        } catch (LightrailException ignored) {
+        Contact contact = lr.contacts.retrieveByUserSuppliedId(params.shopperId);
+        if (contact == null) {
             contact = lr.contacts.create(params.shopperId);
         }
 
-        try {
-            return lr.cards.retrieveAccountCardByContactIdAndCurrency(contact.contactId, params.currency);
-        } catch (LightrailException ignored) {
-            // if the account doesn't exist yet, that's fine, the next step creates one
+        Card card = lr.cards.retrieveAccountCardByContactIdAndCurrency(contact.contactId, params.currency);
+        if (card != null) {
+            return card;
         }
 
         CreateAccountCardByContactIdParams contactIdParams = new CreateAccountCardByContactIdParams(params, contact.contactId);

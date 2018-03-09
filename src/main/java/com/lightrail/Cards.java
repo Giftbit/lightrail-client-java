@@ -27,16 +27,18 @@ public class Cards {
     }
 
     public Card retrieveAccountCardByContactIdAndCurrency(String contactId, String currency) throws LightrailException, IOException {
-
         String response = lr.networkProvider.getAPIResponse(lr.apiKey, format("cards?cardType=ACCOUNT_CARD&contactId=%s&currency=%s", contactId, currency), LightrailConstants.API.REQUEST_METHOD_GET, null);
 
-        JsonArray jsonResponse = lr.gson.fromJson(response, JsonObject.class).getAsJsonArray("cards");
+        if (response == null) {
+            return null;
+        }
 
+        JsonArray jsonResponse = lr.gson.fromJson(response, JsonObject.class).getAsJsonArray("cards");
         if (jsonResponse.size() > 0) {
             String jsonCard = jsonResponse.get(0).toString();
             return lr.gson.fromJson(jsonCard, Card.class);
         } else {
-            throw new LightrailException(format("Could not find account card with contactId '%s' and currency '%s'", contactId, currency));
+            return null;
         }
     }
 

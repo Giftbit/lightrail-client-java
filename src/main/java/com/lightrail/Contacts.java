@@ -44,13 +44,7 @@ public class Contacts {
     public Contact retrieveByUserSuppliedId(String userSuppliedId) throws LightrailException, IOException {
         String jsonResponse = lr.networkProvider.getAPIResponse(lr.apiKey, format("contacts?userSuppliedId=%s", userSuppliedId), LightrailConstants.API.REQUEST_METHOD_GET, null);
 
-        Contact contact = getFirstContactResultFromJson(jsonResponse);
-
-        if (contact == null) {
-            throw new LightrailException(format("Could not find contact with userSuppliedId '%s'", userSuppliedId));
-        }
-
-        return contact;
+        return getFirstContactResultFromJson(jsonResponse);
     }
 
     private Contact getSingleContactFromJson(String jsonResponse) {
