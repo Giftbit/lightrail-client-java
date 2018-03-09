@@ -25,17 +25,12 @@ import static org.mockito.Mockito.*;
 
 public class AccountStepdefs {
     @Given("^ACCOUNT_CREATION a contact .*\\s*exists?\\s*.*: requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\](?: and throws the following error: \\[(.[^\\]]+)\\])?$")
-    public void contact_does_or_does_not_exist(String minimumParams, String expectedRequestsAndResponses, String errorName) throws Throwable {
+    public void accountCreation(String minimumParams, String expectedRequestsAndResponses, String errorName) throws Throwable {
 
         JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
-
         Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses, jsonVariables);
-
-        NetworkProvider npMock = mock(DefaultNetworkProvider.class);
-        LightrailClient lr = new LightrailClient("123", "123", npMock);
-
+        LightrailClient lr = new LightrailClient("123", "123", mock(DefaultNetworkProvider.class));
         setReqResExpectations(reqResCollection, lr);
-
         JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
 
         if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
