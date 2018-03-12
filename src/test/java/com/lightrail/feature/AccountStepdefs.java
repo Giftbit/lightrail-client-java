@@ -7,9 +7,10 @@ import com.google.gson.JsonParser;
 import com.lightrail.LightrailClient;
 import com.lightrail.model.LightrailException;
 import com.lightrail.network.DefaultNetworkProvider;
-import com.lightrail.network.NetworkProvider;
 import com.lightrail.params.CreateAccountCardByContactIdParams;
 import com.lightrail.params.CreateAccountCardByShopperIdParams;
+import com.lightrail.params.CreateAccountTransactionByContactIdParams;
+import com.lightrail.params.CreateAccountTransactionByShopperIdParams;
 import cucumber.api.java.en.Given;
 
 import java.io.FileReader;
@@ -75,6 +76,49 @@ public class AccountStepdefs {
         } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
             String shopperId = jsonParams.get("shopperId").getAsString();
             lr.accounts.retrieveByShopperIdAndCurrency(shopperId, currency);
+        }
+
+        verifyMock(reqResCollection, lr);
+    }
+
+
+    @Given("^ACCOUNT_TRANSACTION a contact .*\\s*exists?\\s*.*: requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\](?: and throws the following error: \\[(.[^\\]]+)\\])?$")
+    public void accountTransaction(String minimumParams, String expectedRequestsAndResponses, String errorName) throws Throwable {
+        JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
+        Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses, jsonVariables);
+        LightrailClient lr = new LightrailClient("123", "123", mock(DefaultNetworkProvider.class));
+        setReqResExpectations(reqResCollection, lr);
+        JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
+
+        String currency = jsonParams.get("currency").getAsString();
+
+        boolean exceptionThrown = false;
+        if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
+            CreateAccountTransactionByContactIdParams minParams = gson.fromJson(jsonParams.toString(), CreateAccountTransactionByContactIdParams.class);
+
+            String contactId = jsonParams.get("contactId").getAsString();
+
+            try {
+                lr.accounts.createTransaction(minParams);
+            } catch (LightrailException e) {
+                exceptionThrown = true;
+            }
+        } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
+            CreateAccountTransactionByShopperIdParams minParams = gson.fromJson(jsonParams.toString(), CreateAccountTransactionByShopperIdParams.class);
+
+            String shopperId = jsonParams.get("shopperId").getAsString();
+
+            try {
+                lr.accounts.createTransaction(minParams);
+            } catch (LightrailException e) {
+                exceptionThrown = true;
+            }
+        }
+
+        if (errorName != null) {
+            assertEquals(true, exceptionThrown);
+        } else {
+            assertEquals(false, exceptionThrown);
         }
 
         verifyMock(reqResCollection, lr);

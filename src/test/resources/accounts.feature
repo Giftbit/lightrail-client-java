@@ -50,6 +50,9 @@ Feature: Account Card
   @account_transactions
 
   Scenario: Charge by shopperId
+    When ACCOUNT_TRANSACTION a contact exists and has an account: requires minimum parameters [shopperId, currency, value, userSuppliedId] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult, accountCardPostTransaction]
+    When ACCOUNT_TRANSACTION a contact exists and but has no account: requires minimum parameters [shopperId, currency, value, userSuppliedId] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchNoResults] and throws the following error: [LightrailException]
+    When ACCOUNT_TRANSACTION a contact doesn't exist: requires minimum parameters [shopperId, currency, value, userSuppliedId] and makes the following REST requests: [contactsSearchNoResults] and throws the following error: [LightrailException]
 
   Scenario: Charge by contactId
 

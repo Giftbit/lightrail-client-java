@@ -123,6 +123,27 @@
         }
       }
     },
+    "accountCardPostTransaction": {
+      "httpMethod": "post",
+      "endpoint": "/transactions",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "DRAWDOWN",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ],
+          "transactionId": "this-is-a-transaction-id"
+        }
+      }
+    },
     "contactsError404": {
       "httpMethod": "get",
       "endpoint": "contacts/",

@@ -7,14 +7,4 @@ public class Card {
     public String dateCreated;
     public String cardType;
     public String currency;
-
-//
-//    public static Card retrieveById(String cardId) {
-//    }
-//
-//    public Transaction createTransaction() {
-//    }
-//
-//    public Transaction simulateTransaction() {
-//    }
 }

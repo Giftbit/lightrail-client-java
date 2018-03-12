@@ -4,7 +4,9 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.lightrail.model.Card;
 import com.lightrail.model.LightrailException;
+import com.lightrail.model.Transaction;
 import com.lightrail.params.CreateAccountCardByContactIdParams;
+import com.lightrail.params.CreateTransactionParams;
 import com.lightrail.utils.LightrailConstants;
 
 import java.io.IOException;
@@ -43,4 +45,10 @@ public class Cards {
     }
 
 
+    public Transaction createTransaction(CreateTransactionParams params) throws IOException, LightrailException {
+        String bodyJsonString = lr.gson.toJson(params);
+        String response = lr.networkProvider.getAPIResponse(lr.apiKey, format("cards/%s/transactions", params.cardId), "POST", bodyJsonString);
+        String transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction").toString();
+        return lr.gson.fromJson(transaction, Transaction.class);
+    }
 }

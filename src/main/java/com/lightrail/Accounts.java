@@ -3,8 +3,8 @@ package com.lightrail;
 import com.lightrail.model.Card;
 import com.lightrail.model.Contact;
 import com.lightrail.model.LightrailException;
-import com.lightrail.params.CreateAccountCardByContactIdParams;
-import com.lightrail.params.CreateAccountCardByShopperIdParams;
+import com.lightrail.model.Transaction;
+import com.lightrail.params.*;
 import com.lightrail.utils.LightrailConstants;
 
 import java.io.IOException;
@@ -98,4 +98,49 @@ public class Accounts {
         return lr.cards.retrieveAccountCardByContactIdAndCurrency(contactId, currency);
     }
 
+    public Transaction createTransaction(CreateAccountTransactionByContactIdParams params) throws LightrailException, IOException {
+        if (params == null) {
+            throw new LightrailException("Cannot create account transaction with params: null");
+        }
+        if (params.contactId == null) {
+            throw new LightrailException("Missing parameter for account transaction: contactId");
+        }
+        if (params.currency == null) {
+            throw new LightrailException("Missing parameter for account transaction: currency");
+        }
+        if (params.userSuppliedId == null) {
+            throw new LightrailException("Missing parameter for account transaction: userSuppliedId");
+        }
+
+        Card card = lr.cards.retrieveAccountCardByContactIdAndCurrency(params.contactId, params.currency);
+        if (card == null || card.cardId == null) {
+            throw new LightrailException(format("Could not find account card for contact '%s' with currency '%s'", params.contactId, params.currency));
+        }
+
+        CreateTransactionParams cardParams = new CreateTransactionParams(params, card.cardId);
+        return lr.cards.createTransaction(cardParams);
+    }
+
+    public Transaction createTransaction(CreateAccountTransactionByShopperIdParams params) throws LightrailException, IOException {
+        if (params == null) {
+            throw new LightrailException("Cannot create account transaction with params: null");
+        }
+        if (params.shopperId == null) {
+            throw new LightrailException("Missing parameter for account transaction: contactId");
+        }
+        if (params.currency == null) {
+            throw new LightrailException("Missing parameter for account transaction: currency");
+        }
+        if (params.userSuppliedId == null) {
+            throw new LightrailException("Missing parameter for account transaction: userSuppliedId");
+        }
+
+        Contact contact = lr.contacts.retrieveByUserSuppliedId(params.shopperId);
+        if (contact == null || contact.contactId == null) {
+            throw new LightrailException(format("Could not find contact for shopperId '%s'", params.shopperId));
+        }
+
+        CreateAccountTransactionByContactIdParams contactParams = new CreateAccountTransactionByContactIdParams(params, contact.contactId);
+        return createTransaction(contactParams);
+    }
 }
