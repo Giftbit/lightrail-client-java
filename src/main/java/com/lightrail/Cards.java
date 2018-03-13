@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.lightrail.model.Card;
 import com.lightrail.model.LightrailException;
 import com.lightrail.model.Transaction;
-import com.lightrail.params.CreateAccountCardByContactIdParams;
+import com.lightrail.params.CreateCardParams;
 import com.lightrail.params.CreateTransactionParams;
 import com.lightrail.utils.LightrailConstants;
 
@@ -20,12 +20,11 @@ public class Cards {
         this.lr = lr;
     }
 
-    public Card create(CreateAccountCardByContactIdParams params) throws IOException, LightrailException {
+    public Card create(CreateCardParams params) throws IOException, LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
         String response = lr.networkProvider.getAPIResponse(lr.apiKey, com.lightrail.old.helpers.LightrailConstants.API.Endpoints.CREATE_CARD, LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
         String card = lr.gson.fromJson(response, JsonObject.class).get("card").toString();
         return lr.gson.fromJson(card, Card.class);
-
     }
 
     public Card retrieveAccountCardByContactIdAndCurrency(String contactId, String currency) throws LightrailException, IOException {

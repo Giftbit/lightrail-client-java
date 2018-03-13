@@ -31,25 +31,25 @@ public class Accounts {
         if (params.userSuppliedId == null) {
             throw new LightrailException("Missing parameter for account creation: userSuppliedId");
         }
-        if (params.cardType == null) {
-            params.cardType = "ACCOUNT_CARD";
-        } else if (params.cardType != "ACCOUNT_CARD") {
-            throw new LightrailException(format("Cannot create account with cardType '%s'", params.cardType));
-        }
 
         Contact contact = lr.contacts.retrieve(params.contactId);
-
-        if (contact != null) {
-
-            Card card = lr.cards.retrieveAccountCardByContactIdAndCurrency(contact.contactId, params.currency);
-            if (card != null) {
-                return card;
-            }
-            params.cardType = LightrailConstants.Parameters.CARD_TYPE_ACCOUNT_CARD;
-            return lr.cards.create(params);
-        } else {
+        if (contact == null) {
             throw new LightrailException("Could not find the Contact for that contactId: " + params.contactId);
         }
+
+        Card card = lr.cards.retrieveAccountCardByContactIdAndCurrency(contact.contactId, params.currency);
+        if (card != null) {
+            return card;
+        }
+
+        CreateCardParams newCardParams = new CreateCardParams();
+        newCardParams.currency = params.currency;
+        newCardParams.userSuppliedId = params.userSuppliedId;
+        newCardParams.contactId = params.contactId;
+        newCardParams.initialValue = params.initialValue;
+        newCardParams.cardType = "ACCOUNT_CARD";
+
+        return lr.cards.create(newCardParams);
     }
 
     public Card create(CreateAccountCardByShopperIdParams params) throws LightrailException, IOException {
@@ -65,11 +65,6 @@ public class Accounts {
         if (params.userSuppliedId == null) {
             throw new LightrailException("Missing parameter for account creation: userSuppliedId");
         }
-        if (params.cardType == null) {
-            params.cardType = "ACCOUNT_CARD";
-        } else if (params.cardType != "ACCOUNT_CARD") {
-            throw new LightrailException(format("Cannot create account with cardType '%s'", params.cardType));
-        }
 
         Contact contact = lr.contacts.retrieveByUserSuppliedId(params.shopperId);
         if (contact == null) {
@@ -81,8 +76,14 @@ public class Accounts {
             return card;
         }
 
-        CreateAccountCardByContactIdParams contactIdParams = new CreateAccountCardByContactIdParams(params, contact.contactId);
-        return lr.cards.create(contactIdParams);
+        CreateCardParams newCardParams = new CreateCardParams();
+        newCardParams.currency = params.currency;
+        newCardParams.userSuppliedId = params.userSuppliedId;
+        newCardParams.contactId = contact.contactId;
+        newCardParams.initialValue = params.initialValue;
+        newCardParams.cardType = "ACCOUNT_CARD";
+
+        return lr.cards.create(newCardParams);
     }
 
     public Card retrieveByContactIdAndCurrency(String contactId, String currency) throws IOException, LightrailException {

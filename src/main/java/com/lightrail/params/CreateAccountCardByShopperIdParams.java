@@ -5,6 +5,4 @@ public class CreateAccountCardByShopperIdParams {
     public String currency;
     public String userSuppliedId;
     public int initialValue = 0;
-    public String cardType = "ACCOUNT_CARD";
-
 }
