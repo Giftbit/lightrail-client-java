@@ -25,10 +25,10 @@ public class Contacts {
 
     public Contact create(String shopperId) throws IOException, LightrailException {
         CreateContactParams params = new CreateContactParams();
-        params.shopperId = shopperId;
+        params.userSuppliedId = shopperId;
         String jsonParams = lr.gson.toJson(params);
 
-        String jsonResponse = lr.networkProvider.getAPIResponse(lr.apiKey, format("contacts/%s", shopperId), LightrailConstants.API.REQUEST_METHOD_POST, jsonParams);
+        String jsonResponse = lr.networkProvider.getAPIResponse(lr.apiKey, "contacts", LightrailConstants.API.REQUEST_METHOD_POST, jsonParams);
         return getSingleContactFromJson(jsonResponse);
     }
 
