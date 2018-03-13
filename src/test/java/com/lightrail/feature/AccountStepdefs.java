@@ -13,6 +13,7 @@ import com.lightrail.params.CreateAccountTransactionByContactIdParams;
 import com.lightrail.params.CreateAccountTransactionByShopperIdParams;
 import cucumber.api.java.en.Given;
 
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.HashMap;
@@ -26,16 +27,19 @@ import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.*;
 
 public class AccountStepdefs {
-    Gson gson = new Gson();
+    private JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
+    private DefaultNetworkProvider npMock = mock(DefaultNetworkProvider.class);
+    private LightrailClient lr = new LightrailClient("123", "123", npMock);
+    private Gson gson = new Gson();
+
+    public AccountStepdefs() throws LightrailException, FileNotFoundException {
+    }
 
     @Given("^ACCOUNT_CREATION a contact .*\\s*exists?\\s*.*: requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\](?: and throws the following error: \\[(.[^\\]]+)\\])?$")
     public void accountCreation(String minimumParams, String expectedRequestsAndResponses, String errorName) throws Throwable {
-
-        JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
-        Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses, jsonVariables);
-        LightrailClient lr = new LightrailClient("123", "123", mock(DefaultNetworkProvider.class));
+        Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses);
         setReqResExpectations(reqResCollection, lr);
-        JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
+        JsonObject jsonParams = getJsonParams(minimumParams);
 
         if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
             CreateAccountCardByContactIdParams minParams = gson.fromJson(jsonParams.toString(), CreateAccountCardByContactIdParams.class);
@@ -62,11 +66,9 @@ public class AccountStepdefs {
 
     @Given("^ACCOUNT_RETRIEVAL a contact .*\\s*exists?\\s*.*: requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\](?: and throws the following error: \\[(.[^\\]]+)\\])?$")
     public void accountRetrieval(String minimumParams, String expectedRequestsAndResponses, String errorName) throws Throwable {
-        JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
-        Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses, jsonVariables);
-        LightrailClient lr = new LightrailClient("123", "123", mock(DefaultNetworkProvider.class));
+        Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses);
         setReqResExpectations(reqResCollection, lr);
-        JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
+        JsonObject jsonParams = getJsonParams(minimumParams);
 
         String currency = jsonParams.get("currency").getAsString();
 
@@ -84,11 +86,9 @@ public class AccountStepdefs {
 
     @Given("^ACCOUNT_TRANSACTION a contact .*\\s*exists?\\s*.*: requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\](?: and throws the following error: \\[(.[^\\]]+)\\])?$")
     public void accountTransaction(String minimumParams, String expectedRequestsAndResponses, String errorName) throws Throwable {
-        JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
-        Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses, jsonVariables);
-        LightrailClient lr = new LightrailClient("123", "123", mock(DefaultNetworkProvider.class));
+        Map<String, JsonElement> reqResCollection = getReqResCollection(expectedRequestsAndResponses);
         setReqResExpectations(reqResCollection, lr);
-        JsonObject jsonParams = getJsonParams(minimumParams, jsonVariables);
+        JsonObject jsonParams = getJsonParams(minimumParams);
 
         String currency = jsonParams.get("currency").getAsString();
 
@@ -125,7 +125,7 @@ public class AccountStepdefs {
     }
 
 
-    private JsonObject getJsonParams(String minimumParams, JsonObject jsonVariables) {
+    private JsonObject getJsonParams(String minimumParams) {
         String[] minParamKeys = minimumParams.split(", ");
         JsonObject miniParams = new JsonObject();
         for (int index = 0; index < minParamKeys.length; index++) {
@@ -134,7 +134,7 @@ public class AccountStepdefs {
         return miniParams;
     }
 
-    private Map<String, JsonElement> getReqResCollection(String expectedRequestsAndResponses, JsonObject jsonVariables) {
+    private Map<String, JsonElement> getReqResCollection(String expectedRequestsAndResponses) {
         String[] reqResKeys = expectedRequestsAndResponses.split(", ");
         Map<String, JsonElement> reqResCollection = new HashMap<>();
         for (int index = 0; index < reqResKeys.length; index++) {
@@ -145,6 +145,8 @@ public class AccountStepdefs {
     }
 
     private void setReqResExpectations(Map<String, JsonElement> reqResCollection, LightrailClient lr) throws IOException, LightrailException {
+        reset(lr.networkProvider);
+
         for (String name : reqResCollection.keySet()) {
             String reqResKey = name;
             JsonObject reqResDetails = reqResCollection.get(reqResKey).getAsJsonObject();
