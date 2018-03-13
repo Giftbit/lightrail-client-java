@@ -5,14 +5,13 @@ import com.lightrail.model.Contact;
 import com.lightrail.model.LightrailException;
 import com.lightrail.model.Transaction;
 import com.lightrail.params.*;
-import com.lightrail.utils.LightrailConstants;
 
 import java.io.IOException;
 
 import static java.lang.String.format;
 
 public class Accounts {
-    public LightrailClient lr;
+    private LightrailClient lr;
 
     public Accounts(LightrailClient lr) {
         this.lr = lr;

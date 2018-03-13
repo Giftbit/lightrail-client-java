@@ -14,7 +14,7 @@ import java.io.IOException;
 import static java.lang.String.format;
 
 public class Cards {
-    public LightrailClient lr;
+    private LightrailClient lr;
 
     public Cards(LightrailClient lr) {
         this.lr = lr;

@@ -13,7 +13,7 @@ import java.io.IOException;
 import static java.lang.String.format;
 
 public class Contacts {
-    public LightrailClient lr;
+    private LightrailClient lr;
 
     public Contacts(LightrailClient lr) {
         this.lr = lr;
