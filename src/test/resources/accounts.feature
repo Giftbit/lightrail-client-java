@@ -29,14 +29,16 @@ Feature: Account Card
   @account_retrieval @by_shopper_id
 
   Scenario: Retrieve by shopperId
-    When ACCOUNT_RETRIEVAL a contact exists: requires minimum parameters [shopperId, currency] and makes the following REST requests: [contactsSearchOneResult]
+    When ACCOUNT_RETRIEVAL a contact exists and has an account: requires minimum parameters [shopperId, currency] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult]
+    When ACCOUNT_RETRIEVAL a contact exists but has no account: requires minimum parameters [shopperId, currency] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchNoResults] and throws the following error: [LightrailException]
     When ACCOUNT_RETRIEVAL a contact doesn't exist: requires minimum parameters [shopperId, currency] and makes the following REST requests: [contactsSearchNoResults]
 
 
   @account_retrieval @by_contact_id
 
   Scenario: Retrieve by contactId
-    When ACCOUNT_RETRIEVAL a contact exists: requires minimum parameters [contactId, currency] and makes the following REST requests: [accountCardSearchOneResult]
+    When ACCOUNT_RETRIEVAL a contact exists and has an account: requires minimum parameters [contactId, currency] and makes the following REST requests: [accountCardSearchOneResult]
+    When ACCOUNT_RETRIEVAL a contact exists but has no account: requires minimum parameters [contactId, currency] and makes the following REST requests: [accountCardSearchNoResults] and throws the following error: [LightrailException]
     When ACCOUNT_RETRIEVAL a contact doesn't exist: requires minimum parameters [contactId, currency] and makes the following REST requests: [accountCardSearchNoResults]
 
 
