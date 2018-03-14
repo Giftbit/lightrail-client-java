@@ -27,7 +27,7 @@ import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.*;
 
 public class AccountStepdefs {
-    private JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/variables.json")).getAsJsonObject();
+    private JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/accountVariables.json")).getAsJsonObject();
     private DefaultNetworkProvider npMock = mock(DefaultNetworkProvider.class);
     private LightrailClient lr = new LightrailClient("123", "123", npMock);
     private Gson gson = new Gson();
