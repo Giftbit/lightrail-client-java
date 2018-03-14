@@ -5,6 +5,7 @@ import com.google.gson.JsonObject;
 import com.lightrail.model.Card;
 import com.lightrail.model.LightrailException;
 import com.lightrail.model.Transaction;
+import com.lightrail.params.CardSearchParams;
 import com.lightrail.params.CreateCardParams;
 import com.lightrail.params.CreateTransactionParams;
 import com.lightrail.utils.LightrailConstants;
@@ -27,22 +28,33 @@ public class Cards {
         return lr.gson.fromJson(card, Card.class);
     }
 
-    public Card retrieveAccountCardByContactIdAndCurrency(String contactId, String currency) throws LightrailException, IOException {
-        String response = lr.networkProvider.getAPIResponse(lr.apiKey, format("cards?cardType=ACCOUNT_CARD&contactId=%s&currency=%s", contactId, currency), LightrailConstants.API.REQUEST_METHOD_GET, null);
+    public Card retrieveSingleCardByParams(CardSearchParams params) throws IOException, LightrailException {
+        String urlQuery = "cards?";
+        if (params.cardType != null) {
+            urlQuery = urlQuery + "cardType=" + params.cardType + "&";
+        }
+        if (params.userSuppliedId != null) {
+            urlQuery = urlQuery + "userSuppliedId=" + params.userSuppliedId + "&";
+        }
+        if (params.contactId != null) {
+            urlQuery = urlQuery + "contactId=" + params.contactId + "&";
+        }
+        if (params.currency != null) {
+            urlQuery = urlQuery + "currency=" + params.currency + "&";
+        }
 
-        if (response == null) {
+        String response = lr.networkProvider.getAPIResponse(lr.apiKey, urlQuery, "GET", null);
+
+        JsonObject jsonResponse = lr.gson.fromJson(response, JsonObject.class);
+
+        JsonArray cardResultsArray = jsonResponse.getAsJsonArray("cards");
+        if (cardResultsArray.size() == 0) {
             return null;
         }
 
-        JsonArray jsonResponse = lr.gson.fromJson(response, JsonObject.class).getAsJsonArray("cards");
-        if (jsonResponse.size() > 0) {
-            String jsonCard = jsonResponse.get(0).toString();
-            return lr.gson.fromJson(jsonCard, Card.class);
-        } else {
-            return null;
-        }
+        String jsonCard = cardResultsArray.get(0).toString();
+        return lr.gson.fromJson(jsonCard, Card.class);
     }
-
 
     public Transaction createTransaction(CreateTransactionParams params) throws IOException, LightrailException {
         String bodyJsonString = lr.gson.toJson(params);

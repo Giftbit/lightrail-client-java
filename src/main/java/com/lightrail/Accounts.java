@@ -36,7 +36,7 @@ public class Accounts {
             throw new LightrailException("Could not find the Contact for that contactId: " + params.contactId);
         }
 
-        Card card = lr.cards.retrieveAccountCardByContactIdAndCurrency(contact.contactId, params.currency);
+        Card card = lr.cards.retrieveSingleCardByParams(createAccountCardSearchParams(params.contactId, params.currency));
         if (card != null) {
             return card;
         }
@@ -70,7 +70,7 @@ public class Accounts {
             contact = lr.contacts.create(params.shopperId);
         }
 
-        Card card = lr.cards.retrieveAccountCardByContactIdAndCurrency(contact.contactId, params.currency);
+        Card card = lr.cards.retrieveSingleCardByParams(createAccountCardSearchParams(contact.contactId, params.currency));
         if (card != null) {
             return card;
         }
@@ -86,7 +86,7 @@ public class Accounts {
     }
 
     public Card retrieveByContactIdAndCurrency(String contactId, String currency) throws IOException, LightrailException {
-        return lr.cards.retrieveAccountCardByContactIdAndCurrency(contactId, currency);
+        return lr.cards.retrieveSingleCardByParams(createAccountCardSearchParams(contactId, currency));
     }
 
     public Card retrieveByShopperIdAndCurrency(String shopperId, String currency) throws IOException, LightrailException {
@@ -94,8 +94,7 @@ public class Accounts {
         if (contact == null) {
             return null;
         }
-        String contactId = contact.contactId;
-        return lr.cards.retrieveAccountCardByContactIdAndCurrency(contactId, currency);
+        return lr.cards.retrieveSingleCardByParams(createAccountCardSearchParams(contact.contactId, currency));
     }
 
     public Transaction createTransaction(CreateAccountTransactionByContactIdParams params) throws LightrailException, IOException {
@@ -112,7 +111,7 @@ public class Accounts {
             throw new LightrailException("Missing parameter for account transaction: userSuppliedId");
         }
 
-        Card card = lr.cards.retrieveAccountCardByContactIdAndCurrency(params.contactId, params.currency);
+        Card card = lr.cards.retrieveSingleCardByParams(createAccountCardSearchParams(params.contactId, params.currency));
         if (card == null || card.cardId == null) {
             throw new LightrailException(format("Could not find account card for contact '%s' with currency '%s'", params.contactId, params.currency));
         }
@@ -142,5 +141,13 @@ public class Accounts {
 
         CreateAccountTransactionByContactIdParams contactParams = new CreateAccountTransactionByContactIdParams(params, contact.contactId);
         return createTransaction(contactParams);
+    }
+
+    private CardSearchParams createAccountCardSearchParams(String contactId, String currency) {
+        CardSearchParams cardSearchParams = new CardSearchParams();
+        cardSearchParams.cardType = "ACCOUNT_CARD";
+        cardSearchParams.currency = currency;
+        cardSearchParams.contactId = contactId;
+        return cardSearchParams;
     }
 }
