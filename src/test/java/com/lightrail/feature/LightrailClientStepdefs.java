@@ -14,6 +14,7 @@ import io.jsonwebtoken.Jwts;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.regex.Pattern;
 
@@ -80,5 +81,22 @@ public class LightrailClientStepdefs {
         Integer exp = (Integer) tokenBody.get("exp");
 
         assertEquals(iat + tokenParams.validityInSeconds, (int) exp);
+    }
+
+    @Given("^TOKEN_GENERATION a token should contain the metadata it is generated with: \\[(.*)\\]$")
+    public void tokenGenerationWithMetadata(String params) throws LightrailException, UnsupportedEncodingException {
+        LightrailClient lr = new LightrailClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnIjp7Imd1aSI6Imdvb2V5IiwiZ21pIjoiZ2VybWllIn19.XxOjDsluAw5_hdf5scrLk0UBn8VlhT-3zf5ZeIkEld8", "secret");
+        JsonObject jsonParams = getJsonParams(jsonVariables, params);
+        CreateShopperTokenParams tokenParams = gson.fromJson(jsonParams, CreateShopperTokenParams.class);
+
+
+        String token = lr.generateShopperToken(tokenParams);
+
+        Jwt parsedToken = Jwts.parser().setSigningKey(lr.sharedSecret.getBytes("UTF-8")).parse(token);
+        Claims tokenBody = (Claims) (parsedToken.getBody());
+        LinkedHashMap g = (LinkedHashMap) tokenBody.get("g");
+        HashMap metadata = (HashMap) g.get("metadata");
+
+        assertEquals(tokenParams.metadata, metadata);
     }
 }

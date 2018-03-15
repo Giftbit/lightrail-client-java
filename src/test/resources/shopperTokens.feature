@@ -12,4 +12,4 @@ Feature: Shopper Tokens
 
   @shopper_tokens
   Scenario: Shopper token - Sets metadata
-    #When TOKEN_GENERATION a token should contain the metadata it is generated with: [shopperId, metadata]
+    When TOKEN_GENERATION a token should contain the metadata it is generated with: [shopperId, metadata]

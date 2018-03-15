@@ -108,7 +108,7 @@ public class LightrailClient {
         int exp = iat + validityInSeconds;
 
         if (params.metadata != null) {
-            // TODO - accept this without being prescriptive about shape?
+            g.put("metadata", params.metadata);
         }
 
 
