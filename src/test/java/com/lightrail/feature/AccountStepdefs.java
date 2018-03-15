@@ -7,10 +7,7 @@ import com.google.gson.JsonParser;
 import com.lightrail.LightrailClient;
 import com.lightrail.model.LightrailException;
 import com.lightrail.network.DefaultNetworkProvider;
-import com.lightrail.params.CreateAccountCardByContactIdParams;
-import com.lightrail.params.CreateAccountCardByShopperIdParams;
-import com.lightrail.params.CreateAccountTransactionByContactIdParams;
-import com.lightrail.params.CreateAccountTransactionByShopperIdParams;
+import com.lightrail.params.*;
 import cucumber.api.java.en.Given;
 
 import java.io.FileNotFoundException;
@@ -115,6 +112,33 @@ public class AccountStepdefs {
             assertEquals(true, exceptionThrown);
         } else {
             assertEquals(false, exceptionThrown);
+        }
+
+        verifyMock(reqResCollection, lr);
+    }
+
+    @Given("^ACCOUNT_TRANSACTION a pending transaction exists: \\[(.[^\\]]+)\\] requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\]$")
+    public void accountTransactionVoidOrCapturePending(String actionOnPending, String minimumParams, String expectedRequestsAndResponses) throws Throwable {
+        Map<String, JsonElement> reqResCollection = getReqResCollection(jsonVariables, expectedRequestsAndResponses);
+        setReqResExpectations(reqResCollection, lr);
+        JsonObject jsonParams = getJsonParams(jsonVariables, minimumParams);
+
+
+        if (Pattern.compile("(?i)contactid").matcher(minimumParams).find()) {
+            HandleAccountPendingByContactId minParams = gson.fromJson(jsonParams.toString(), HandleAccountPendingByContactId.class);
+            if (Pattern.compile("(?i)capture").matcher(actionOnPending).find()) {
+                lr.accounts.capturePendingTransaction(minParams);
+            } else if (Pattern.compile("(?i)void").matcher(actionOnPending).find()) {
+                lr.accounts.voidPendingTransaction(minParams);
+            }
+
+        } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
+            HandleAccountPendingByShopperId minParams = gson.fromJson(jsonParams.toString(), HandleAccountPendingByShopperId.class);
+            if (Pattern.compile("(?i)capture").matcher(actionOnPending).find()) {
+                lr.accounts.capturePendingTransaction(minParams);
+            } else if (Pattern.compile("(?i)void").matcher(actionOnPending).find()) {
+                lr.accounts.voidPendingTransaction(minParams);
+            }
         }
 
         verifyMock(reqResCollection, lr);

@@ -56,6 +56,7 @@ Feature: Account Card
     When ACCOUNT_TRANSACTION a contact exists and but has no account: requires minimum parameters [shopperId, currency, value, userSuppliedId] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchNoResults] and throws the following error: [LightrailException]
     When ACCOUNT_TRANSACTION a contact doesn't exist: requires minimum parameters [shopperId, currency, value, userSuppliedId] and makes the following REST requests: [contactsSearchNoResults] and throws the following error: [LightrailException]
 
+
   @accounts @account_transactions @by_contact_id
 
   Scenario: Charge by contactId
@@ -64,11 +65,33 @@ Feature: Account Card
     When ACCOUNT_TRANSACTION a contact doesn't exist: requires minimum parameters [contactId, currency, value, userSuppliedId] and makes the following REST requests: [accountCardSearchNoResults] and throws the following error: [LightrailException]
 
 
-  Scenario: Pending charge
+  @accounts @account_transactions @by_shopper_id
 
-  Scenario: Capture pending
+  Scenario: Charge by shopperId
+    When ACCOUNT_TRANSACTION a contact exists and has an account: requires minimum parameters [shopperId, currency, value, userSuppliedId] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult, accountCardPostTransaction]
+    When ACCOUNT_TRANSACTION a contact exists and but has no account: requires minimum parameters [shopperId, currency, value, userSuppliedId] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchNoResults] and throws the following error: [LightrailException]
+    When ACCOUNT_TRANSACTION a contact doesn't exist: requires minimum parameters [shopperId, currency, value, userSuppliedId] and makes the following REST requests: [contactsSearchNoResults] and throws the following error: [LightrailException]
 
-  Scenario: Void pending
+
+  @accounts @account_transactions @pending @by_shopper_id
+
+  Scenario: Pending charge by shopperId
+    When ACCOUNT_TRANSACTION a contact exists and has an account: requires minimum parameters [shopperId, currency, value, userSuppliedId, pending] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult, accountCardPostPendingTransaction]
+
+
+  @accounts @account_transactions @pending @by_shopper_id
+
+  Scenario: Void or capture pending by shopperId
+    When ACCOUNT_TRANSACTION a pending transaction exists: [capture] requires minimum parameters [shopperId, currency, userSuppliedId, transactionId] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult, accountCardCapturePendingTransaction]
+    When ACCOUNT_TRANSACTION a pending transaction exists: [void] requires minimum parameters [shopperId, currency, userSuppliedId, transactionId] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult, accountCardVoidPendingTransaction]
+
+
+  @accounts @account_transactions @pending @by_contact_id
+
+  Scenario: Void or capture pending by contactId
+    When ACCOUNT_TRANSACTION a pending transaction exists: [capture] requires minimum parameters [contactId, currency, userSuppliedId, transactionId] and makes the following REST requests: [accountCardSearchOneResult, accountCardCapturePendingTransaction]
+    When ACCOUNT_TRANSACTION a pending transaction exists: [void] requires minimum parameters [contactId, currency, userSuppliedId, transactionId] and makes the following REST requests: [accountCardSearchOneResult, accountCardVoidPendingTransaction]
+
 
   Scenario: Simulate charge (nsf: false)
 

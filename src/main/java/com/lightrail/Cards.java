@@ -8,6 +8,7 @@ import com.lightrail.model.Transaction;
 import com.lightrail.params.CardSearchParams;
 import com.lightrail.params.CreateCardParams;
 import com.lightrail.params.CreateTransactionParams;
+import com.lightrail.params.HandlePendingTransactionParams;
 import com.lightrail.utils.LightrailConstants;
 
 import java.io.IOException;
@@ -61,6 +62,21 @@ public class Cards {
     public Transaction createTransaction(CreateTransactionParams params) throws IOException, LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
         String response = lr.networkProvider.getAPIResponse(format("cards/%s/transactions", params.cardId), "POST", bodyJsonString);
+        String transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction").toString();
+        return lr.gson.fromJson(transaction, Transaction.class);
+    }
+
+    public Transaction handlePendingTransaction(HandlePendingTransactionParams params) throws IOException, LightrailException {
+        if (params.captureTransaction == false && params.voidTransaction == false) {
+            throw new LightrailException("Must set one of 'captureTransaction' or 'voidTransaction' to true");
+        }
+        if (params.captureTransaction == true && params.voidTransaction == true) {
+            throw new LightrailException("Must set ONLY one of 'captureTransaction' or 'voidTransaction' to true");
+        }
+        String actionOnPending = params.captureTransaction ? "capture" : "void";
+
+        String bodyJsonString = lr.gson.toJson(params);
+        String response = lr.networkProvider.getAPIResponse(format("cards/%s/transactions/%s/%s", params.cardId, params.transactionId, actionOnPending), "POST", bodyJsonString);
         String transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction").toString();
         return lr.gson.fromJson(transaction, Transaction.class);
     }

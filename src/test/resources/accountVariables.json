@@ -4,7 +4,9 @@
   "userSuppliedId": "this-is-a-user-supplied-id",
   "accountCardId": "this-is-an-account-card-id",
   "cardId": "this-is-a-card-id",
+  "transactionId": "this-is-a-transaction-id",
   "currency": "ABC",
+  "pending": true,
   "endpoints": {
     "contacts": "contacts",
     "contactsSearch": "contacts?",
@@ -131,6 +133,69 @@
           "value": -1,
           "userSuppliedId": "this-is-a-transaction-user-supplied-id",
           "transactionType": "DRAWDOWN",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ],
+          "transactionId": "this-is-a-transaction-id"
+        }
+      }
+    },
+    "accountCardPostPendingTransaction": {
+      "httpMethod": "post",
+      "endpoint": "/transactions",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "PENDING_CREATE",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ],
+          "transactionId": "this-is-a-transaction-id"
+        }
+      }
+    },
+    "accountCardCapturePendingTransaction": {
+      "httpMethod": "post",
+      "endpoint": "/capture",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "DRAWDOWN",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ],
+          "transactionId": "this-is-a-transaction-id"
+        }
+      }
+    },
+    "accountCardVoidPendingTransaction": {
+      "httpMethod": "post",
+      "endpoint": "/void",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "PENDING_VOID",
           "cardId": "this-is-a-card-id",
           "currency": "XXX",
           "cardType": "ACCOUNT_CARD",
