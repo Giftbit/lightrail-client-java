@@ -28,12 +28,12 @@ public class Contacts {
         params.userSuppliedId = shopperId;
         String jsonParams = lr.gson.toJson(params);
 
-        String jsonResponse = lr.networkProvider.getAPIResponse(lr.apiKey, "contacts", LightrailConstants.API.REQUEST_METHOD_POST, jsonParams);
+        String jsonResponse = lr.networkProvider.getAPIResponse("contacts", LightrailConstants.API.REQUEST_METHOD_POST, jsonParams);
         return getSingleContactFromJson(jsonResponse);
     }
 
     public Contact retrieve(String contactId) throws IOException, LightrailException {
-        String jsonResponse = lr.networkProvider.getAPIResponse(lr.apiKey, format("contacts/%s", contactId), LightrailConstants.API.REQUEST_METHOD_GET, null);
+        String jsonResponse = lr.networkProvider.getAPIResponse(format("contacts/%s", contactId), LightrailConstants.API.REQUEST_METHOD_GET, null);
         return getSingleContactFromJson(jsonResponse);
     }
 
@@ -42,7 +42,7 @@ public class Contacts {
     }
 
     public Contact retrieveByUserSuppliedId(String userSuppliedId) throws LightrailException, IOException {
-        String jsonResponse = lr.networkProvider.getAPIResponse(lr.apiKey, format("contacts?userSuppliedId=%s", userSuppliedId), LightrailConstants.API.REQUEST_METHOD_GET, null);
+        String jsonResponse = lr.networkProvider.getAPIResponse(format("contacts?userSuppliedId=%s", userSuppliedId), LightrailConstants.API.REQUEST_METHOD_GET, null);
 
         return getFirstContactResultFromJson(jsonResponse);
     }

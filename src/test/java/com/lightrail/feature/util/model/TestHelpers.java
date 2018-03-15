@@ -49,9 +49,9 @@ public class TestHelpers {
             // todo: generate body string?
 
             if (Pattern.compile("(?i)error").matcher(reqResKey).find()) {
-                when(lr.networkProvider.getAPIResponse(matches(lr.apiKey), contains(endpoint), matches("(?i)" + method), (String) any())).thenThrow(new LightrailException(""));  // todo: this exception needs to match the `errorName` passed in from the feature file
+                when(lr.networkProvider.getAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenThrow(new LightrailException(""));  // todo: this exception needs to match the `errorName` passed in from the feature file
             } else {
-                when(lr.networkProvider.getAPIResponse(matches(lr.apiKey), contains(endpoint), matches("(?i)" + method), (String) any())).thenReturn(reqResDetails.get("response").toString());
+                when(lr.networkProvider.getAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenReturn(reqResDetails.get("response").toString());
             }
         }
     }
@@ -64,7 +64,7 @@ public class TestHelpers {
             String endpoint = reqResDetails.get("endpoint").getAsString();
             String method = reqResDetails.get("httpMethod").getAsString();
 
-            verify(lr.networkProvider, times(1)).getAPIResponse(matches(lr.apiKey), contains(endpoint), matches("(?i)" + method), (String) any());
+            verify(lr.networkProvider, times(1)).getAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any());
         }
     }
 }
