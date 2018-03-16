@@ -12,6 +12,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -130,6 +131,14 @@ public class LightrailClient {
                 .setHeaderParam("typ", "JWT")
                 .signWith(SignatureAlgorithm.HS256, sharedSecret.getBytes("UTF-8"))
                 .compact();
+    }
+
+    public String urlEncode(String string) throws LightrailException {
+        try {
+            return URLEncoder.encode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new LightrailException("Could not URL-encode the parameter " + string);
+        }
     }
 
 }

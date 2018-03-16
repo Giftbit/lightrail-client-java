@@ -33,7 +33,7 @@ public class Contacts {
     }
 
     public Contact retrieve(String contactId) throws IOException, LightrailException {
-        String jsonResponse = lr.networkProvider.getAPIResponse(format("contacts/%s", contactId), LightrailConstants.API.REQUEST_METHOD_GET, null);
+        String jsonResponse = lr.networkProvider.getAPIResponse(format("contacts/%s", lr.urlEncode(contactId)), LightrailConstants.API.REQUEST_METHOD_GET, null);
         return getSingleContactFromJson(jsonResponse);
     }
 
@@ -42,7 +42,7 @@ public class Contacts {
     }
 
     public Contact retrieveByUserSuppliedId(String userSuppliedId) throws LightrailException, IOException {
-        String jsonResponse = lr.networkProvider.getAPIResponse(format("contacts?userSuppliedId=%s", userSuppliedId), LightrailConstants.API.REQUEST_METHOD_GET, null);
+        String jsonResponse = lr.networkProvider.getAPIResponse(format("contacts?userSuppliedId=%s", lr.urlEncode(userSuppliedId)), LightrailConstants.API.REQUEST_METHOD_GET, null);
 
         return getFirstContactResultFromJson(jsonResponse);
     }
