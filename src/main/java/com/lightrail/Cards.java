@@ -61,7 +61,13 @@ public class Cards {
 
     public Transaction createTransaction(CreateTransactionParams params) throws IOException, LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
-        String response = lr.networkProvider.getAPIResponse(format("cards/%s/transactions", params.cardId), "POST", bodyJsonString);
+
+        String urlEndpoint = format("cards/%s/transactions", params.cardId);
+        if (params.dryRun) {
+            urlEndpoint = urlEndpoint + "/dryRun";
+        }
+
+        String response = lr.networkProvider.getAPIResponse(urlEndpoint, "POST", bodyJsonString);
         String transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction").toString();
         return lr.gson.fromJson(transaction, Transaction.class);
     }

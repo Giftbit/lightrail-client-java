@@ -93,8 +93,15 @@ Feature: Account Card
     When ACCOUNT_TRANSACTION a pending transaction exists: [void] requires minimum parameters [contactId, currency, userSuppliedId, transactionId] and makes the following REST requests: [accountCardSearchOneResult, accountCardVoidPendingTransaction]
 
 
+  @accounts @account_transactions @simulation @by_shopper_id
+
   Scenario: Simulate charge (nsf: false)
+    When ACCOUNT_TRANSACTION a contact exists and has an account: requires minimum parameters [shopperId, currency, value, userSuppliedId, dryRun] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult, accountCardPostTransactionSimulation]
+
+
+  @accounts @account_transactions @simulation @by_shopper_id
 
   Scenario: Simulate charge (nsf: true)
+    When ACCOUNT_TRANSACTION a contact exists and has an account: requires minimum parameters [shopperId, currency, value, userSuppliedId, dryRun] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult, accountCardPostTransactionSimulation]
 
   Scenario: Fund
