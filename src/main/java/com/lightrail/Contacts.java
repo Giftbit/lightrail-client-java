@@ -8,8 +8,6 @@ import com.lightrail.model.LightrailException;
 import com.lightrail.params.CreateContactParams;
 import com.lightrail.utils.LightrailConstants;
 
-import java.io.IOException;
-
 import static java.lang.String.format;
 
 public class Contacts {
@@ -23,7 +21,7 @@ public class Contacts {
         return new Contact();
     }
 
-    public Contact create(String shopperId) throws IOException, LightrailException {
+    public Contact create(String shopperId) throws LightrailException {
         CreateContactParams params = new CreateContactParams();
         params.userSuppliedId = shopperId;
         String jsonParams = lr.gson.toJson(params);
@@ -32,16 +30,16 @@ public class Contacts {
         return getSingleContactFromJson(jsonResponse);
     }
 
-    public Contact retrieve(String contactId) throws IOException, LightrailException {
+    public Contact retrieve(String contactId) throws LightrailException {
         String jsonResponse = lr.networkProvider.getAPIResponse(format("contacts/%s", lr.urlEncode(contactId)), LightrailConstants.API.REQUEST_METHOD_GET, null);
         return getSingleContactFromJson(jsonResponse);
     }
 
-    public Contact retrieveByShopperId(String shopperId) throws LightrailException, IOException {
+    public Contact retrieveByShopperId(String shopperId) throws LightrailException {
         return retrieveByUserSuppliedId(shopperId);
     }
 
-    public Contact retrieveByUserSuppliedId(String userSuppliedId) throws LightrailException, IOException {
+    public Contact retrieveByUserSuppliedId(String userSuppliedId) throws LightrailException {
         String jsonResponse = lr.networkProvider.getAPIResponse(format("contacts?userSuppliedId=%s", lr.urlEncode(userSuppliedId)), LightrailConstants.API.REQUEST_METHOD_GET, null);
 
         return getFirstContactResultFromJson(jsonResponse);

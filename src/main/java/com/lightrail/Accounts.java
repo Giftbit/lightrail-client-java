@@ -6,8 +6,6 @@ import com.lightrail.model.LightrailException;
 import com.lightrail.model.Transaction;
 import com.lightrail.params.*;
 
-import java.io.IOException;
-
 import static java.lang.String.format;
 
 public class Accounts {
@@ -17,7 +15,7 @@ public class Accounts {
         this.lr = lr;
     }
 
-    public Card create(CreateAccountCardByContactIdParams params) throws LightrailException, IOException {
+    public Card create(CreateAccountCardByContactIdParams params) throws LightrailException {
         if (params == null) {
             throw new LightrailException("Cannot create Account with params: null");
         }
@@ -51,7 +49,7 @@ public class Accounts {
         return lr.cards.create(newCardParams);
     }
 
-    public Card create(CreateAccountCardByShopperIdParams params) throws LightrailException, IOException {
+    public Card create(CreateAccountCardByShopperIdParams params) throws LightrailException {
         if (params == null) {
             throw new LightrailException("Cannot create Account with params: null");
         }
@@ -85,11 +83,11 @@ public class Accounts {
         return lr.cards.create(newCardParams);
     }
 
-    public Card retrieveByContactIdAndCurrency(String contactId, String currency) throws IOException, LightrailException {
+    public Card retrieveByContactIdAndCurrency(String contactId, String currency) throws LightrailException {
         return lr.cards.retrieveSingleCardByParams(createAccountCardSearchParams(contactId, currency));
     }
 
-    public Card retrieveByShopperIdAndCurrency(String shopperId, String currency) throws IOException, LightrailException {
+    public Card retrieveByShopperIdAndCurrency(String shopperId, String currency) throws LightrailException {
         Contact contact = lr.contacts.retrieveByShopperId(shopperId);
         if (contact == null) {
             return null;
@@ -97,7 +95,7 @@ public class Accounts {
         return lr.cards.retrieveSingleCardByParams(createAccountCardSearchParams(contact.contactId, currency));
     }
 
-    public Transaction createTransaction(CreateAccountTransactionByContactIdParams params) throws LightrailException, IOException {
+    public Transaction createTransaction(CreateAccountTransactionByContactIdParams params) throws LightrailException {
         if (params == null) {
             throw new LightrailException("Cannot create account transaction with params: null");
         }
@@ -120,7 +118,7 @@ public class Accounts {
         return lr.cards.createTransaction(cardParams);
     }
 
-    public Transaction createTransaction(CreateAccountTransactionByShopperIdParams params) throws LightrailException, IOException {
+    public Transaction createTransaction(CreateAccountTransactionByShopperIdParams params) throws LightrailException {
         if (params == null) {
             throw new LightrailException("Cannot create account transaction with params: null");
         }
@@ -143,25 +141,25 @@ public class Accounts {
         return createTransaction(contactParams);
     }
 
-    public Transaction capturePendingTransaction(HandleAccountPendingByContactId params) throws LightrailException, IOException {
+    public Transaction capturePendingTransaction(HandleAccountPendingByContactId params) throws LightrailException {
         String cardId = retrieveByContactIdAndCurrency(params.contactId, params.currency).cardId;
         HandlePendingTransactionParams fullParams = new HandlePendingTransactionParams(params, cardId, true);
         return lr.cards.handlePendingTransaction(fullParams);
     }
 
-    public Transaction capturePendingTransaction(HandleAccountPendingByShopperId params) throws LightrailException, IOException {
+    public Transaction capturePendingTransaction(HandleAccountPendingByShopperId params) throws LightrailException {
         String cardId = retrieveByShopperIdAndCurrency(params.shopperId, params.currency).cardId;
         HandlePendingTransactionParams fullParams = new HandlePendingTransactionParams(params, cardId, true);
         return lr.cards.handlePendingTransaction(fullParams);
     }
 
-    public Transaction voidPendingTransaction(HandleAccountPendingByContactId params) throws LightrailException, IOException {
+    public Transaction voidPendingTransaction(HandleAccountPendingByContactId params) throws LightrailException {
         String cardId = retrieveByContactIdAndCurrency(params.contactId, params.currency).cardId;
         HandlePendingTransactionParams fullParams = new HandlePendingTransactionParams(params, cardId, false);
         return lr.cards.handlePendingTransaction(fullParams);
     }
 
-    public Transaction voidPendingTransaction(HandleAccountPendingByShopperId params) throws LightrailException, IOException {
+    public Transaction voidPendingTransaction(HandleAccountPendingByShopperId params) throws LightrailException {
         String cardId = retrieveByShopperIdAndCurrency(params.shopperId, params.currency).cardId;
         HandlePendingTransactionParams fullParams = new HandlePendingTransactionParams(params, cardId, false);
         return lr.cards.handlePendingTransaction(fullParams);

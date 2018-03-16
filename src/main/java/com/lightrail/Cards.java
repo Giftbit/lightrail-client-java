@@ -11,8 +11,6 @@ import com.lightrail.params.CreateTransactionParams;
 import com.lightrail.params.HandlePendingTransactionParams;
 import com.lightrail.utils.LightrailConstants;
 
-import java.io.IOException;
-
 import static java.lang.String.format;
 
 public class Cards {
@@ -22,7 +20,7 @@ public class Cards {
         this.lr = lr;
     }
 
-    public Card create(CreateCardParams params) throws IOException, LightrailException {
+    public Card create(CreateCardParams params) throws LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
         String response = lr.networkProvider.getAPIResponse("cards", LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
         String card = lr.gson.fromJson(response, JsonObject.class).get("card").toString();
@@ -30,7 +28,7 @@ public class Cards {
     }
 
     // todo: write method that returns all search results, not just one
-    public Card retrieveSingleCardByParams(CardSearchParams params) throws IOException, LightrailException {
+    public Card retrieveSingleCardByParams(CardSearchParams params) throws LightrailException {
         String urlQuery = "cards?";
         if (params.cardType != null) {
             urlQuery = urlQuery + "cardType=" + lr.urlEncode(params.cardType) + "&";
@@ -58,7 +56,7 @@ public class Cards {
         return lr.gson.fromJson(jsonCard, Card.class);
     }
 
-    public Transaction createTransaction(CreateTransactionParams params) throws IOException, LightrailException {
+    public Transaction createTransaction(CreateTransactionParams params) throws LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
 
         String urlEndpoint = format("cards/%s/transactions", lr.urlEncode(params.cardId));
@@ -71,7 +69,7 @@ public class Cards {
         return lr.gson.fromJson(transaction, Transaction.class);
     }
 
-    public Transaction handlePendingTransaction(HandlePendingTransactionParams params) throws IOException, LightrailException {
+    public Transaction handlePendingTransaction(HandlePendingTransactionParams params) throws LightrailException {
         if (!params.captureTransaction && !params.voidTransaction) {
             throw new LightrailException("Must set one of 'captureTransaction' or 'voidTransaction' to true");
         }

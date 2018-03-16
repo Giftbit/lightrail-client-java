@@ -32,7 +32,7 @@ public class LightrailClientStepdefs {
 
 
     @Given("^the \\[(.[^\\]]*)\\] is set to a(?:n)? (?:in)?valid value \\[(.*)\\] it should (?:not )?throw an error(?:: \\[(.[^\\]]+)\\])?$")
-    public void lightrail_client_invalid_api_key(String configOption, String value, String errorName) throws Throwable {
+    public void lightrail_client_invalid_api_key(String configOption, String value, String errorName) {
         String apiKey = Pattern.compile("(?i)API key").matcher(configOption).find() ? value : "anything";
         String secret = Pattern.compile("(?i)shared secret").matcher(configOption).find() ? value : "anything";
 

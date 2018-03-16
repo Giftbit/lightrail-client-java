@@ -16,47 +16,51 @@ public class DefaultNetworkProvider implements NetworkProvider {
         this.lr = lr;
     }
 
-    public String getAPIResponse(String urlSuffix, String requestMethod, String body) throws LightrailException, IOException {
-        URL requestURL = new URL(LightrailConstants.API.apiBaseURL + urlSuffix);
-        HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
-        httpsURLConnection.setRequestProperty(
-                LightrailConstants.API.AUTHORIZATION_HEADER_NAME,
-                LightrailConstants.API.AUTHORIZATION_TOKEN_TYPE + " " + lr.apiKey);
-        httpsURLConnection.setRequestMethod(requestMethod);
+    public String getAPIResponse(String urlSuffix, String requestMethod, String body) throws LightrailException {
+        try {
+            URL requestURL = new URL(LightrailConstants.API.apiBaseURL + urlSuffix);
+            HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
+            httpsURLConnection.setRequestProperty(
+                    LightrailConstants.API.AUTHORIZATION_HEADER_NAME,
+                    LightrailConstants.API.AUTHORIZATION_TOKEN_TYPE + " " + lr.apiKey);
+            httpsURLConnection.setRequestMethod(requestMethod);
 
-        if (body != null) {
-            httpsURLConnection.setRequestProperty(LightrailConstants.API.CONTENT_TYPE_HEADER_NAME, LightrailConstants.API.CONTENT_TYPE_JSON_UTF8);
-            httpsURLConnection.setDoOutput(true);
-            try (OutputStream wr = httpsURLConnection.getOutputStream()) {
-                wr.write(body.getBytes(StandardCharsets.UTF_8));
-                wr.flush();
-                wr.close();
+            if (body != null) {
+                httpsURLConnection.setRequestProperty(LightrailConstants.API.CONTENT_TYPE_HEADER_NAME, LightrailConstants.API.CONTENT_TYPE_JSON_UTF8);
+                httpsURLConnection.setDoOutput(true);
+                try (OutputStream wr = httpsURLConnection.getOutputStream()) {
+                    wr.write(body.getBytes(StandardCharsets.UTF_8));
+                    wr.flush();
+                    wr.close();
+                }
             }
+            int responseCode = httpsURLConnection.getResponseCode();
+
+            InputStream responseInputStream;
+            if (httpsURLConnection.getResponseCode() < HttpsURLConnection.HTTP_BAD_REQUEST) {
+                responseInputStream = httpsURLConnection.getInputStream();
+            } else {
+                responseInputStream = httpsURLConnection.getErrorStream();
+            }
+
+            // todo try() {}
+            BufferedReader responseReader = new BufferedReader(new InputStreamReader(responseInputStream, StandardCharsets.UTF_8));
+            StringBuilder responseStringBuffer = new StringBuilder();
+            String inputLine;
+            while ((inputLine = responseReader.readLine()) != null)
+                responseStringBuffer.append(inputLine).append('\n');
+            responseReader.close();
+
+            String responseString = responseStringBuffer.toString();
+
+            if (responseCode > 204) {
+                handleErrors(responseCode, responseString);
+            }
+
+            return responseString;
+        } catch (IOException e) {
+            throw new LightrailException("There was a problem making that API request: " + e.getMessage());
         }
-        int responseCode = httpsURLConnection.getResponseCode();
-
-        InputStream responseInputStream;
-        if (httpsURLConnection.getResponseCode() < HttpsURLConnection.HTTP_BAD_REQUEST) {
-            responseInputStream = httpsURLConnection.getInputStream();
-        } else {
-            responseInputStream = httpsURLConnection.getErrorStream();
-        }
-
-        // todo try() {}
-        BufferedReader responseReader = new BufferedReader(new InputStreamReader(responseInputStream, StandardCharsets.UTF_8));
-        StringBuilder responseStringBuffer = new StringBuilder();
-        String inputLine;
-        while ((inputLine = responseReader.readLine()) != null)
-            responseStringBuffer.append(inputLine).append('\n');
-        responseReader.close();
-
-        String responseString = responseStringBuffer.toString();
-
-        if (responseCode > 204) {
-            handleErrors(responseCode, responseString);
-        }
-
-        return responseString;
     }
 
     @Override
