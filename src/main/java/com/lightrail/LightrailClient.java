@@ -120,12 +120,14 @@ public class LightrailClient {
             g.put("metadata", params.metadata);
         }
 
+        String[] roles = {"shopper"};
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("g", g);
         claims.put("iat", iat);
         claims.put("exp", exp);
         claims.put("iss", "MERCHANT");
+        claims.put("roles", roles);
 
         return builder.setClaims(claims)
                 .setHeaderParam("typ", "JWT")
