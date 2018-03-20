@@ -26,6 +26,7 @@ public class LightrailClient {
     public final Accounts accounts;
     public final Contacts contacts;
     public final Cards cards;
+    public Programs programs;
 
     public LightrailClient(String apiKey, String sharedSecret, NetworkProvider np) throws LightrailException {
         this.apiKey = apiKey;
@@ -38,6 +39,7 @@ public class LightrailClient {
         this.accounts = new Accounts(this);
         this.contacts = new Contacts(this);
         this.cards = new Cards(this);
+        this.programs = new Programs(this);
     }
 
     public LightrailClient(String apiKey, String sharedSecret) throws LightrailException {
@@ -50,6 +52,7 @@ public class LightrailClient {
         this.accounts = new Accounts(this);
         this.contacts = new Contacts(this);
         this.cards = new Cards(this);
+        this.programs = new Programs(this);
     }
 
     public void verifyApiKey() throws LightrailException {
