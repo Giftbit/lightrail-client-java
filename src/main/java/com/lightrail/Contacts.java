@@ -17,10 +17,6 @@ public class Contacts {
         this.lr = lr;
     }
 
-    public Contact create() {
-        return new Contact();
-    }
-
     public Contact create(String shopperId) throws LightrailException {
         CreateContactParams params = new CreateContactParams();
         params.userSuppliedId = shopperId;
