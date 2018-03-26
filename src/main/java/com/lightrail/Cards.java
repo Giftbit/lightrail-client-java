@@ -30,16 +30,16 @@ public class Cards {
     // todo: write method that returns all search results, not just one
     public Card retrieveSingleCardByParams(CardSearchParams params) throws LightrailException {
         String urlQuery = "cards?";
-        if (params.cardType != null) {
+        if (params.cardType != null && !params.cardType.isEmpty()) {
             urlQuery = urlQuery + "cardType=" + lr.urlEncode(params.cardType) + "&";
         }
-        if (params.userSuppliedId != null) {
+        if (params.userSuppliedId != null && !params.userSuppliedId.isEmpty()) {
             urlQuery = urlQuery + "userSuppliedId=" + lr.urlEncode(params.userSuppliedId) + "&";
         }
-        if (params.contactId != null) {
+        if (params.contactId != null && !params.contactId.isEmpty()) {
             urlQuery = urlQuery + "contactId=" + lr.urlEncode(params.contactId) + "&";
         }
-        if (params.currency != null) {
+        if (params.currency != null && !params.currency.isEmpty()) {
             urlQuery = urlQuery + "currency=" + lr.urlEncode(params.currency) + "&";
         }
 
