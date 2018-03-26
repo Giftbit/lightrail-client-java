@@ -4,9 +4,7 @@ Feature: Account Card
 
   Scenario: Create by shopperId
     When ACCOUNT_CREATION a contact exists but has no account: requires minimum parameters [shopperId, currency, userSuppliedId] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchNoResults, accountCardCreate]
-
     When ACCOUNT_CREATION a contact exists and has an account: requires minimum parameters [shopperId, currency, userSuppliedId] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult]
-
     When ACCOUNT_CREATION a contact doesn't exist: requires minimum parameters [shopperId, currency, userSuppliedId] and makes the following REST requests: [contactsSearchNoResults, contactCreate, accountCardSearchNoResults, accountCardCreate]
 
 
@@ -40,13 +38,6 @@ Feature: Account Card
     When ACCOUNT_RETRIEVAL a contact exists and has an account: requires minimum parameters [contactId, currency] and makes the following REST requests: [accountCardSearchOneResult]
     When ACCOUNT_RETRIEVAL a contact exists but has no account: requires minimum parameters [contactId, currency] and makes the following REST requests: [accountCardSearchNoResults] and throws the following error: [LightrailException]
     When ACCOUNT_RETRIEVAL a contact doesn't exist: requires minimum parameters [contactId, currency] and makes the following REST requests: [accountCardSearchNoResults]
-
-
-  @accounts @account_details
-
-  Scenario: retrieve details by shopperId
-
-  Scenario: retrieve details by contactId
 
 
   @accounts @account_transactions @by_shopper_id
@@ -103,5 +94,3 @@ Feature: Account Card
 
   Scenario: Simulate charge (nsf: true)
     When ACCOUNT_TRANSACTION a contact exists and has an account: requires minimum parameters [shopperId, currency, value, userSuppliedId, dryRun] and makes the following REST requests: [contactsSearchOneResult, accountCardSearchOneResult, accountCardPostTransactionSimulation]
-
-  Scenario: Fund
