@@ -86,7 +86,7 @@ public class Cards {
         return lr.gson.fromJson(transaction, Transaction.class);
     }
 
-    public Transaction handlePendingTransaction(HandlePendingTransactionParams params) throws LightrailException {
+    public Transaction completePendingTransaction(HandlePendingTransactionParams params) throws LightrailException {
         if (!params.captureTransaction && !params.voidTransaction) {
             throw new LightrailException("Must set one of 'captureTransaction' or 'voidTransaction' to true");
         }
