@@ -1,6 +1,7 @@
 package com.lightrail;
 
 import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lightrail.model.Card;
 import com.lightrail.model.LightrailException;
@@ -10,6 +11,8 @@ import com.lightrail.params.CreateCardParams;
 import com.lightrail.params.CreateTransactionParams;
 import com.lightrail.params.HandlePendingTransactionParams;
 import com.lightrail.utils.LightrailConstants;
+
+import java.util.ArrayList;
 
 import static java.lang.String.format;
 
@@ -27,8 +30,7 @@ public class Cards {
         return lr.gson.fromJson(card, Card.class);
     }
 
-    // todo: write method that returns all search results, not just one
-    public Card retrieveSingleCardByParams(CardSearchParams params) throws LightrailException {
+    public ArrayList<Card> retrieve(CardSearchParams params) throws LightrailException {
         String urlQuery = "cards?";
         if (params.cardType != null && !params.cardType.isEmpty()) {
             urlQuery = urlQuery + "cardType=" + lr.urlEncode(params.cardType) + "&";
@@ -47,13 +49,19 @@ public class Cards {
 
         JsonObject jsonResponse = lr.gson.fromJson(response, JsonObject.class);
 
-        JsonArray cardResultsArray = jsonResponse.getAsJsonArray("cards");
-        if (cardResultsArray.size() == 0) {
+
+        JsonArray cardResultsJsonArray = jsonResponse.getAsJsonArray("cards");
+        if (cardResultsJsonArray.size() == 0) {
             return null;
         }
 
-        String jsonCard = cardResultsArray.get(0).toString();
-        return lr.gson.fromJson(jsonCard, Card.class);
+        ArrayList<Card> cardResults = new ArrayList<>();
+        for (JsonElement jsonCard : cardResultsJsonArray) {
+            Card card = lr.gson.fromJson(jsonCard, Card.class);
+            cardResults.add(card);
+        }
+
+        return cardResults;
     }
 
     public Transaction createTransaction(CreateTransactionParams params) throws LightrailException {
