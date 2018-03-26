@@ -25,13 +25,16 @@ public class Cards {
 
     public Card create(CreateCardParams params) throws LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
-        String response = lr.networkProvider.getAPIResponse("cards", LightrailConstants.API.REQUEST_METHOD_POST, bodyJsonString);
+        String response = lr.networkProvider.getAPIResponse(
+                LightrailConstants.API.Endpoints.CREATE_CARD,
+                LightrailConstants.API.REQUEST_METHOD_POST,
+                bodyJsonString);
         String card = lr.gson.fromJson(response, JsonObject.class).get("card").toString();
         return lr.gson.fromJson(card, Card.class);
     }
 
     public ArrayList<Card> retrieve(CardSearchParams params) throws LightrailException {
-        String urlQuery = "cards?";
+        String urlQuery = LightrailConstants.API.Endpoints.SEARCH_CARDS;
         if (params.cardType != null && !params.cardType.isEmpty()) {
             urlQuery = urlQuery + "cardType=" + lr.urlEncode(params.cardType) + "&";
         }
@@ -45,7 +48,10 @@ public class Cards {
             urlQuery = urlQuery + "currency=" + lr.urlEncode(params.currency) + "&";
         }
 
-        String response = lr.networkProvider.getAPIResponse(urlQuery, "GET", null);
+        String response = lr.networkProvider.getAPIResponse(
+                urlQuery,
+                LightrailConstants.API.REQUEST_METHOD_GET,
+                null);
 
         JsonObject jsonResponse = lr.gson.fromJson(response, JsonObject.class);
 
@@ -67,12 +73,15 @@ public class Cards {
     public Transaction createTransaction(CreateTransactionParams params) throws LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
 
-        String urlEndpoint = format("cards/%s/transactions", lr.urlEncode(params.cardId));
+        String urlEndpoint = format(LightrailConstants.API.Endpoints.CREATE_TRANSACTION, lr.urlEncode(params.cardId));
         if (params.dryRun) {
-            urlEndpoint = urlEndpoint + "/dryRun";
+            urlEndpoint = urlEndpoint + LightrailConstants.API.Transactions.DRYRUN;
         }
 
-        String response = lr.networkProvider.getAPIResponse(urlEndpoint, "POST", bodyJsonString);
+        String response = lr.networkProvider.getAPIResponse(
+                urlEndpoint,
+                LightrailConstants.API.REQUEST_METHOD_POST,
+                bodyJsonString);
         String transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction").toString();
         return lr.gson.fromJson(transaction, Transaction.class);
     }
@@ -84,10 +93,16 @@ public class Cards {
         if (params.captureTransaction && params.voidTransaction) {
             throw new LightrailException("Must set ONLY one of 'captureTransaction' or 'voidTransaction' to true");
         }
-        String actionOnPending = params.captureTransaction ? "capture" : "void";
+        String actionOnPending = params.captureTransaction ? LightrailConstants.API.Transactions.CAPTURE : LightrailConstants.API.Transactions.VOID;
 
         String bodyJsonString = lr.gson.toJson(params);
-        String response = lr.networkProvider.getAPIResponse(format("cards/%s/transactions/%s/%s", lr.urlEncode(params.cardId), lr.urlEncode(params.transactionId), lr.urlEncode(actionOnPending)), "POST", bodyJsonString);
+        String response = lr.networkProvider.getAPIResponse(
+                format(LightrailConstants.API.Endpoints.ACTION_ON_TRANSACTION,
+                        lr.urlEncode(params.cardId),
+                        lr.urlEncode(params.transactionId),
+                        lr.urlEncode(actionOnPending)),
+                LightrailConstants.API.REQUEST_METHOD_POST,
+                bodyJsonString);
         String transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction").toString();
         return lr.gson.fromJson(transaction, Transaction.class);
     }
