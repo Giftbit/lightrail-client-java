@@ -28,6 +28,15 @@ public class Contacts {
         return getSingleContactFromJson(jsonResponse);
     }
 
+    public Contact create(CreateContactParams params) throws LightrailException {
+        String jsonParams = lr.gson.toJson(params);
+        String jsonResponse = lr.networkProvider.getAPIResponse(
+                LightrailConstants.API.Endpoints.CREATE_CONTACT,
+                LightrailConstants.API.REQUEST_METHOD_POST,
+                jsonParams);
+        return getSingleContactFromJson(jsonResponse);
+    }
+
     public Contact retrieve(String contactId) throws LightrailException {
         String jsonResponse = lr.networkProvider.getAPIResponse(
                 format(LightrailConstants.API.Endpoints.RETRIEVE_CONTACT, lr.urlEncode(contactId)),
