@@ -33,7 +33,7 @@ public class Programs {
 
         String bodyJsonString = lr.gson.toJson(params);
         String response = lr.networkProvider.getAPIResponse(
-                LightrailConstants.API.Endpoints.CREATE_PROGRAM,
+                lr.endpointBuilder.createProgram(),
                 LightrailConstants.API.REQUEST_METHOD_POST,
                 bodyJsonString);
         JsonElement program = lr.gson.fromJson(response, JsonObject.class).get("program");
@@ -46,7 +46,7 @@ public class Programs {
         }
 
         String response = lr.networkProvider.getAPIResponse(
-                LightrailConstants.API.Endpoints.RETRIEVE_PROGRAM + lr.urlEncode(programId),
+                lr.endpointBuilder.retrieveProgram(programId),
                 LightrailConstants.API.REQUEST_METHOD_GET,
                 null);
         JsonElement program = lr.gson.fromJson(response, JsonObject.class).get("program");

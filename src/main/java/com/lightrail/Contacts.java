@@ -20,7 +20,7 @@ public class Contacts {
         params.userSuppliedId = shopperId;
         String jsonParams = lr.gson.toJson(params);
         String jsonResponse = lr.networkProvider.getAPIResponse(
-                LightrailConstants.API.Endpoints.CREATE_CONTACT,
+                lr.endpointBuilder.createContact(),
                 LightrailConstants.API.REQUEST_METHOD_POST,
                 jsonParams);
         return getSingleContactFromJson(jsonResponse);
@@ -29,7 +29,7 @@ public class Contacts {
     public Contact create(CreateContactParams params) throws LightrailException {
         String jsonParams = lr.gson.toJson(params);
         String jsonResponse = lr.networkProvider.getAPIResponse(
-                LightrailConstants.API.Endpoints.CREATE_CONTACT,
+                lr.endpointBuilder.createContact(),
                 LightrailConstants.API.REQUEST_METHOD_POST,
                 jsonParams);
         return getSingleContactFromJson(jsonResponse);

@@ -8,15 +8,6 @@ import java.net.URLEncoder;
 public final class LightrailConstants {
     public static final class API {
 
-        public final class Endpoints {
-            public static final String PING = "ping";
-
-            public static final String CREATE_CONTACT = "contacts";
-
-            public static final String CREATE_PROGRAM = "programs";
-            public static final String RETRIEVE_PROGRAM = "programs/";
-        }
-
         //        public enum EndpointsEnum {
 //            PROGRAMS("programs"),
 //            CARDS("cards");

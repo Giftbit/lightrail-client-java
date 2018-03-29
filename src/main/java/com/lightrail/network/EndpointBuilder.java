@@ -58,6 +58,18 @@ public class EndpointBuilder {
         return urlQuery;
     }
 
+    public String createContact() {
+        return "contacts";
+    }
+
+    public String createProgram() {
+        return "programs";
+    }
+
+    public String retrieveProgram(String programId) throws LightrailException {
+        return format("programs/%s", urlEncode(programId));
+    }
+
 
     private String urlEncode(String string) throws LightrailException {
         try {
