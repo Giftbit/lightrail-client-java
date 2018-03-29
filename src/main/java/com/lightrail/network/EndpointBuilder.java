@@ -27,6 +27,10 @@ public class EndpointBuilder {
         return format("cards/%s/transactions/%s/%s", urlEncode(cardId), urlEncode(transactionId), urlEncode(action));
     }
 
+    public String dryRunTransaction(String transactionEndpoint) throws LightrailException {
+        return transactionEndpoint + "/dryRun";
+    }
+
     public String retrieveContactById(String contactId) throws LightrailException {
         return format("contacts/%s", urlEncode(contactId));
     }
@@ -70,6 +74,17 @@ public class EndpointBuilder {
         return format("programs/%s", urlEncode(programId));
     }
 
+
+    public enum Transactions {
+        CAPTURE("capture"),
+        VOID("void");
+
+        public final String action;
+
+        Transactions(String action) {
+            this.action = action;
+        }
+    }
 
     private String urlEncode(String string) throws LightrailException {
         try {

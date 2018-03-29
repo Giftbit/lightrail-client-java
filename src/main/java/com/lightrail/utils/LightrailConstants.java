@@ -28,13 +28,6 @@ public final class LightrailConstants {
         public static final String REQUEST_METHOD_GET = "GET";
         public static final String REQUEST_METHOD_POST = "POST";
 
-        public final class Transactions {
-            public static final String CAPTURE = "capture";
-            public static final String VOID = "void";
-            public static final String REFUND = "refund";
-
-            public static final String DRYRUN = "/dryRun";
-        }
     }
 
     private static String urlEncode(String string) throws LightrailException {
