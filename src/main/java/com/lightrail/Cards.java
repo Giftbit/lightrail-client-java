@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.lightrail.model.Card;
 import com.lightrail.model.LightrailException;
 import com.lightrail.model.Transaction;
-import com.lightrail.network.EndpointBuilder;
 import com.lightrail.params.CardSearchParams;
 import com.lightrail.params.CompletePendingTransactionParams;
 import com.lightrail.params.CreateCardParams;
@@ -15,7 +14,6 @@ import com.lightrail.utils.LightrailConstants;
 
 import java.util.ArrayList;
 
-import static com.lightrail.network.EndpointBuilder.*;
 import static com.lightrail.network.EndpointBuilder.Transactions.CAPTURE;
 import static com.lightrail.network.EndpointBuilder.Transactions.VOID;
 
