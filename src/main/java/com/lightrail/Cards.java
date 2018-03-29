@@ -7,9 +7,9 @@ import com.lightrail.model.Card;
 import com.lightrail.model.LightrailException;
 import com.lightrail.model.Transaction;
 import com.lightrail.params.CardSearchParams;
+import com.lightrail.params.CompletePendingTransactionParams;
 import com.lightrail.params.CreateCardParams;
 import com.lightrail.params.CreateTransactionParams;
-import com.lightrail.params.HandlePendingTransactionParams;
 import com.lightrail.utils.LightrailConstants;
 
 import java.util.ArrayList;
@@ -85,12 +85,9 @@ public class Cards {
         return lr.gson.fromJson(transaction, Transaction.class);
     }
 
-    public Transaction completePendingTransaction(HandlePendingTransactionParams params) throws LightrailException {
-        if (!params.captureTransaction && !params.voidTransaction) {
-            throw new LightrailException("Must set one of 'captureTransaction' or 'voidTransaction' to true");
-        }
-        if (params.captureTransaction && params.voidTransaction) {
-            throw new LightrailException("Must set ONLY one of 'captureTransaction' or 'voidTransaction' to true");
+    public Transaction completePendingTransaction(CompletePendingTransactionParams params) throws LightrailException {
+        if (params == null) {
+            throw new LightrailException("Cannot void or capture pending transaction with null params");
         }
         String actionOnPending = params.captureTransaction ? LightrailConstants.API.Transactions.CAPTURE : LightrailConstants.API.Transactions.VOID;
 

@@ -149,25 +149,25 @@ public class Accounts {
 
     public Transaction capturePendingTransaction(HandleAccountPendingByContactId params) throws LightrailException {
         String cardId = retrieveByContactIdAndCurrency(params.contactId, params.currency).cardId;
-        HandlePendingTransactionParams fullParams = new HandlePendingTransactionParams(params, cardId, true);
+        CompletePendingTransactionParams fullParams = new CompletePendingTransactionParams(params, cardId, true);
         return lr.cards.completePendingTransaction(fullParams);
     }
 
     public Transaction capturePendingTransaction(HandleAccountPendingByShopperId params) throws LightrailException {
         String cardId = retrieveByShopperIdAndCurrency(params.shopperId, params.currency).cardId;
-        HandlePendingTransactionParams fullParams = new HandlePendingTransactionParams(params, cardId, true);
+        CompletePendingTransactionParams fullParams = new CompletePendingTransactionParams(params, cardId, true);
         return lr.cards.completePendingTransaction(fullParams);
     }
 
     public Transaction voidPendingTransaction(HandleAccountPendingByContactId params) throws LightrailException {
         String cardId = retrieveByContactIdAndCurrency(params.contactId, params.currency).cardId;
-        HandlePendingTransactionParams fullParams = new HandlePendingTransactionParams(params, cardId, false);
+        CompletePendingTransactionParams fullParams = new CompletePendingTransactionParams(params, cardId, false);
         return lr.cards.completePendingTransaction(fullParams);
     }
 
     public Transaction voidPendingTransaction(HandleAccountPendingByShopperId params) throws LightrailException {
         String cardId = retrieveByShopperIdAndCurrency(params.shopperId, params.currency).cardId;
-        HandlePendingTransactionParams fullParams = new HandlePendingTransactionParams(params, cardId, false);
+        CompletePendingTransactionParams fullParams = new CompletePendingTransactionParams(params, cardId, false);
         return lr.cards.completePendingTransaction(fullParams);
     }
 
