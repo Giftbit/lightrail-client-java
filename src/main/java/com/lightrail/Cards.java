@@ -14,8 +14,6 @@ import com.lightrail.utils.LightrailConstants;
 
 import java.util.ArrayList;
 
-import static java.lang.String.format;
-
 public class Cards {
     private LightrailClient lr;
 
@@ -72,7 +70,9 @@ public class Cards {
     public Transaction createTransaction(CreateTransactionParams params) throws LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
 
-        String urlEndpoint = format(LightrailConstants.API.Endpoints.CREATE_TRANSACTION, lr.urlEncode(params.cardId));
+        // todo possibility: LightrailConstants.API.EndpointsEnum.CARDS + "/" + id;
+
+        String urlEndpoint = LightrailConstants.API.buildTransactionCreationEndpoint(params.cardId);
         if (params.dryRun) {
             urlEndpoint = urlEndpoint + LightrailConstants.API.Transactions.DRYRUN;
         }
@@ -91,12 +91,10 @@ public class Cards {
         }
         String actionOnPending = params.captureTransaction ? LightrailConstants.API.Transactions.CAPTURE : LightrailConstants.API.Transactions.VOID;
 
+        String endpoint = LightrailConstants.API.buildTransactionActionEndpoint(params.cardId, params.transactionId, actionOnPending);
         String bodyJsonString = lr.gson.toJson(params);
         String response = lr.networkProvider.getAPIResponse(
-                format(LightrailConstants.API.Endpoints.ACTION_ON_TRANSACTION,
-                        lr.urlEncode(params.cardId),
-                        lr.urlEncode(params.transactionId),
-                        lr.urlEncode(actionOnPending)),
+                endpoint,
                 LightrailConstants.API.REQUEST_METHOD_POST,
                 bodyJsonString);
         JsonElement transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction");

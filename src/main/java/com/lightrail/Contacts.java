@@ -8,8 +8,6 @@ import com.lightrail.model.LightrailException;
 import com.lightrail.params.CreateContactParams;
 import com.lightrail.utils.LightrailConstants;
 
-import static java.lang.String.format;
-
 public class Contacts {
     private LightrailClient lr;
 
@@ -39,7 +37,7 @@ public class Contacts {
 
     public Contact retrieve(String contactId) throws LightrailException {
         String jsonResponse = lr.networkProvider.getAPIResponse(
-                format(LightrailConstants.API.Endpoints.RETRIEVE_CONTACT, lr.urlEncode(contactId)),
+                LightrailConstants.API.buildContactRetrievalEndpoint(contactId),
                 LightrailConstants.API.REQUEST_METHOD_GET,
                 null);
         return getSingleContactFromJson(jsonResponse);
@@ -51,7 +49,7 @@ public class Contacts {
 
     public Contact retrieveByUserSuppliedId(String userSuppliedId) throws LightrailException {
         String jsonResponse = lr.networkProvider.getAPIResponse(
-                format(LightrailConstants.API.Endpoints.RETRIEVE_CONTACT_BY_UID, lr.urlEncode(userSuppliedId)),
+                LightrailConstants.API.buildContactRetrieveByUserSuppliedIdEndpoint(userSuppliedId),
                 LightrailConstants.API.REQUEST_METHOD_GET,
                 null);
         return getFirstContactResultFromJson(jsonResponse);
