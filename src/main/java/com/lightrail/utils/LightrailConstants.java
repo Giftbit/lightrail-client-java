@@ -5,29 +5,8 @@ import com.lightrail.model.LightrailException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
-import static java.lang.String.format;
-
 public final class LightrailConstants {
     public static final class API {
-
-        public static final String apiBaseURL = "https://api.lightrail.com/v1/";
-
-        public static String buildTransactionCreationEndpoint(String cardId) throws LightrailException {
-            return format("cards/%s/transactions", urlEncode(cardId));
-        }
-
-        public static String buildTransactionActionEndpoint(String cardId, String transactionId, String action) throws LightrailException {
-            return format("cards/%s/transactions/%s/%s", urlEncode(cardId), urlEncode(transactionId), urlEncode(action));
-        }
-
-        public static String buildContactRetrievalEndpoint(String contactId) throws LightrailException {
-            return format("contacts/%s", urlEncode(contactId));
-        }
-
-        public static String buildContactRetrieveByUserSuppliedIdEndpoint(String userSuppliedId) throws LightrailException {
-            return format("contacts?userSuppliedId=%s", urlEncode(userSuppliedId));
-        }
-
 
         public final class Endpoints {
             public static final String PING = "ping";
@@ -41,7 +20,7 @@ public final class LightrailConstants {
             public static final String RETRIEVE_PROGRAM = "programs/";
         }
 
-//        public enum EndpointsEnum {
+        //        public enum EndpointsEnum {
 //            PROGRAMS("programs"),
 //            CARDS("cards");
 //

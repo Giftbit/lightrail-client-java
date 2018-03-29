@@ -37,7 +37,7 @@ public class Contacts {
 
     public Contact retrieve(String contactId) throws LightrailException {
         String jsonResponse = lr.networkProvider.getAPIResponse(
-                LightrailConstants.API.buildContactRetrievalEndpoint(contactId),
+                lr.endpointBuilder.retrieveContactById(contactId),
                 LightrailConstants.API.REQUEST_METHOD_GET,
                 null);
         return getSingleContactFromJson(jsonResponse);
@@ -49,7 +49,7 @@ public class Contacts {
 
     public Contact retrieveByUserSuppliedId(String userSuppliedId) throws LightrailException {
         String jsonResponse = lr.networkProvider.getAPIResponse(
-                LightrailConstants.API.buildContactRetrieveByUserSuppliedIdEndpoint(userSuppliedId),
+                lr.endpointBuilder.searchContactByUserSuppliedId(userSuppliedId),
                 LightrailConstants.API.REQUEST_METHOD_GET,
                 null);
         return getFirstContactResultFromJson(jsonResponse);

@@ -72,7 +72,7 @@ public class Cards {
 
         // todo possibility: LightrailConstants.API.EndpointsEnum.CARDS + "/" + id;
 
-        String urlEndpoint = LightrailConstants.API.buildTransactionCreationEndpoint(params.cardId);
+        String urlEndpoint = lr.endpointBuilder.createTransaction(params.cardId);
         if (params.dryRun) {
             urlEndpoint = urlEndpoint + LightrailConstants.API.Transactions.DRYRUN;
         }
@@ -91,7 +91,7 @@ public class Cards {
         }
         String actionOnPending = params.captureTransaction ? LightrailConstants.API.Transactions.CAPTURE : LightrailConstants.API.Transactions.VOID;
 
-        String endpoint = LightrailConstants.API.buildTransactionActionEndpoint(params.cardId, params.transactionId, actionOnPending);
+        String endpoint = lr.endpointBuilder.completePendingTransaction(params.cardId, params.transactionId, actionOnPending);
         String bodyJsonString = lr.gson.toJson(params);
         String response = lr.networkProvider.getAPIResponse(
                 endpoint,

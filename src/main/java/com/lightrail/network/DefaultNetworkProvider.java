@@ -18,7 +18,7 @@ public class DefaultNetworkProvider implements NetworkProvider {
 
     public String getAPIResponse(String urlSuffix, String requestMethod, String body) throws LightrailException {
         try {
-            URL requestURL = new URL(LightrailConstants.API.apiBaseURL + urlSuffix);
+            URL requestURL = new URL(lr.endpointBuilder.apiBaseURL + urlSuffix);
             HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
             httpsURLConnection.setRequestProperty(
                     LightrailConstants.API.AUTHORIZATION_HEADER_NAME,
