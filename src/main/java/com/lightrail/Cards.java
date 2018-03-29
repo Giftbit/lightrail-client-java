@@ -29,7 +29,7 @@ public class Cards {
                 LightrailConstants.API.Endpoints.CREATE_CARD,
                 LightrailConstants.API.REQUEST_METHOD_POST,
                 bodyJsonString);
-        String card = lr.gson.fromJson(response, JsonObject.class).get("card").toString();
+        JsonElement card = lr.gson.fromJson(response, JsonObject.class).get("card");
         return lr.gson.fromJson(card, Card.class);
     }
 
@@ -81,7 +81,7 @@ public class Cards {
                 urlEndpoint,
                 LightrailConstants.API.REQUEST_METHOD_POST,
                 bodyJsonString);
-        String transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction").toString();
+        JsonElement transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction");
         return lr.gson.fromJson(transaction, Transaction.class);
     }
 
@@ -99,7 +99,7 @@ public class Cards {
                         lr.urlEncode(actionOnPending)),
                 LightrailConstants.API.REQUEST_METHOD_POST,
                 bodyJsonString);
-        String transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction").toString();
+        JsonElement transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction");
         return lr.gson.fromJson(transaction, Transaction.class);
     }
 }

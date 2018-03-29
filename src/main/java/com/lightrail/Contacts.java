@@ -69,7 +69,7 @@ public class Contacts {
     private Contact getFirstContactResultFromJson(String jsonResponse) {
         JsonArray jsonContactResults = lr.gson.fromJson(jsonResponse, JsonObject.class).getAsJsonArray("contacts");
         if (jsonContactResults.size() > 0) {
-            String jsonContact = jsonContactResults.get(0).toString();
+            JsonElement jsonContact = jsonContactResults.get(0);
             return lr.gson.fromJson(jsonContact, Contact.class);
         } else {
             return null;

@@ -1,5 +1,6 @@
 package com.lightrail;
 
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lightrail.model.LightrailException;
 import com.lightrail.model.Program;
@@ -35,7 +36,7 @@ public class Programs {
                 LightrailConstants.API.Endpoints.CREATE_PROGRAM,
                 LightrailConstants.API.REQUEST_METHOD_POST,
                 bodyJsonString);
-        String program = lr.gson.fromJson(response, JsonObject.class).get("program").toString();
+        JsonElement program = lr.gson.fromJson(response, JsonObject.class).get("program");
         return lr.gson.fromJson(program, Program.class);
     }
 
@@ -48,7 +49,7 @@ public class Programs {
                 LightrailConstants.API.Endpoints.RETRIEVE_PROGRAM + lr.urlEncode(programId),
                 LightrailConstants.API.REQUEST_METHOD_GET,
                 null);
-        String program = lr.gson.fromJson(response, JsonObject.class).get("program").toString();
+        JsonElement program = lr.gson.fromJson(response, JsonObject.class).get("program");
         return lr.gson.fromJson(program, Program.class);
     }
 }
