@@ -47,8 +47,9 @@ public class DefaultNetworkProvider implements NetworkProvider {
             BufferedReader responseReader = new BufferedReader(new InputStreamReader(responseInputStream, StandardCharsets.UTF_8));
             StringBuilder responseStringBuffer = new StringBuilder();
             String inputLine;
-            while ((inputLine = responseReader.readLine()) != null)
+            while ((inputLine = responseReader.readLine()) != null) {
                 responseStringBuffer.append(inputLine).append('\n');
+            }
             responseReader.close();
 
             String responseString = responseStringBuffer.toString();

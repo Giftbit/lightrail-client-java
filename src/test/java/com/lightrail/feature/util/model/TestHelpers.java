@@ -38,8 +38,7 @@ public class TestHelpers {
     public static void setReqResExpectations(Map<String, JsonElement> reqResCollection, LightrailClient lr) throws IOException, LightrailException {
         reset(lr.networkProvider);
 
-        for (String name : reqResCollection.keySet()) {
-            String reqResKey = name;
+        for (String reqResKey : reqResCollection.keySet()) {
             JsonObject reqResDetails = reqResCollection.get(reqResKey).getAsJsonObject();
 
             String endpoint = reqResDetails.get("endpoint").getAsString();

@@ -55,7 +55,6 @@ public class Cards {
 
         JsonObject jsonResponse = lr.gson.fromJson(response, JsonObject.class);
 
-
         JsonArray cardResultsJsonArray = jsonResponse.getAsJsonArray("cards");
         if (cardResultsJsonArray.size() == 0) {
             return null;
