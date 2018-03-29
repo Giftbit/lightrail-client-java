@@ -5,7 +5,6 @@ import com.google.gson.JsonObject;
 import com.lightrail.model.LightrailException;
 import com.lightrail.model.Program;
 import com.lightrail.params.CreateProgramParams;
-import com.lightrail.utils.LightrailConstants;
 
 public class Programs {
     private LightrailClient lr;
@@ -32,10 +31,7 @@ public class Programs {
         }
 
         String bodyJsonString = lr.gson.toJson(params);
-        String response = lr.networkProvider.getAPIResponse(
-                lr.endpointBuilder.createProgram(),
-                LightrailConstants.API.REQUEST_METHOD_POST,
-                bodyJsonString);
+        String response = lr.networkProvider.post(lr.endpointBuilder.createProgram(), bodyJsonString);
         JsonElement program = lr.gson.fromJson(response, JsonObject.class).get("program");
         return lr.gson.fromJson(program, Program.class);
     }
@@ -45,10 +41,7 @@ public class Programs {
             throw new LightrailException("Cannot retrieve program for programId: null");
         }
 
-        String response = lr.networkProvider.getAPIResponse(
-                lr.endpointBuilder.retrieveProgram(programId),
-                LightrailConstants.API.REQUEST_METHOD_GET,
-                null);
+        String response = lr.networkProvider.get(lr.endpointBuilder.retrieveProgram(programId));
         JsonElement program = lr.gson.fromJson(response, JsonObject.class).get("program");
         return lr.gson.fromJson(program, Program.class);
     }

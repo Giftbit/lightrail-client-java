@@ -12,7 +12,6 @@ import java.util.regex.Pattern;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.contains;
-import static org.mockito.ArgumentMatchers.matches;
 import static org.mockito.Mockito.*;
 
 public class TestHelpers {
@@ -47,11 +46,31 @@ public class TestHelpers {
 
             // todo: generate body string?
 
-            if (Pattern.compile("(?i)error").matcher(reqResKey).find()) {
-                when(lr.networkProvider.getAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenThrow(new LightrailException(""));  // todo: this exception needs to match the `errorName` passed in from the feature file
-            } else {
-                when(lr.networkProvider.getAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any())).thenReturn(reqResDetails.get("response").toString());
+            boolean expectingError = Pattern.compile("(?i)error").matcher(reqResKey).find();
+
+            if (Pattern.compile("(?i)get").matcher(method).find()) {
+                setGetExpectation(endpoint, response, expectingError, lr);
+            } else if (Pattern.compile("(?i)post").matcher(method).find()) {
+                setPostExpectation(endpoint, response, expectingError, lr);
             }
+        }
+    }
+
+    private static void setGetExpectation(String endpoint, String response, boolean expectError, LightrailClient lr) throws LightrailException {
+        if (expectError) {
+            when(lr.networkProvider.get(contains(endpoint))).thenThrow(new LightrailException(""));   // todo better exception matching
+        } else {
+            when(lr.networkProvider.get(contains(endpoint))).thenReturn(response);
+        }
+
+    }
+
+    private static void setPostExpectation(String endpoint, String response, boolean expectError, LightrailClient lr) throws LightrailException {
+        // todo needs refactoring to check request body: second arg matcher should be motivated, not 'any()'
+        if (expectError) {
+            when(lr.networkProvider.post(contains(endpoint), (String) any())).thenThrow(new LightrailException(""));   // todo better exception matching
+        } else {
+            when(lr.networkProvider.post(contains(endpoint), (String) any())).thenReturn(response);
         }
     }
 
@@ -63,7 +82,14 @@ public class TestHelpers {
             String endpoint = reqResDetails.get("endpoint").getAsString();
             String method = reqResDetails.get("httpMethod").getAsString();
 
-            verify(lr.networkProvider, times(1)).getAPIResponse(contains(endpoint), matches("(?i)" + method), (String) any());
+            if (Pattern.compile("(?i)get").matcher(method).find()) {
+                verify(lr.networkProvider, times(1)).get(contains(endpoint));
+            }
+            if (Pattern.compile("(?i)post").matcher(method).find()) {
+                verify(lr.networkProvider, times(1)).post(contains(endpoint), (String) any());
+            }
+
+
         }
     }
 }

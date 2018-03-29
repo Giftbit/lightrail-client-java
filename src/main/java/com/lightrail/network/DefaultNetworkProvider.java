@@ -15,13 +15,25 @@ public class DefaultNetworkProvider implements NetworkProvider {
         this.lr = lr;
     }
 
+    public enum HttpMethods {
+        GET, POST
+    }
+
     private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
     private static final String AUTHORIZATION_TOKEN_TYPE = "Bearer";
 
     private static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
     private static final String CONTENT_TYPE_JSON_UTF8 = "application/json; charset=utf-8";
 
-    public String getAPIResponse(String urlSuffix, String requestMethod, String body) throws LightrailException {
+    public String get(String urlSuffix) throws LightrailException {
+        return makeAPIRequest(urlSuffix, HttpMethods.GET.name(), null);
+    }
+
+    public String post(String urlSuffix, String body) throws LightrailException {
+        return makeAPIRequest(urlSuffix, HttpMethods.POST.name(), body);
+    }
+
+    public String makeAPIRequest(String urlSuffix, String requestMethod, String body) throws LightrailException {
         try {
             URL requestURL = new URL(lr.endpointBuilder.apiBaseURL + urlSuffix);
             HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
