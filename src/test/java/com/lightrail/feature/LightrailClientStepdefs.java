@@ -1,6 +1,7 @@
 package com.lightrail.feature;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.lightrail.LightrailClient;
@@ -25,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 
 public class LightrailClientStepdefs {
     private JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/shopperTokenVariables.json")).getAsJsonObject();
-    private Gson gson = new Gson();
+    private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 
     public LightrailClientStepdefs() throws FileNotFoundException {
     }

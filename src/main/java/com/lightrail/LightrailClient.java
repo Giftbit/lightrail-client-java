@@ -1,6 +1,7 @@
 package com.lightrail;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.lightrail.model.LightrailException;
 import com.lightrail.network.DefaultNetworkProvider;
@@ -20,7 +21,7 @@ public class LightrailClient {
     public String apiKey;
     public String sharedSecret;
 
-    protected final Gson gson = new Gson();
+    protected final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 
     public NetworkProvider networkProvider;
     public final Accounts accounts;
