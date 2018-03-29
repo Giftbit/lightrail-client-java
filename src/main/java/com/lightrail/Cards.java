@@ -24,7 +24,7 @@ public class Cards {
     public Card create(CreateCardParams params) throws LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
         String response = lr.networkProvider.getAPIResponse(
-                LightrailConstants.API.Endpoints.CREATE_CARD,
+                lr.endpointBuilder.createCard(),
                 LightrailConstants.API.REQUEST_METHOD_POST,
                 bodyJsonString);
         JsonElement card = lr.gson.fromJson(response, JsonObject.class).get("card");
@@ -32,19 +32,7 @@ public class Cards {
     }
 
     public ArrayList<Card> retrieve(CardSearchParams params) throws LightrailException {
-        String urlQuery = LightrailConstants.API.Endpoints.SEARCH_CARDS;
-        if (params.cardType != null && !params.cardType.isEmpty()) {
-            urlQuery = urlQuery + "cardType=" + lr.urlEncode(params.cardType) + "&";
-        }
-        if (params.userSuppliedId != null && !params.userSuppliedId.isEmpty()) {
-            urlQuery = urlQuery + "userSuppliedId=" + lr.urlEncode(params.userSuppliedId) + "&";
-        }
-        if (params.contactId != null && !params.contactId.isEmpty()) {
-            urlQuery = urlQuery + "contactId=" + lr.urlEncode(params.contactId) + "&";
-        }
-        if (params.currency != null && !params.currency.isEmpty()) {
-            urlQuery = urlQuery + "currency=" + lr.urlEncode(params.currency) + "&";
-        }
+        String urlQuery = lr.endpointBuilder.searchCardsByParams(params);
 
         String response = lr.networkProvider.getAPIResponse(
                 urlQuery,

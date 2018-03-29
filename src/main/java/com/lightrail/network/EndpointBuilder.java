@@ -2,6 +2,7 @@ package com.lightrail.network;
 
 import com.lightrail.LightrailClient;
 import com.lightrail.model.LightrailException;
+import com.lightrail.params.CardSearchParams;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
@@ -32,6 +33,29 @@ public class EndpointBuilder {
 
     public String searchContactByUserSuppliedId(String userSuppliedId) throws LightrailException {
         return format("contacts?userSuppliedId=%s", urlEncode(userSuppliedId));
+    }
+
+    public String createCard() {
+        return "cards";
+    }
+
+    public String searchCardsByParams(CardSearchParams params) throws LightrailException {
+        String urlQuery = "cards?";
+
+        if (params.cardType != null && !params.cardType.isEmpty()) {
+            urlQuery = urlQuery + "cardType=" + urlEncode(params.cardType) + "&";
+        }
+        if (params.userSuppliedId != null && !params.userSuppliedId.isEmpty()) {
+            urlQuery = urlQuery + "userSuppliedId=" + urlEncode(params.userSuppliedId) + "&";
+        }
+        if (params.contactId != null && !params.contactId.isEmpty()) {
+            urlQuery = urlQuery + "contactId=" + urlEncode(params.contactId) + "&";
+        }
+        if (params.currency != null && !params.currency.isEmpty()) {
+            urlQuery = urlQuery + "currency=" + urlEncode(params.currency) + "&";
+        }
+
+        return urlQuery;
     }
 
 

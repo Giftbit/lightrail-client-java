@@ -13,9 +13,6 @@ public final class LightrailConstants {
 
             public static final String CREATE_CONTACT = "contacts";
 
-            public static final String CREATE_CARD = "cards";
-            public static final String SEARCH_CARDS = "cards?";
-
             public static final String CREATE_PROGRAM = "programs";
             public static final String RETRIEVE_PROGRAM = "programs/";
         }
