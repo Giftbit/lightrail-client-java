@@ -59,7 +59,7 @@ public class LightrailClient {
         if (apiKey == null) {
             throw new LightrailException("API key is not set");
         }
-        if ("".equals(apiKey)) {
+        if (apiKey.isEmpty()) {
             throw new LightrailException("API key is empty");
         }
     }
