@@ -17,7 +17,7 @@ import java.util.ArrayList;
 import static java.lang.String.format;
 
 public class Cards {
-    private LightrailClient lr;
+    private final LightrailClient lr;
 
     public Cards(LightrailClient lr) {
         this.lr = lr;

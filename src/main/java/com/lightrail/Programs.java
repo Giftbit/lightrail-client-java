@@ -7,7 +7,7 @@ import com.lightrail.params.CreateProgramParams;
 import com.lightrail.utils.LightrailConstants;
 
 public class Programs {
-    private LightrailClient lr;
+    private final LightrailClient lr;
 
     public Programs(LightrailClient lr) {
         this.lr = lr;

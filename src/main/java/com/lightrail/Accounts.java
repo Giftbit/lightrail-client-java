@@ -11,7 +11,7 @@ import java.util.ArrayList;
 import static java.lang.String.format;
 
 public class Accounts {
-    private LightrailClient lr;
+    private final LightrailClient lr;
 
     public Accounts(LightrailClient lr) {
         this.lr = lr;

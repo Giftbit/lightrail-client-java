@@ -11,7 +11,7 @@ import com.lightrail.utils.LightrailConstants;
 import static java.lang.String.format;
 
 public class Contacts {
-    private LightrailClient lr;
+    private final LightrailClient lr;
 
     public Contacts(LightrailClient lr) {
         this.lr = lr;
