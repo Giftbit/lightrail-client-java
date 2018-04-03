@@ -2,7 +2,7 @@ package com.lightrail.params;
 
 import java.util.Map;
 
-public class CreateShopperTokenParams {
+public class GenerateShopperTokenParams {
     public String shopperId = "";
     public String contactId = "";
     public String contactUserSuppliedId = "";

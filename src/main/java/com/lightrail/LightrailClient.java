@@ -5,7 +5,7 @@ import com.google.gson.JsonObject;
 import com.lightrail.model.LightrailException;
 import com.lightrail.network.DefaultNetworkProvider;
 import com.lightrail.network.NetworkProvider;
-import com.lightrail.params.CreateShopperTokenParams;
+import com.lightrail.params.GenerateShopperTokenParams;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -73,7 +73,7 @@ public class LightrailClient {
         }
     }
 
-    public String generateShopperToken(CreateShopperTokenParams params) throws LightrailException, UnsupportedEncodingException {
+    public String generateShopperToken(GenerateShopperTokenParams params) throws LightrailException, UnsupportedEncodingException {
         verifyApiKey();
         verifySharedSecret();
         if (params.contactId == null || params.shopperId == null || params.contactUserSuppliedId == null) {
