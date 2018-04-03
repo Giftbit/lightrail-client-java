@@ -55,7 +55,7 @@ public class LightrailClient {
         this.programs = new Programs(this);
     }
 
-    public void verifyApiKey() throws LightrailException {
+    protected void verifyApiKey() throws LightrailException {
         if (apiKey == null) {
             throw new LightrailException("API key is not set");
         }
@@ -64,7 +64,7 @@ public class LightrailClient {
         }
     }
 
-    public void verifySharedSecret() throws LightrailException {
+    protected void verifySharedSecret() throws LightrailException {
         if (sharedSecret == null) {
             throw new LightrailException("Shared secret is not set");
         }
