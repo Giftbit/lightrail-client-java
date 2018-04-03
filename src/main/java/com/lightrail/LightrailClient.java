@@ -26,7 +26,7 @@ public class LightrailClient {
     public final Accounts accounts;
     public final Contacts contacts;
     public final Cards cards;
-    public Programs programs;
+    public final Programs programs;
 
     public LightrailClient(String apiKey, String sharedSecret, NetworkProvider np) throws LightrailException {
         this.apiKey = apiKey;
