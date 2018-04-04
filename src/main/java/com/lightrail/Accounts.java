@@ -36,9 +36,10 @@ public class Accounts {
             throw new LightrailException("Could not find the Contact for that contactId: " + params.contactId);
         }
 
-        ArrayList<Card> cards = lr.cards.retrieve(createAccountCardSearchParams(contact.contactId, params.currency));
-        if (cards != null && cards.size() == 1) {
-            return cards.get(0);
+
+        Card card = retrieveByContactIdAndCurrency(contact.contactId, params.currency);
+        if (card != null) {
+            return card;
         }
 
         CreateCardParams newCardParams = new CreateCardParams();
@@ -70,9 +71,9 @@ public class Accounts {
             contact = lr.contacts.create(params.shopperId);
         }
 
-        ArrayList<Card> cards = lr.cards.retrieve(createAccountCardSearchParams(contact.contactId, params.currency));
-        if (cards != null && cards.size() == 1) {
-            return cards.get(0);
+        Card card = retrieveByContactIdAndCurrency(contact.contactId, params.currency);
+        if (card != null) {
+            return card;
         }
 
         CreateCardParams newCardParams = new CreateCardParams();
@@ -86,7 +87,7 @@ public class Accounts {
     }
 
     public Card retrieveByContactIdAndCurrency(String contactId, String currency) throws LightrailException {
-        ArrayList<Card> cards = lr.cards.retrieve(createAccountCardSearchParams(contactId, currency));
+        ArrayList<Card> cards = lr.cards.retrieve(buildAccountSearchParams(contactId, currency));
         if (cards == null || cards.size() == 0) {
             return null;
         }
@@ -172,7 +173,7 @@ public class Accounts {
     }
 
 
-    private CardSearchParams createAccountCardSearchParams(String contactId, String currency) {
+    private CardSearchParams buildAccountSearchParams(String contactId, String currency) {
         CardSearchParams cardSearchParams = new CardSearchParams();
         cardSearchParams.cardType = "ACCOUNT_CARD";
         cardSearchParams.currency = currency;
