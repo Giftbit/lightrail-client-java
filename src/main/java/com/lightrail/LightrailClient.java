@@ -80,13 +80,9 @@ public class LightrailClient {
             throw new LightrailException("Must set one of contactId, shopperId, or contactUserSuppliedId");
         }
 
-        int validityInSeconds = 43200;
         if (params.validityInSeconds <= 0) {
             throw new LightrailException("validityInSeconds must be greater than 0");
-        } else if (params.validityInSeconds > 0) {
-            validityInSeconds = params.validityInSeconds;
         }
-
 
         JwtBuilder builder = Jwts.builder();
 
@@ -117,7 +113,7 @@ public class LightrailClient {
         }
 
         int iat = (int) (System.currentTimeMillis() / 1000);
-        int exp = iat + validityInSeconds;
+        int exp = iat + params.validityInSeconds;
 
         if (params.metadata != null) {
             g.put("metadata", params.metadata);
