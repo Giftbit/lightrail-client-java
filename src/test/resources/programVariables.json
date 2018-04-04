@@ -1,0 +1,37 @@
+{
+  "programId": "this-is-a-program-id",
+  "userSuppliedId": "this-is-a-program-user-supplied-id",
+  "name": "this-is-a-program-name",
+  "currency": "ABC",
+  "valueStoreType": "SOME_TYPE",
+  "requestResponseCombos": {
+    "programCreate": {
+      "httpMethod": "post",
+      "endpoint": "programs",
+      "response": {
+        "program": {
+          "programId": "this-is-a-program-id",
+          "userSuppliedId": "this-is-a-program-user-supplied-id",
+          "name": "this-is-a-program-name",
+          "currency": "ABC",
+          "valueStoreType": "SOME_TYPE",
+          "dateCreated": "2018-03-29T16:45:24.000Z"
+        }
+      }
+    },
+    "programGet": {
+      "httpMethod": "get",
+      "endpoint": "programs/",
+      "response": {
+        "program": {
+          "programId": "this-is-a-program-id",
+          "userSuppliedId": "this-is-a-program-user-supplied-id",
+          "name": "this-is-a-program-name",
+          "currency": "ABC",
+          "valueStoreType": "SOME_TYPE",
+          "dateCreated": "2018-03-29T16:45:24.000Z"
+        }
+      }
+    }
+  }
+}

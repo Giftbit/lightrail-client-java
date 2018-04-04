@@ -1,0 +1,268 @@
+{
+  "shopperId": "this-is-a-shopper-id",
+  "contactId": "this-is-a-contact-id",
+  "userSuppliedId": "this-is-a-user-supplied-id",
+  "accountCardId": "this-is-an-account-card-id",
+  "cardId": "this-is-a-card-id",
+  "transactionId": "this-is-a-transaction-id",
+  "currency": "ABC",
+  "pending": true,
+  "dryRun": true,
+  "nsf": false,
+  "endpoints": {
+    "contacts": "contacts",
+    "contactsSearch": "contacts?",
+    "cards": "cards",
+    "cardsSearch": "cards?",
+    "accountCardsSearch": "cards?cardType=ACCOUNT_CARD"
+  },
+  "jsonResponses": {
+    "contactsSearchOneResult": {
+      "contacts": [
+        {
+          "contactId": "this-is-a-contact-id"
+        }
+      ]
+    },
+    "contactResult": {
+      "contact": {
+        "contactId": "this-is-a-contact-id"
+      }
+    },
+    "contactsSearchNoResults": {
+      "contacts": []
+    },
+    "accountCardsSearchOneResult": {
+      "cards": [
+        {
+          "cardId": "",
+          "cardType": "ACCOUNT_CARD"
+        }
+      ]
+    },
+    "accountCardsSearchNoResults": {
+      "cards": []
+    },
+    "accountCard": {
+      "card": {
+        "cardId": "this-is-a-card-id",
+        "contactId": "this-is-a-contact-id",
+        "userSuppliedId": "this-is-a-user-supplied-id"
+      }
+    }
+  },
+  "requestResponseCombos": {
+    "contactsSearchNoResults": {
+      "httpMethod": "get",
+      "endpoint": "contacts?",
+      "response": {
+        "contacts": []
+      }
+    },
+    "contactsSearchOneResult": {
+      "httpMethod": "get",
+      "endpoint": "contacts?",
+      "response": {
+        "contacts": [
+          {
+            "contactId": "this-is-a-contact-id"
+          }
+        ]
+      }
+    },
+    "contactGet": {
+      "httpMethod": "get",
+      "endpoint": "contacts",
+      "response": {
+        "contact": {
+          "contactId": "this-is-a-contact-id"
+        }
+      }
+    },
+    "contactCreate": {
+      "httpMethod": "post",
+      "endpoint": "contacts",
+      "response": {
+        "contact": {
+          "contactId": "this-is-a-contact-id"
+        }
+      }
+    },
+    "accountCardSearchNoResults": {
+      "httpMethod": "get",
+      "endpoint": "cards?cardType=ACCOUNT_CARD",
+      "response": {
+        "cards": []
+      }
+    },
+    "accountCardSearchOneResult": {
+      "httpMethod": "get",
+      "endpoint": "cards?cardType=ACCOUNT_CARD",
+      "response": {
+        "cards": [
+          {
+            "cardId": "this-is-a-card-id"
+          }
+        ]
+      }
+    },
+    "accountCardGet": {
+      "httpMethod": "get",
+      "endpoint": "cards/",
+      "response": {
+        "card": {
+          "cardId": "this-is-a-card-id"
+        }
+      }
+    },
+    "accountCardCreate": {
+      "httpMethod": "post",
+      "endpoint": "cards",
+      "response": {
+        "card": {
+          "cardId": "this-is-a-card-id",
+          "cardType": "ACCOUNT_CARD",
+          "contactId": "this-is-a-contact-id",
+          "currency": "ABC"
+        }
+      }
+    },
+    "accountCardPostTransaction": {
+      "httpMethod": "post",
+      "endpoint": "/transactions",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "DRAWDOWN",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ],
+          "transactionId": "this-is-a-transaction-id"
+        }
+      }
+    },
+    "accountCardPostTransactionSimulation": {
+      "httpMethod": "post",
+      "endpoint": "/transactions/dryRun",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "DRAWDOWN",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ]
+        }
+      }
+    },
+    "accountCardPostTransactionSimulationNsfFalse": {
+      "httpMethod": "post",
+      "endpoint": "/transactions/dryRun",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "DRAWDOWN",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ]
+        }
+      }
+    },
+    "accountCardPostPendingTransaction": {
+      "httpMethod": "post",
+      "endpoint": "/transactions",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "PENDING_CREATE",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ],
+          "transactionId": "this-is-a-transaction-id"
+        }
+      }
+    },
+    "accountCardCapturePendingTransaction": {
+      "httpMethod": "post",
+      "endpoint": "/capture",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "DRAWDOWN",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ],
+          "transactionId": "this-is-a-transaction-id"
+        }
+      }
+    },
+    "accountCardVoidPendingTransaction": {
+      "httpMethod": "post",
+      "endpoint": "/void",
+      "response": {
+        "transaction": {
+          "value": -1,
+          "userSuppliedId": "this-is-a-transaction-user-supplied-id",
+          "transactionType": "PENDING_VOID",
+          "cardId": "this-is-a-card-id",
+          "currency": "XXX",
+          "cardType": "ACCOUNT_CARD",
+          "transactionBreakdown": [
+            {
+              "value": -1,
+              "valueStoreId": "this-is-a-value-store-id"
+            }
+          ],
+          "transactionId": "this-is-a-transaction-id"
+        }
+      }
+    },
+    "contactsError404": {
+      "httpMethod": "get",
+      "endpoint": "contacts/",
+      "response": {
+        "status": 404,
+        "message": "Couldn't find the contact",
+        "messageCode": "SomeContactNotFound"
+      }
+    }
+  },
+  "errorNames": {
+    "LightrailArgumentError": "LightrailArgumentError",
+    "CouldNotFindObjectError": "CouldNotFindObjectError"
+  }
+}
