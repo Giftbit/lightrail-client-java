@@ -22,8 +22,16 @@ public class EndpointBuilder {
         return format("cards/%s/transactions", urlEncode(cardId));
     }
 
-    public String completePendingTransaction(String cardId, String transactionId, String action) throws LightrailException {
-        return format("cards/%s/transactions/%s/%s", urlEncode(cardId), urlEncode(transactionId), urlEncode(action));
+    public String getTransaction(String cardId, String transactionId) throws LightrailException {
+        return format("cards/%s/transactions/%s", urlEncode(cardId), urlEncode(transactionId));
+    }
+
+    public String voidPendingTransaction(String cardId, String transactionId) throws LightrailException {
+        return getTransaction(cardId, transactionId) + "/void";
+    }
+
+    public String capturePendingTransaction(String cardId, String transactionId) throws LightrailException {
+        return getTransaction(cardId, transactionId) + "/capture";
     }
 
     public String dryRunTransaction(String cardId) throws LightrailException {
@@ -71,17 +79,6 @@ public class EndpointBuilder {
 
     public String retrieveProgram(String programId) throws LightrailException {
         return format("programs/%s", urlEncode(programId));
-    }
-
-    public enum Transactions {
-        CAPTURE("capture"),
-        VOID("void");
-
-        public final String action;
-
-        Transactions(String action) {
-            this.action = action;
-        }
     }
 
     private String urlEncode(String string) throws LightrailException {

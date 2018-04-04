@@ -13,9 +13,6 @@ import com.lightrail.params.CreateTransactionParams;
 
 import java.util.ArrayList;
 
-import static com.lightrail.network.EndpointBuilder.Transactions.CAPTURE;
-import static com.lightrail.network.EndpointBuilder.Transactions.VOID;
-
 public class Cards {
     private LightrailClient lr;
 
@@ -66,13 +63,25 @@ public class Cards {
         return lr.gson.fromJson(transaction, Transaction.class);
     }
 
+    public Transaction retrieveTransaction(String cardId, String transactionId) throws LightrailException {
+        String endpoint = lr.endpointBuilder.getTransaction(cardId, transactionId);
+        String response = lr.networkProvider.get(endpoint);
+        JsonElement transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction");
+        return lr.gson.fromJson(transaction, Transaction.class);
+    }
+
     public Transaction completePendingTransaction(CompletePendingTransactionParams params) throws LightrailException {
         if (params == null) {
             throw new LightrailException("Cannot void or capture pending transaction with null params");
         }
-        String actionOnPending = params.captureTransaction ? CAPTURE.action : VOID.action;
 
-        String endpoint = lr.endpointBuilder.completePendingTransaction(params.cardId, params.transactionId, actionOnPending);
+        String endpoint;
+        if (params.captureTransaction) {
+            endpoint = lr.endpointBuilder.capturePendingTransaction(params.cardId, params.transactionId);
+        } else {
+            endpoint = lr.endpointBuilder.voidPendingTransaction(params.cardId, params.transactionId);
+        }
+
         String bodyJsonString = lr.gson.toJson(params);
         String response = lr.networkProvider.post(endpoint, bodyJsonString);
         JsonElement transaction = lr.gson.fromJson(response, JsonObject.class).get("transaction");
