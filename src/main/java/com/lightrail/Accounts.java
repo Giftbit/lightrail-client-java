@@ -1,9 +1,6 @@
 package com.lightrail;
 
-import com.lightrail.model.Card;
-import com.lightrail.model.Contact;
-import com.lightrail.model.LightrailException;
-import com.lightrail.model.Transaction;
+import com.lightrail.model.*;
 import com.lightrail.params.*;
 
 import java.util.ArrayList;
@@ -100,6 +97,16 @@ public class Accounts {
             return null;
         }
         return retrieveByContactIdAndCurrency(contact.contactId, currency);
+    }
+
+    public CardDetails getDetailsByContactIdAndCurrency(String contactId, String currency) throws LightrailException {
+        Card card = retrieveByContactIdAndCurrency(contactId, currency);
+        return lr.cards.getDetails(card.cardId);
+    }
+
+    public CardDetails getDetailsByShopperIdAndCurrency(String shopperId, String currency) throws LightrailException {
+        Card card = retrieveByShopperIdAndCurrency(shopperId, currency);
+        return lr.cards.getDetails(card.cardId);
     }
 
     public Transaction createTransaction(CreateAccountTransactionByContactIdParams params) throws LightrailException {
