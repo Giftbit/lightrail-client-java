@@ -43,16 +43,8 @@ public class LightrailClient {
     }
 
     public LightrailClient(String apiKey, String sharedSecret) throws LightrailException {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        verifyApiKey();
-        verifySharedSecret();
-
+        this(apiKey, sharedSecret, null);
         this.networkProvider = new DefaultNetworkProvider(this);
-        this.accounts = new Accounts(this);
-        this.contacts = new Contacts(this);
-        this.cards = new Cards(this);
-        this.programs = new Programs(this);
     }
 
     protected void verifyApiKey() throws LightrailException {
