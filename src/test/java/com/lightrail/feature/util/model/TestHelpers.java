@@ -62,7 +62,6 @@ public class TestHelpers {
         } else {
             when(lr.networkProvider.get(contains(endpoint))).thenReturn(response);
         }
-
     }
 
     private static void setPostExpectation(String endpoint, String response, boolean expectError, LightrailClient lr) throws LightrailException {
@@ -88,8 +87,6 @@ public class TestHelpers {
             if (Pattern.compile("(?i)post").matcher(method).find()) {
                 verify(lr.networkProvider, times(1)).post(contains(endpoint), (String) any());
             }
-
-
         }
     }
 }

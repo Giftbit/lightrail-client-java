@@ -16,7 +16,6 @@ public class EndpointBuilder {
         this.lr = lr;
     }
 
-
     public final String apiBaseURL = "https://api.lightrail.com/v1/";
 
     public String createTransaction(String cardId) throws LightrailException {
@@ -73,7 +72,6 @@ public class EndpointBuilder {
     public String retrieveProgram(String programId) throws LightrailException {
         return format("programs/%s", urlEncode(programId));
     }
-
 
     public enum Transactions {
         CAPTURE("capture"),
