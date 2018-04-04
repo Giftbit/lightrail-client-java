@@ -84,7 +84,11 @@ public class Accounts {
     }
 
     public Card retrieveByContactIdAndCurrency(String contactId, String currency) throws LightrailException {
-        ArrayList<Card> cards = lr.cards.retrieve(buildAccountSearchParams(contactId, currency));
+        CardSearchParams cardSearchParams = new CardSearchParams();
+        cardSearchParams.cardType = "ACCOUNT_CARD";
+        cardSearchParams.currency = currency;
+        cardSearchParams.contactId = contactId;
+        ArrayList<Card> cards = lr.cards.retrieve(cardSearchParams);
         if (cards == null || cards.size() == 0) {
             return null;
         }
@@ -177,14 +181,5 @@ public class Accounts {
         String cardId = retrieveByShopperIdAndCurrency(params.shopperId, params.currency).cardId;
         CompletePendingTransactionParams fullParams = new CompletePendingTransactionParams(params, cardId, false);
         return lr.cards.completePendingTransaction(fullParams);
-    }
-
-
-    private CardSearchParams buildAccountSearchParams(String contactId, String currency) {
-        CardSearchParams cardSearchParams = new CardSearchParams();
-        cardSearchParams.cardType = "ACCOUNT_CARD";
-        cardSearchParams.currency = currency;
-        cardSearchParams.contactId = contactId;
-        return cardSearchParams;
     }
 }
