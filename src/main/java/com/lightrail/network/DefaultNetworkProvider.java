@@ -9,7 +9,7 @@ import java.net.URL;
 import java.nio.charset.StandardCharsets;
 
 public class DefaultNetworkProvider implements NetworkProvider {
-    private LightrailClient lr;
+    private final LightrailClient lr;
 
     public DefaultNetworkProvider(LightrailClient lr) {
         this.lr = lr;

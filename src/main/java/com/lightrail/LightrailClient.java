@@ -7,7 +7,7 @@ import com.lightrail.model.LightrailException;
 import com.lightrail.network.DefaultNetworkProvider;
 import com.lightrail.network.EndpointBuilder;
 import com.lightrail.network.NetworkProvider;
-import com.lightrail.params.CreateShopperTokenParams;
+import com.lightrail.params.GenerateShopperTokenParams;
 import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -29,7 +29,7 @@ public class LightrailClient {
     public final Accounts accounts;
     public final Contacts contacts;
     public final Cards cards;
-    public Programs programs;
+    public final Programs programs;
 
     public LightrailClient(String apiKey, String sharedSecret, NetworkProvider np) throws LightrailException {
         this.apiKey = apiKey;
@@ -46,29 +46,20 @@ public class LightrailClient {
     }
 
     public LightrailClient(String apiKey, String sharedSecret) throws LightrailException {
-        this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        verifyApiKey();
-        verifySharedSecret();
-
+        this(apiKey, sharedSecret, null);
         this.networkProvider = new DefaultNetworkProvider(this);
-        this.endpointBuilder = new EndpointBuilder(this);
-        this.accounts = new Accounts(this);
-        this.contacts = new Contacts(this);
-        this.cards = new Cards(this);
-        this.programs = new Programs(this);
     }
 
-    public void verifyApiKey() throws LightrailException {
+    protected void verifyApiKey() throws LightrailException {
         if (apiKey == null) {
             throw new LightrailException("API key is not set");
         }
-        if ("".equals(apiKey)) {
+        if (apiKey.isEmpty()) {
             throw new LightrailException("API key is empty");
         }
     }
 
-    public void verifySharedSecret() throws LightrailException {
+    protected void verifySharedSecret() throws LightrailException {
         if (sharedSecret == null) {
             throw new LightrailException("Shared secret is not set");
         }
@@ -77,20 +68,16 @@ public class LightrailClient {
         }
     }
 
-    public String generateShopperToken(CreateShopperTokenParams params) throws LightrailException, UnsupportedEncodingException {
+    public String generateShopperToken(GenerateShopperTokenParams params) throws LightrailException, UnsupportedEncodingException {
         verifyApiKey();
         verifySharedSecret();
         if (params.contactId == null || params.shopperId == null || params.contactUserSuppliedId == null) {
             throw new LightrailException("Must set one of contactId, shopperId, or contactUserSuppliedId");
         }
 
-        int validityInSeconds = 43200;
         if (params.validityInSeconds <= 0) {
             throw new LightrailException("validityInSeconds must be greater than 0");
-        } else if (params.validityInSeconds > 0) {
-            validityInSeconds = params.validityInSeconds;
         }
-
 
         JwtBuilder builder = Jwts.builder();
 
@@ -121,7 +108,7 @@ public class LightrailClient {
         }
 
         int iat = (int) (System.currentTimeMillis() / 1000);
-        int exp = iat + validityInSeconds;
+        int exp = iat + params.validityInSeconds;
 
         if (params.metadata != null) {
             g.put("metadata", params.metadata);

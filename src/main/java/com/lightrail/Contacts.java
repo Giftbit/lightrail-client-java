@@ -8,7 +8,7 @@ import com.lightrail.model.LightrailException;
 import com.lightrail.params.CreateContactParams;
 
 public class Contacts {
-    private LightrailClient lr;
+    private final LightrailClient lr;
 
     public Contacts(LightrailClient lr) {
         this.lr = lr;

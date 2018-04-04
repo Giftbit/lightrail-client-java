@@ -6,7 +6,7 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.lightrail.LightrailClient;
 import com.lightrail.model.LightrailException;
-import com.lightrail.params.CreateShopperTokenParams;
+import com.lightrail.params.GenerateShopperTokenParams;
 import cucumber.api.java.en.Given;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwt;
@@ -53,7 +53,7 @@ public class LightrailClientStepdefs {
     public void tokenGenerationWithContactIdentifier(String contactIdentifier, String keyInJwt) throws LightrailException, UnsupportedEncodingException {
         LightrailClient lr = new LightrailClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnIjp7Imd1aSI6Imdvb2V5IiwiZ21pIjoiZ2VybWllIn19.XxOjDsluAw5_hdf5scrLk0UBn8VlhT-3zf5ZeIkEld8", "secret");
         JsonObject jsonParams = getJsonParams(jsonVariables, contactIdentifier);
-        CreateShopperTokenParams tokenParams = gson.fromJson(jsonParams, CreateShopperTokenParams.class);
+        GenerateShopperTokenParams tokenParams = gson.fromJson(jsonParams, GenerateShopperTokenParams.class);
 
         String token = lr.generateShopperToken(tokenParams);
 
@@ -72,7 +72,7 @@ public class LightrailClientStepdefs {
     public void tokenGenerationWithExpiry(String params) throws LightrailException, UnsupportedEncodingException {
         LightrailClient lr = new LightrailClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnIjp7Imd1aSI6Imdvb2V5IiwiZ21pIjoiZ2VybWllIn19.XxOjDsluAw5_hdf5scrLk0UBn8VlhT-3zf5ZeIkEld8", "secret");
         JsonObject jsonParams = getJsonParams(jsonVariables, params);
-        CreateShopperTokenParams tokenParams = gson.fromJson(jsonParams, CreateShopperTokenParams.class);
+        GenerateShopperTokenParams tokenParams = gson.fromJson(jsonParams, GenerateShopperTokenParams.class);
 
         String token = lr.generateShopperToken(tokenParams);
 
@@ -88,7 +88,7 @@ public class LightrailClientStepdefs {
     public void tokenGenerationWithMetadata(String params) throws LightrailException, UnsupportedEncodingException {
         LightrailClient lr = new LightrailClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnIjp7Imd1aSI6Imdvb2V5IiwiZ21pIjoiZ2VybWllIn19.XxOjDsluAw5_hdf5scrLk0UBn8VlhT-3zf5ZeIkEld8", "secret");
         JsonObject jsonParams = getJsonParams(jsonVariables, params);
-        CreateShopperTokenParams tokenParams = gson.fromJson(jsonParams, CreateShopperTokenParams.class);
+        GenerateShopperTokenParams tokenParams = gson.fromJson(jsonParams, GenerateShopperTokenParams.class);
 
 
         String token = lr.generateShopperToken(tokenParams);

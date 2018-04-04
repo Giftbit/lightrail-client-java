@@ -4,6 +4,7 @@ import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lightrail.model.Card;
+import com.lightrail.model.CardDetails;
 import com.lightrail.model.LightrailException;
 import com.lightrail.model.Transaction;
 import com.lightrail.params.CardSearchParams;
@@ -14,7 +15,7 @@ import com.lightrail.params.CreateTransactionParams;
 import java.util.ArrayList;
 
 public class Cards {
-    private LightrailClient lr;
+    private final LightrailClient lr;
 
     public Cards(LightrailClient lr) {
         this.lr = lr;
@@ -46,6 +47,17 @@ public class Cards {
         }
 
         return cardResults;
+    }
+
+    public CardDetails getDetails(String cardId) throws LightrailException {
+        String endpoint = lr.endpointBuilder.getCardDetails(cardId);
+        String response = lr.networkProvider.get(endpoint);
+        JsonElement card = lr.gson.fromJson(response, JsonObject.class).get("card");
+        return lr.gson.fromJson(card, CardDetails.class);
+    }
+
+    public CardDetails getDetails(Card card) throws LightrailException {
+        return getDetails(card.cardId);
     }
 
     public Transaction createTransaction(CreateTransactionParams params) throws LightrailException {

@@ -50,6 +50,10 @@ public class EndpointBuilder {
         return "cards";
     }
 
+    public String getCardDetails(String cardId) throws LightrailException {
+        return format("cards/%s/details", urlEncode(cardId));
+    }
+
     public String searchCardsByParams(CardSearchParams params) throws LightrailException {
         String urlQuery = "cards?";
 
