@@ -1,9 +1,11 @@
 package com.lightrail;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.lightrail.model.LightrailException;
 import com.lightrail.network.DefaultNetworkProvider;
+import com.lightrail.network.EndpointBuilder;
 import com.lightrail.network.NetworkProvider;
 import com.lightrail.params.GenerateShopperTokenParams;
 import io.jsonwebtoken.JwtBuilder;
@@ -20,9 +22,10 @@ public class LightrailClient {
     public String apiKey;
     public String sharedSecret;
 
-    protected final Gson gson = new Gson();
+    protected final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 
     public NetworkProvider networkProvider;
+    public final EndpointBuilder endpointBuilder;
     public final Accounts accounts;
     public final Contacts contacts;
     public final Cards cards;
@@ -35,7 +38,7 @@ public class LightrailClient {
         verifySharedSecret();
 
         this.networkProvider = np;
-
+        this.endpointBuilder = new EndpointBuilder(this);
         this.accounts = new Accounts(this);
         this.contacts = new Contacts(this);
         this.cards = new Cards(this);

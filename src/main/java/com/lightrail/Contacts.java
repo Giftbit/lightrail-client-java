@@ -6,9 +6,6 @@ import com.google.gson.JsonObject;
 import com.lightrail.model.Contact;
 import com.lightrail.model.LightrailException;
 import com.lightrail.params.CreateContactParams;
-import com.lightrail.utils.LightrailConstants;
-
-import static java.lang.String.format;
 
 public class Contacts {
     private final LightrailClient lr;
@@ -21,27 +18,18 @@ public class Contacts {
         CreateContactParams params = new CreateContactParams();
         params.userSuppliedId = shopperId;
         String jsonParams = lr.gson.toJson(params);
-        String jsonResponse = lr.networkProvider.getAPIResponse(
-                LightrailConstants.API.Endpoints.CREATE_CONTACT,
-                LightrailConstants.API.REQUEST_METHOD_POST,
-                jsonParams);
-        return getSingleContactFromJson(jsonResponse);
+        String response = lr.networkProvider.post(lr.endpointBuilder.createContact(), jsonParams);
+        return getSingleContactFromJson(response);
     }
 
     public Contact create(CreateContactParams params) throws LightrailException {
         String jsonParams = lr.gson.toJson(params);
-        String jsonResponse = lr.networkProvider.getAPIResponse(
-                LightrailConstants.API.Endpoints.CREATE_CONTACT,
-                LightrailConstants.API.REQUEST_METHOD_POST,
-                jsonParams);
-        return getSingleContactFromJson(jsonResponse);
+        String response = lr.networkProvider.post(lr.endpointBuilder.createContact(), jsonParams);
+        return getSingleContactFromJson(response);
     }
 
     public Contact retrieve(String contactId) throws LightrailException {
-        String jsonResponse = lr.networkProvider.getAPIResponse(
-                format(LightrailConstants.API.Endpoints.RETRIEVE_CONTACT, lr.urlEncode(contactId)),
-                LightrailConstants.API.REQUEST_METHOD_GET,
-                null);
+        String jsonResponse = lr.networkProvider.get(lr.endpointBuilder.retrieveContactById(contactId));
         return getSingleContactFromJson(jsonResponse);
     }
 
@@ -50,10 +38,7 @@ public class Contacts {
     }
 
     public Contact retrieveByUserSuppliedId(String userSuppliedId) throws LightrailException {
-        String jsonResponse = lr.networkProvider.getAPIResponse(
-                format(LightrailConstants.API.Endpoints.RETRIEVE_CONTACT_BY_UID, lr.urlEncode(userSuppliedId)),
-                LightrailConstants.API.REQUEST_METHOD_GET,
-                null);
+        String jsonResponse = lr.networkProvider.get(lr.endpointBuilder.searchContactByUserSuppliedId(userSuppliedId));
         return getFirstContactResultFromJson(jsonResponse);
     }
 
@@ -69,7 +54,7 @@ public class Contacts {
     private Contact getFirstContactResultFromJson(String jsonResponse) {
         JsonArray jsonContactResults = lr.gson.fromJson(jsonResponse, JsonObject.class).getAsJsonArray("contacts");
         if (jsonContactResults.size() > 0) {
-            String jsonContact = jsonContactResults.get(0).toString();
+            JsonElement jsonContact = jsonContactResults.get(0);
             return lr.gson.fromJson(jsonContact, Contact.class);
         } else {
             return null;

@@ -2,7 +2,6 @@ package com.lightrail.network;
 
 import com.lightrail.LightrailClient;
 import com.lightrail.model.LightrailException;
-import com.lightrail.utils.LightrailConstants;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -16,17 +15,35 @@ public class DefaultNetworkProvider implements NetworkProvider {
         this.lr = lr;
     }
 
-    public String getAPIResponse(String urlSuffix, String requestMethod, String body) throws LightrailException {
+    public enum HttpMethods {
+        GET, POST
+    }
+
+    private static final String AUTHORIZATION_HEADER_NAME = "Authorization";
+    private static final String AUTHORIZATION_TOKEN_TYPE = "Bearer";
+
+    private static final String CONTENT_TYPE_HEADER_NAME = "Content-Type";
+    private static final String CONTENT_TYPE_JSON_UTF8 = "application/json; charset=utf-8";
+
+    public String get(String urlSuffix) throws LightrailException {
+        return makeAPIRequest(urlSuffix, HttpMethods.GET.name(), null);
+    }
+
+    public String post(String urlSuffix, String body) throws LightrailException {
+        return makeAPIRequest(urlSuffix, HttpMethods.POST.name(), body);
+    }
+
+    public String makeAPIRequest(String urlSuffix, String requestMethod, String body) throws LightrailException {
         try {
-            URL requestURL = new URL(LightrailConstants.API.apiBaseURL + urlSuffix);
+            URL requestURL = new URL(lr.endpointBuilder.apiBaseURL + urlSuffix);
             HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
             httpsURLConnection.setRequestProperty(
-                    LightrailConstants.API.AUTHORIZATION_HEADER_NAME,
-                    LightrailConstants.API.AUTHORIZATION_TOKEN_TYPE + " " + lr.apiKey);
+                    AUTHORIZATION_HEADER_NAME,
+                    AUTHORIZATION_TOKEN_TYPE + " " + lr.apiKey);
             httpsURLConnection.setRequestMethod(requestMethod);
 
             if (body != null) {
-                httpsURLConnection.setRequestProperty(LightrailConstants.API.CONTENT_TYPE_HEADER_NAME, LightrailConstants.API.CONTENT_TYPE_JSON_UTF8);
+                httpsURLConnection.setRequestProperty(CONTENT_TYPE_HEADER_NAME, CONTENT_TYPE_JSON_UTF8);
                 httpsURLConnection.setDoOutput(true);
                 try (OutputStream wr = httpsURLConnection.getOutputStream()) {
                     wr.write(body.getBytes(StandardCharsets.UTF_8));
@@ -47,8 +64,9 @@ public class DefaultNetworkProvider implements NetworkProvider {
             BufferedReader responseReader = new BufferedReader(new InputStreamReader(responseInputStream, StandardCharsets.UTF_8));
             StringBuilder responseStringBuffer = new StringBuilder();
             String inputLine;
-            while ((inputLine = responseReader.readLine()) != null)
+            while ((inputLine = responseReader.readLine()) != null) {
                 responseStringBuffer.append(inputLine).append('\n');
+            }
             responseReader.close();
 
             String responseString = responseStringBuffer.toString();

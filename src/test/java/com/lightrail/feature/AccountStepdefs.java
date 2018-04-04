@@ -1,9 +1,6 @@
 package com.lightrail.feature;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import com.lightrail.LightrailClient;
 import com.lightrail.model.LightrailException;
 import com.lightrail.network.DefaultNetworkProvider;
@@ -23,7 +20,7 @@ public class AccountStepdefs {
     private JsonObject jsonVariables = new JsonParser().parse(new FileReader("src/test/resources/accountVariables.json")).getAsJsonObject();
     private DefaultNetworkProvider npMock = mock(DefaultNetworkProvider.class);
     private LightrailClient lr = new LightrailClient("123", "123", npMock);
-    private Gson gson = new Gson();
+    private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 
     public AccountStepdefs() throws LightrailException, FileNotFoundException {
     }

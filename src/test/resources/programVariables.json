@@ -14,7 +14,8 @@
           "userSuppliedId": "this-is-a-program-user-supplied-id",
           "name": "this-is-a-program-name",
           "currency": "ABC",
-          "valueStoreType": "SOME_TYPE"
+          "valueStoreType": "SOME_TYPE",
+          "dateCreated": "2018-03-29T16:45:24.000Z"
         }
       }
     },
@@ -27,7 +28,8 @@
           "userSuppliedId": "this-is-a-program-user-supplied-id",
           "name": "this-is-a-program-name",
           "currency": "ABC",
-          "valueStoreType": "SOME_TYPE"
+          "valueStoreType": "SOME_TYPE",
+          "dateCreated": "2018-03-29T16:45:24.000Z"
         }
       }
     }
