@@ -54,9 +54,11 @@ public class Cards {
     public Transaction createTransaction(CreateTransactionParams params) throws LightrailException {
         String bodyJsonString = lr.gson.toJson(params);
 
-        String urlEndpoint = lr.endpointBuilder.createTransaction(params.cardId);
+        String urlEndpoint;
         if (params.dryRun) {
-            urlEndpoint = lr.endpointBuilder.dryRunTransaction(urlEndpoint);
+            urlEndpoint = lr.endpointBuilder.dryRunTransaction(params.cardId);
+        } else {
+            urlEndpoint = lr.endpointBuilder.createTransaction(params.cardId);
         }
 
         String response = lr.networkProvider.post(urlEndpoint, bodyJsonString);

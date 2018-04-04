@@ -27,8 +27,8 @@ public class EndpointBuilder {
         return format("cards/%s/transactions/%s/%s", urlEncode(cardId), urlEncode(transactionId), urlEncode(action));
     }
 
-    public String dryRunTransaction(String transactionEndpoint) throws LightrailException {
-        return transactionEndpoint + "/dryRun";
+    public String dryRunTransaction(String cardId) throws LightrailException {
+        return createTransaction(cardId) + "/dryRun";
     }
 
     public String retrieveContactById(String contactId) throws LightrailException {
