@@ -5,7 +5,7 @@ import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.lightrail.LightrailClient;
-import com.lightrail.model.LightrailException;
+import com.lightrail.errors.LightrailRestException;
 import com.lightrail.params.GenerateShopperTokenParams;
 import cucumber.api.java.en.Given;
 import io.jsonwebtoken.Claims;
@@ -42,7 +42,7 @@ public class LightrailClientStepdefs {
             if (errorName != null) {
                 fail("Invalid LightrailClient config should throw an exception");
             }
-        } catch (LightrailException ignored) {
+        } catch (LightrailRestException ignored) {
             if (errorName == null) {
                 fail("Valid LightrailClient config should not throw an exception");
             }
@@ -50,7 +50,7 @@ public class LightrailClientStepdefs {
     }
 
     @Given("^TOKEN_GENERATION a token should contain the contact identifier it is generated with: \\[(.*)\\] as \\[(.*)\\]$")
-    public void tokenGenerationWithContactIdentifier(String contactIdentifier, String keyInJwt) throws LightrailException, UnsupportedEncodingException {
+    public void tokenGenerationWithContactIdentifier(String contactIdentifier, String keyInJwt) throws LightrailRestException, UnsupportedEncodingException {
         LightrailClient lr = new LightrailClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnIjp7Imd1aSI6Imdvb2V5IiwiZ21pIjoiZ2VybWllIn19.XxOjDsluAw5_hdf5scrLk0UBn8VlhT-3zf5ZeIkEld8", "secret");
         JsonObject jsonParams = getJsonParams(jsonVariables, contactIdentifier);
         GenerateShopperTokenParams tokenParams = gson.fromJson(jsonParams, GenerateShopperTokenParams.class);
@@ -69,7 +69,7 @@ public class LightrailClientStepdefs {
     }
 
     @Given("^TOKEN_GENERATION a token should have the right validity period when generated with params \\[(.*)\\]$")
-    public void tokenGenerationWithExpiry(String params) throws LightrailException, UnsupportedEncodingException {
+    public void tokenGenerationWithExpiry(String params) throws LightrailRestException, UnsupportedEncodingException {
         LightrailClient lr = new LightrailClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnIjp7Imd1aSI6Imdvb2V5IiwiZ21pIjoiZ2VybWllIn19.XxOjDsluAw5_hdf5scrLk0UBn8VlhT-3zf5ZeIkEld8", "secret");
         JsonObject jsonParams = getJsonParams(jsonVariables, params);
         GenerateShopperTokenParams tokenParams = gson.fromJson(jsonParams, GenerateShopperTokenParams.class);
@@ -85,7 +85,7 @@ public class LightrailClientStepdefs {
     }
 
     @Given("^TOKEN_GENERATION a token should contain the metadata it is generated with: \\[(.*)\\]$")
-    public void tokenGenerationWithMetadata(String params) throws LightrailException, UnsupportedEncodingException {
+    public void tokenGenerationWithMetadata(String params) throws LightrailRestException, UnsupportedEncodingException {
         LightrailClient lr = new LightrailClient("eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJnIjp7Imd1aSI6Imdvb2V5IiwiZ21pIjoiZ2VybWllIn19.XxOjDsluAw5_hdf5scrLk0UBn8VlhT-3zf5ZeIkEld8", "secret");
         JsonObject jsonParams = getJsonParams(jsonVariables, params);
         GenerateShopperTokenParams tokenParams = gson.fromJson(jsonParams, GenerateShopperTokenParams.class);

@@ -1,30 +1,38 @@
 package com.lightrail.model;
 
+import com.google.gson.JsonObject;
+
+import java.util.Date;
 import java.util.Objects;
 
 public class Contact {
-    public String contactId;
-    public String userSuppliedId;
-    public String email;
+
+    public String id;
     public String firstName;
     public String lastName;
-    public String dateCreated;
+    public String email;
+    public JsonObject metadata;
+    public Date createdDate;
+    public Date updatedDate;
+    public String createdBy;
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Contact contact = (Contact) o;
-        return Objects.equals(contactId, contact.contactId) &&
-                Objects.equals(userSuppliedId, contact.userSuppliedId) &&
-                Objects.equals(email, contact.email) &&
+        return Objects.equals(id, contact.id) &&
                 Objects.equals(firstName, contact.firstName) &&
                 Objects.equals(lastName, contact.lastName) &&
-                Objects.equals(dateCreated, contact.dateCreated);
+                Objects.equals(email, contact.email) &&
+                Objects.equals(metadata, contact.metadata) &&
+                Objects.equals(createdDate, contact.createdDate) &&
+                Objects.equals(updatedDate, contact.updatedDate) &&
+                Objects.equals(createdBy, contact.createdBy);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(contactId, userSuppliedId, email, firstName, lastName, dateCreated);
+        return Objects.hash(id, firstName, lastName, email, metadata, createdDate, updatedDate, createdBy);
     }
 }

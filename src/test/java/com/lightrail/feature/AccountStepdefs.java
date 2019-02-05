@@ -2,9 +2,8 @@ package com.lightrail.feature;
 
 import com.google.gson.*;
 import com.lightrail.LightrailClient;
-import com.lightrail.model.LightrailException;
+import com.lightrail.errors.LightrailRestException;
 import com.lightrail.network.DefaultNetworkProvider;
-import com.lightrail.params.*;
 import cucumber.api.java.en.Given;
 
 import java.io.FileNotFoundException;
@@ -22,7 +21,7 @@ public class AccountStepdefs {
     private LightrailClient lr = new LightrailClient("123", "123", npMock);
     private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 
-    public AccountStepdefs() throws LightrailException, FileNotFoundException {
+    public AccountStepdefs() throws LightrailRestException, FileNotFoundException {
     }
 
     @Given("^ACCOUNT_CREATION a contact .*\\s*exists?\\s*.*: requires minimum parameters \\[(.[^\\]]+)\\] and makes the following REST requests: \\[(.[^\\]]+)\\](?: and throws the following error: \\[(.[^\\]]+)\\])?$")
@@ -37,7 +36,7 @@ public class AccountStepdefs {
 
             try {
                 lr.accounts.create(minParams);
-            } catch (LightrailException e) {
+            } catch (LightrailRestException e) {
                 exceptionThrown = true;
             }
 
@@ -90,7 +89,7 @@ public class AccountStepdefs {
 
             try {
                 lr.accounts.createTransaction(minParams);
-            } catch (LightrailException e) {
+            } catch (LightrailRestException e) {
                 exceptionThrown = true;
             }
         } else if (Pattern.compile("(?i)shopperid").matcher(minimumParams).find()) {
@@ -100,7 +99,7 @@ public class AccountStepdefs {
 
             try {
                 lr.accounts.createTransaction(minParams);
-            } catch (LightrailException e) {
+            } catch (LightrailRestException e) {
                 exceptionThrown = true;
             }
         }

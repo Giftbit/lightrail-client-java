@@ -1,11 +1,9 @@
 package com.lightrail.params;
 
-import java.util.Map;
+import com.google.gson.JsonObject;
 
 public class GenerateShopperTokenParams {
-    public String shopperId = "";
     public String contactId = "";
-    public String contactUserSuppliedId = "";
     public int validityInSeconds = 43200;
-    public Map<String, Object> metadata = null;
+    public JsonObject metadata = null;
 }

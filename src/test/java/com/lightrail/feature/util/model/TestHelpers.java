@@ -3,7 +3,7 @@ package com.lightrail.feature.util.model;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.lightrail.LightrailClient;
-import com.lightrail.model.LightrailException;
+import com.lightrail.errors.LightrailRestException;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -34,7 +34,7 @@ public class TestHelpers {
         return reqResCollection;
     }
 
-    public static void setReqResExpectations(Map<String, JsonElement> reqResCollection, LightrailClient lr) throws IOException, LightrailException {
+    public static void setReqResExpectations(Map<String, JsonElement> reqResCollection, LightrailClient lr) throws IOException, LightrailRestException {
         reset(lr.networkProvider);
 
         for (String reqResKey : reqResCollection.keySet()) {
@@ -56,24 +56,24 @@ public class TestHelpers {
         }
     }
 
-    private static void setGetExpectation(String endpoint, String response, boolean expectError, LightrailClient lr) throws LightrailException {
+    private static void setGetExpectation(String endpoint, String response, boolean expectError, LightrailClient lr) throws LightrailRestException {
         if (expectError) {
-            when(lr.networkProvider.get(contains(endpoint))).thenThrow(new LightrailException(""));   // todo better exception matching
+            when(lr.networkProvider.get(contains(endpoint))).thenThrow(new LightrailRestException(""));   // todo better exception matching
         } else {
             when(lr.networkProvider.get(contains(endpoint))).thenReturn(response);
         }
     }
 
-    private static void setPostExpectation(String endpoint, String response, boolean expectError, LightrailClient lr) throws LightrailException {
+    private static void setPostExpectation(String endpoint, String response, boolean expectError, LightrailClient lr) throws LightrailRestException {
         // todo needs refactoring to check request body: second arg matcher should be motivated, not 'any()'
         if (expectError) {
-            when(lr.networkProvider.post(contains(endpoint), (String) any())).thenThrow(new LightrailException(""));   // todo better exception matching
+            when(lr.networkProvider.post(contains(endpoint), (String) any())).thenThrow(new LightrailRestException(""));   // todo better exception matching
         } else {
             when(lr.networkProvider.post(contains(endpoint), (String) any())).thenReturn(response);
         }
     }
 
-    public static void verifyMock(Map<String, JsonElement> reqResCollection, LightrailClient lr) throws IOException, LightrailException {
+    public static void verifyMock(Map<String, JsonElement> reqResCollection, LightrailClient lr) throws IOException, LightrailRestException {
         for (String name : reqResCollection.keySet()) {
             String reqResKey = name.toString();
             JsonObject reqResDetails = reqResCollection.get(reqResKey).getAsJsonObject();

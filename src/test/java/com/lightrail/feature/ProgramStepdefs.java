@@ -2,7 +2,7 @@ package com.lightrail.feature;
 
 import com.google.gson.*;
 import com.lightrail.LightrailClient;
-import com.lightrail.model.LightrailException;
+import com.lightrail.errors.LightrailRestException;
 import com.lightrail.network.DefaultNetworkProvider;
 import com.lightrail.params.CreateProgramParams;
 import cucumber.api.java.en.Given;
@@ -21,11 +21,11 @@ public class ProgramStepdefs {
     private LightrailClient lr = new LightrailClient("123", "123", npMock);
     private Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
 
-    public ProgramStepdefs() throws FileNotFoundException, LightrailException {
+    public ProgramStepdefs() throws FileNotFoundException, LightrailRestException {
     }
 
     @Given("^PROGRAM_CREATION a program is created with minimum parameters \\[(.[^\\]]+)\\] the following REST requests are made: \\[(.[^\\]]+)\\]$")
-    public void programCreation(String params, String expectedRequestsAndResponses) throws IOException, LightrailException {
+    public void programCreation(String params, String expectedRequestsAndResponses) throws IOException, LightrailRestException {
         Map<String, JsonElement> reqResCollection = getReqResCollection(jsonVariables, expectedRequestsAndResponses);
         setReqResExpectations(reqResCollection, lr);
         JsonObject jsonParams = getJsonParams(jsonVariables, params);
@@ -38,7 +38,7 @@ public class ProgramStepdefs {
 
 
     @Given("^PROGRAM_RETRIEVAL a program is retrieved by \\[(.[^\\]]+)\\] the following REST requests are made: \\[(.[^\\]]+)\\]$")
-    public void programRetrieval(String params, String expectedRequestsAndResponses) throws IOException, LightrailException {
+    public void programRetrieval(String params, String expectedRequestsAndResponses) throws IOException, LightrailRestException {
         Map<String, JsonElement> reqResCollection = getReqResCollection(jsonVariables, expectedRequestsAndResponses);
         setReqResExpectations(reqResCollection, lr);
         JsonObject jsonParams = getJsonParams(jsonVariables, params);
