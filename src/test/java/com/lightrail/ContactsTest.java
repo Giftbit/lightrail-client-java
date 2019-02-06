@@ -3,10 +3,14 @@ package com.lightrail;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.lightrail.model.Contact;
+import com.lightrail.model.PaginatedList;
 import com.lightrail.params.CreateContactParams;
+import com.lightrail.params.ListContactsParams;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.List;
 
 import static com.lightrail.TestUtils.generateId;
 import static com.lightrail.TestUtils.getLightrailClient;
@@ -48,5 +52,11 @@ public class ContactsTest {
         assertEquals(params.lastName, contactGetted.lastName);
         assertEquals(params.email, contactGetted.email);
         assertEquals(params.metadata.get("deepestFear"), contactGetted.metadata.get("deepestFear"));
+
+        ListContactsParams listContactsParams = new ListContactsParams();
+        listContactsParams.id = params.id;
+        PaginatedList<Contact> contactList = lc.contacts.listContacts(listContactsParams);
+        assertEquals(1, contactList.size());
+        assertEquals(params.id, contactList.get(0).id);
     }
 }
