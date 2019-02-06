@@ -1,6 +1,5 @@
 package com.lightrail;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.lightrail.errors.LightrailRestException;
 import com.lightrail.model.RedemptionRule;
@@ -11,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.time.Instant;
 import java.util.Date;
 import java.util.HashMap;
 

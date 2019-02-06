@@ -1,10 +1,12 @@
 package com.lightrail;
 
-import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 import com.lightrail.model.Contact;
 import com.lightrail.model.PaginatedList;
+import com.lightrail.model.Value;
 import com.lightrail.params.contacts.*;
+import com.lightrail.params.values.CreateValueParams;
+import com.lightrail.params.values.CreateValueQueryParams;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -130,5 +132,42 @@ public class ContactsTest {
         assertTrue(contactsLast.hasPrevious());
         assertFalse(contactsLast.hasNext());
         assertFalse(contactsLast.hasLast());
+    }
+
+    @Test
+    public void attachValueAndGetContactValues() throws Exception {
+        CreateContactParams createContactParams = new CreateContactParams(generateId());
+        createContactParams.firstName = "Testado";
+        createContactParams.lastName = "Testington";
+        Contact contactCreated = lc.contacts.createContact(createContactParams);
+        assertNull(contactCreated.metadata);
+
+        assertEquals(createContactParams.id, contactCreated.id);
+
+        CreateValueParams createValueParams = new CreateValueParams(generateId());
+        createValueParams.code = generateId();
+        createValueParams.currency = "USD";
+        createValueParams.balance = 500;
+        CreateValueQueryParams createValueQueryParams = new CreateValueQueryParams();
+        createValueQueryParams.showCode = true;
+        Value valueCreated = lc.values.createValue(createValueParams, createValueQueryParams);
+
+        assertEquals(createValueParams.id, valueCreated.id);
+        assertEquals(createValueParams.code, valueCreated.code);
+        assertEquals(createValueParams.balance, valueCreated.balance);
+        assertNull(valueCreated.contactId);
+
+        AttachContactToValueParams attachContactToValueParams = new AttachContactToValueParams();
+        attachContactToValueParams.valueId = valueCreated.id;
+        Value valueAttached = lc.contacts.attachContactToValue(contactCreated, attachContactToValueParams);
+
+        assertEquals(valueCreated.id, valueAttached.id);
+        assertEquals(valueCreated.balance, valueAttached.balance);
+        assertEquals(contactCreated.id, valueAttached.contactId);
+        assertEquals(valueCreated.metadata, valueAttached.metadata);
+
+        PaginatedList<Value> contactValues = lc.contacts.listContactsValues(contactCreated);
+        assertEquals(1, contactValues.size());
+        assertEquals(valueCreated.id, contactValues.get(0).id);
     }
 }

@@ -6,10 +6,10 @@ public class CreateCurrencyParams {
     public String symbol;
     public int decimalPlaces;
 
-    CreateCurrencyParams() {
+    public CreateCurrencyParams() {
     }
 
-    CreateCurrencyParams(String code) {
+    public CreateCurrencyParams(String code) {
         this.code = code;
     }
 }

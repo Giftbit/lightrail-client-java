@@ -77,21 +77,21 @@ public class Contacts {
     public PaginatedList<Value> listContactsValues(Contact contact) throws IOException, LightrailRestException {
         NullArgumentException.check(contact, "contact");
 
-        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values", encodeUriComponent(contact.id)), Value.class);
+        return listContactsValues(contact.id);
     }
 
     public PaginatedList<Value> listContactsValues(Contact contact, ListContactsValuesParams params) throws IOException, LightrailRestException {
         NullArgumentException.check(contact, "contact");
         NullArgumentException.check(params, "params");
 
-        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values%s", encodeUriComponent(contact.id), toQueryString(params)), Value.class);
+        return listContactsValues(contact.id, params);
     }
 
     public PaginatedList<Value> listContactsValues(Contact contact, Map<String, String> params) throws IOException, LightrailRestException {
         NullArgumentException.check(contact, "contact");
         NullArgumentException.check(params, "params");
 
-        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values%s", encodeUriComponent(contact.id), toQueryString(params)), Value.class);
+        return listContactsValues(contact.id, params);
     }
 
     public Contact updateContact(String contactId, UpdateContactParams params) throws IOException, LightrailRestException {
@@ -106,5 +106,19 @@ public class Contacts {
         NullArgumentException.check(params, "params");
 
         return updateContact(contact.id, params);
+    }
+
+    public Value attachContactToValue(String contactId, AttachContactToValueParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.post(String.format("/contacts/%s/values/attach", encodeUriComponent(contactId)), params, Value.class);
+    }
+
+    public Value attachContactToValue(Contact contact, AttachContactToValueParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+        NullArgumentException.check(params, "params");
+
+        return attachContactToValue(contact.id, params);
     }
 }

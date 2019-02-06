@@ -1,7 +1,6 @@
 package com.lightrail.model;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 
 import java.util.Date;
 import java.util.Map;

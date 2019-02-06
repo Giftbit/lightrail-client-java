@@ -1,7 +1,6 @@
 package com.lightrail.params.values;
 
 import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.lightrail.model.BalanceRule;
 import com.lightrail.model.RedemptionRule;
 
