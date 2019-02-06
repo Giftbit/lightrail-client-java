@@ -3,10 +3,10 @@ package com.lightrail.params.contacts;
 import com.google.gson.JsonObject;
 
 public class CreateContactParams {
-    public String id = "";
-    public String firstName = "";
-    public String lastName = "";
-    public String email = "";
+    public String id;
+    public String firstName;
+    public String lastName;
+    public String email;
     public JsonObject metadata;
 
     public CreateContactParams() {

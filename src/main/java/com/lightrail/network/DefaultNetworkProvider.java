@@ -22,7 +22,10 @@ public class DefaultNetworkProvider implements NetworkProvider {
 
     private final LightrailClient lr;
     private final Map<String, String> additionalHeaders = new HashMap<>();
-    private final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+    private final Gson gson = new GsonBuilder()
+            .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+            .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
+            .create();
     private final Map<Type, Type> listTypeMap = new HashMap<>();
     private String restRoot = "https://api.lightrail.com/v2";
 

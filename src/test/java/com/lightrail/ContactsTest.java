@@ -9,6 +9,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Optional;
+
 import static com.lightrail.TestUtils.generateId;
 import static com.lightrail.TestUtils.getLightrailClient;
 import static org.junit.Assert.*;
@@ -70,17 +72,16 @@ public class ContactsTest {
         assertEquals(createParams.id, contactCreated.id);
 
         UpdateContactParams updateParams = new UpdateContactParams();
-        updateParams.firstName = "Johnny";
-        updateParams.lastName = "Test Face";
-        updateParams.email = "jtestface@face.com";
-        updateParams.metadata = new JsonObject();
-        updateParams.metadata.add("deepestFear", new JsonPrimitive("sharks"));
+        updateParams.firstName = Optional.of("Johnny");
+        updateParams.email = Optional.empty();
+        updateParams.metadata = Optional.of(new JsonObject());
+        updateParams.metadata.get().add("deepestFear", new JsonPrimitive("sharks"));
 
         Contact contactUpdated = lc.contacts.updateContact(contactCreated, updateParams);
         assertEquals(contactCreated.id, contactUpdated.id);
-        assertEquals(updateParams.firstName, contactUpdated.firstName);
-        assertEquals(updateParams.lastName, contactUpdated.lastName);
-        assertEquals(updateParams.email, contactUpdated.email);
-        assertEquals(updateParams.metadata.get("deepestFear"), contactUpdated.metadata.get("deepestFear"));
+        assertEquals(updateParams.firstName.get(), contactUpdated.firstName);
+        assertEquals(contactCreated.lastName, contactUpdated.lastName);
+        assertNull(contactUpdated.email);
+        assertEquals(updateParams.metadata.get().get("deepestFear"), contactUpdated.metadata.get("deepestFear"));
     }
 }
