@@ -105,7 +105,15 @@ public class DefaultNetworkProvider implements NetworkProvider {
         URL requestURL = new URL(restRoot + (path.startsWith("/") ? "" : "/") + path);
         HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
         httpsURLConnection.setRequestProperty("Authorization", "Bearer " + lr.getApiKey());
-        httpsURLConnection.setRequestMethod(method);
+        if (method.equals("PATCH")) {
+            // Throws `java.net.ProtocolException: Invalid HTTP method: PATCH` if we use PATCH.
+            // PATCH is a perfectly valid method.  Fortunately the web is familiar with
+            // gross workarounds and has a solution ready made.
+            httpsURLConnection.setRequestMethod("POST");
+            httpsURLConnection.setRequestProperty("X-HTTP-Method-Override", "PATCH");
+        } else {
+            httpsURLConnection.setRequestMethod(method);
+        }
         for (Map.Entry<String, String> entry : additionalHeaders.entrySet()) {
             httpsURLConnection.setRequestProperty(entry.getKey(), entry.getValue());
         }

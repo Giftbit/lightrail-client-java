@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class NetworkUtils {
@@ -14,6 +15,27 @@ public class NetworkUtils {
         } catch (UnsupportedEncodingException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static String toQueryString(Map<String, String> params) {
+        if (params == null) {
+            return "";
+        }
+
+        StringBuilder queryString = new StringBuilder();
+
+        for (Map.Entry<String, String> entry : params.entrySet()) {
+            if (queryString.length() == 0) {
+                queryString.append("?");
+            } else {
+                queryString.append("&");
+            }
+            queryString.append(entry.getKey());
+            queryString.append("=");
+            queryString.append(urlEncode(entry.getValue()));
+        }
+
+        return queryString.toString();
     }
 
     public static String toQueryString(Object params) {

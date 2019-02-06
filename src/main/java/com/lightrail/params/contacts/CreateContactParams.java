@@ -1,4 +1,4 @@
-package com.lightrail.params;
+package com.lightrail.params.contacts;
 
 import com.google.gson.JsonObject;
 
