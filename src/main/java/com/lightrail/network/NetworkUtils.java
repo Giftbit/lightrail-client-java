@@ -38,6 +38,7 @@ public class NetworkUtils {
         return queryString.toString();
     }
 
+    @SuppressWarnings("unchecked")
     public static String toQueryString(Object params) {
         if (params == null) {
             return "";
@@ -62,7 +63,6 @@ public class NetworkUtils {
                 queryString.append("=");
 
                 if (value instanceof List) {
-                    //noinspection unchecked
                     queryString.append(((List<Object>) value).stream()
                             .map(String::valueOf)
                             .map(NetworkUtils::urlEncode)
