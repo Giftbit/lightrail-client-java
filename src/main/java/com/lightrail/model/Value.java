@@ -1,8 +1,9 @@
 package com.lightrail.model;
 
-import com.google.gson.JsonObject;
+import com.google.gson.JsonElement;
 
 import java.util.Date;
+import java.util.Map;
 
 public class Value {
     public String id;
@@ -23,7 +24,7 @@ public class Value {
     public Float discountSellerLiability;
     public Date startDate;
     public Date endDate;
-    public JsonObject metadata;
+    public Map<String, JsonElement> metadata;
     public Date createdDate;
     public Date updatedDate;
     public String createdBy;

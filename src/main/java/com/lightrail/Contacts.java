@@ -4,6 +4,7 @@ import com.lightrail.errors.LightrailRestException;
 import com.lightrail.errors.NullArgumentException;
 import com.lightrail.model.Contact;
 import com.lightrail.model.PaginatedList;
+import com.lightrail.model.Value;
 import com.lightrail.params.contacts.*;
 
 import java.io.IOException;
@@ -34,7 +35,7 @@ public class Contacts {
     public Contact getContact(String contactId) throws IOException, LightrailRestException {
         NullArgumentException.check(contactId, "contactId");
 
-        return lr.networkProvider.get(String.format("/contacts/%s", urlEncode(contactId)), Contact.class);
+        return lr.networkProvider.get(String.format("/contacts/%s", encodeUriComponent(contactId)), Contact.class);
     }
 
     public PaginatedList<Contact> listContacts() throws IOException, LightrailRestException {
@@ -53,11 +54,51 @@ public class Contacts {
         return lr.networkProvider.getPaginatedList(String.format("/contacts%s", toQueryString(params)), Contact.class);
     }
 
+    public PaginatedList<Value> listContactsValues(String contactId) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values", encodeUriComponent(contactId)), Value.class);
+    }
+
+    public PaginatedList<Value> listContactsValues(String contactId, ListContactsValuesParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values%s", encodeUriComponent(contactId), toQueryString(params)), Value.class);
+    }
+
+    public PaginatedList<Value> listContactsValues(String contactId, Map<String, String> params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values%s", encodeUriComponent(contactId), toQueryString(params)), Value.class);
+    }
+
+    public PaginatedList<Value> listContactsValues(Contact contact) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values", encodeUriComponent(contact.id)), Value.class);
+    }
+
+    public PaginatedList<Value> listContactsValues(Contact contact, ListContactsValuesParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values%s", encodeUriComponent(contact.id), toQueryString(params)), Value.class);
+    }
+
+    public PaginatedList<Value> listContactsValues(Contact contact, Map<String, String> params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values%s", encodeUriComponent(contact.id), toQueryString(params)), Value.class);
+    }
+
     public Contact updateContact(String contactId, UpdateContactParams params) throws IOException, LightrailRestException {
         NullArgumentException.check(contactId, "contactId");
         NullArgumentException.check(params, "params");
 
-        return lr.networkProvider.patch(String.format("/contacts/%s", urlEncode(contactId)), params, Contact.class);
+        return lr.networkProvider.patch(String.format("/contacts/%s", encodeUriComponent(contactId)), params, Contact.class);
     }
 
     public Contact updateContact(Contact contact, UpdateContactParams params) throws IOException, LightrailRestException {

@@ -9,7 +9,7 @@ import com.lightrail.params.currencies.UpdateCurrencyParams;
 
 import java.io.IOException;
 
-import static com.lightrail.network.NetworkUtils.urlEncode;
+import static com.lightrail.network.NetworkUtils.encodeUriComponent;
 
 public class Currencies {
     private final LightrailClient lr;
@@ -27,7 +27,7 @@ public class Currencies {
     public Currency getCurrency(String code) throws IOException, LightrailRestException {
         NullArgumentException.check(code, "code");
 
-        return lr.networkProvider.get(String.format("/currencies/%s", urlEncode(code)), Currency.class);
+        return lr.networkProvider.get(String.format("/currencies/%s", encodeUriComponent(code)), Currency.class);
     }
 
     public PaginatedList<Currency> listCurrencies() throws IOException, LightrailRestException {
@@ -38,7 +38,7 @@ public class Currencies {
         NullArgumentException.check(code, "code");
         NullArgumentException.check(params, "params");
 
-        return lr.networkProvider.patch(String.format("/currencies/%s", urlEncode(code)), params, Currency.class);
+        return lr.networkProvider.patch(String.format("/currencies/%s", encodeUriComponent(code)), params, Currency.class);
     }
 
     public Currency updateCurrency(Currency currency, UpdateCurrencyParams params) throws IOException, LightrailRestException {

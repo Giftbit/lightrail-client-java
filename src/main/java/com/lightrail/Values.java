@@ -7,7 +7,7 @@ import com.lightrail.params.values.CreateValueParams;
 
 import java.io.IOException;
 
-import static com.lightrail.network.NetworkUtils.urlEncode;
+import static com.lightrail.network.NetworkUtils.encodeUriComponent;
 
 public class Values {
 
@@ -26,6 +26,6 @@ public class Values {
     public Value getValue(String valueId) throws IOException, LightrailRestException {
         NullArgumentException.check(valueId, "valueId");
 
-        return lr.networkProvider.get(String.format("/values/%s", urlEncode(valueId)), Value.class);
+        return lr.networkProvider.get(String.format("/values/%s", encodeUriComponent(valueId)), Value.class);
     }
 }

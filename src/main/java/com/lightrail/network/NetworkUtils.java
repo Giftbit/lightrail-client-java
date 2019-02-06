@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class NetworkUtils {
 
-    public static String urlEncode(String string) {
+    public static String encodeUriComponent(String string) {
         try {
             return URLEncoder.encode(string, "UTF-8");
         } catch (UnsupportedEncodingException e) {
@@ -32,7 +32,7 @@ public class NetworkUtils {
             }
             queryString.append(entry.getKey());
             queryString.append("=");
-            queryString.append(urlEncode(entry.getValue()));
+            queryString.append(encodeUriComponent(entry.getValue()));
         }
 
         return queryString.toString();
@@ -65,10 +65,10 @@ public class NetworkUtils {
                 if (value instanceof List) {
                     queryString.append(((List<Object>) value).stream()
                             .map(String::valueOf)
-                            .map(NetworkUtils::urlEncode)
+                            .map(NetworkUtils::encodeUriComponent)
                             .collect(Collectors.joining(", ")));
                 } else {
-                    queryString.append(urlEncode(String.valueOf(value)));
+                    queryString.append(encodeUriComponent(String.valueOf(value)));
                 }
             } catch (IllegalAccessException e) {
                 throw new RuntimeException("Unexpected private field in params object:", e);

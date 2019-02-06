@@ -13,6 +13,7 @@ import org.junit.Test;
 import java.io.IOException;
 import java.time.Instant;
 import java.util.Date;
+import java.util.HashMap;
 
 import static com.lightrail.TestUtils.generateId;
 import static com.lightrail.TestUtils.getLightrailClient;
@@ -41,8 +42,8 @@ public class ValuesTest {
         params.usesRemaining = 1;
         params.startDate = new Date(33450364800000L);
         params.endDate = new Date(65322892800000L);
-        params.metadata = new JsonObject();
-        params.metadata.add("hip", new JsonPrimitive("to be square"));
+        params.metadata = new HashMap<>();
+        params.metadata.put("hip", new JsonPrimitive("to be square"));
 
         Value createdValue = lc.values.createValue(params);
         assertEquals(params.id, createdValue.id);

@@ -10,6 +10,10 @@ import java.util.Date;
 import java.util.Locale;
 import java.util.TimeZone;
 
+/**
+ * Custom Date serializer because GSON's date serialization config always
+ * serializes to local time zone.
+ */
 public class UtcDateSerializer implements JsonSerializer<Date>, JsonDeserializer<Date> {
 
     private final DateFormat dateFormat;

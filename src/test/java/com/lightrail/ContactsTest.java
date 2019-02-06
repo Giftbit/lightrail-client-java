@@ -9,6 +9,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.HashMap;
 import java.util.Optional;
 
 import static com.lightrail.TestUtils.generateId;
@@ -35,8 +36,8 @@ public class ContactsTest {
         params.firstName = "TesterFace";
         params.lastName = "Mctesty Face";
         params.email = "tester@face.com";
-        params.metadata = new JsonObject();
-        params.metadata.add("deepestFear", new JsonPrimitive("spiders"));
+        params.metadata = new HashMap<>();
+        params.metadata.put("deepestFear", new JsonPrimitive("spiders"));
 
         Contact contactCreated = lc.contacts.createContact(params);
         assertEquals(params.id, contactCreated.id);
@@ -69,8 +70,8 @@ public class ContactsTest {
         createParams.firstName = "TesterFace";
         createParams.lastName = "Mctesty Face";
         createParams.email = "tester@face.com";
-        createParams.metadata = new JsonObject();
-        createParams.metadata.add("deepestFear", new JsonPrimitive("spiders"));
+        createParams.metadata = new HashMap<>();
+        createParams.metadata.put("deepestFear", new JsonPrimitive("spiders"));
 
         Contact contactCreated = lc.contacts.createContact(createParams);
         assertEquals(createParams.id, contactCreated.id);
@@ -78,8 +79,8 @@ public class ContactsTest {
         UpdateContactParams updateParams = new UpdateContactParams();
         updateParams.firstName = Optional.of("Johnny");
         updateParams.email = Optional.empty();
-        updateParams.metadata = Optional.of(new JsonObject());
-        updateParams.metadata.get().add("deepestFear", new JsonPrimitive("sharks"));
+        updateParams.metadata = Optional.of(new HashMap<>());
+        updateParams.metadata.get().put("deepestFear", new JsonPrimitive("sharks"));
 
         Contact contactUpdated = lc.contacts.updateContact(contactCreated, updateParams);
         assertEquals(contactCreated.id, contactUpdated.id);
@@ -88,5 +89,46 @@ public class ContactsTest {
         assertNull(contactUpdated.email);
         assertEquals(updateParams.metadata.get().get("deepestFear"), contactUpdated.metadata.get("deepestFear"));
         assertNotEquals(contactCreated, contactUpdated);
+    }
+
+    @Test
+    public void paginateContacts() throws Exception {
+        ListContactsParams params = new ListContactsParams();
+        params.limit = 1;
+
+        PaginatedList<Contact> contactsStart = lc.contacts.listContacts(params);
+        assertEquals(1, contactsStart.size());
+        assertFalse(contactsStart.hasFirst());
+        assertFalse(contactsStart.hasPrevious());
+        assertTrue(contactsStart.hasNext());
+        assertTrue(contactsStart.hasLast());
+
+        PaginatedList<Contact> contactsNext = contactsStart.getNext();
+        assertEquals(1, contactsNext.size());
+        assertTrue(contactsNext.hasFirst());
+        assertTrue(contactsNext.hasPrevious());
+        assertTrue(contactsNext.hasNext());
+        assertTrue(contactsNext.hasLast());
+
+        PaginatedList<Contact> contactsPrev = contactsNext.getPrevious();
+        assertEquals(1, contactsPrev.size());
+        assertEquals(contactsStart.get(0).id, contactsPrev.get(0).id);
+        assertTrue(contactsPrev.hasNext());
+        assertTrue(contactsPrev.hasLast());
+
+        PaginatedList<Contact> contactsFirst = contactsNext.getFirst();
+        assertEquals(1, contactsFirst.size());
+        assertEquals(contactsStart.get(0).id, contactsFirst.get(0).id);
+        assertFalse(contactsFirst.hasFirst());
+        assertFalse(contactsFirst.hasPrevious());
+        assertTrue(contactsFirst.hasNext());
+        assertTrue(contactsFirst.hasLast());
+
+        PaginatedList<Contact> contactsLast = contactsNext.getLast();
+        assertEquals(1, contactsLast.size());
+        assertTrue(contactsLast.hasFirst());
+        assertTrue(contactsLast.hasPrevious());
+        assertFalse(contactsLast.hasNext());
+        assertFalse(contactsLast.hasLast());
     }
 }
