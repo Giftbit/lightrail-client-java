@@ -15,15 +15,15 @@ import static org.junit.Assert.*;
 
 public class ContactsTest {
 
-    LightrailClient lc;
+    private LightrailClient lc;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         lc = getLightrailClient();
     }
 
     @After
-    public void tearDown() throws Exception {
+    public void tearDown() {
         lc = null;
     }
 
@@ -43,7 +43,7 @@ public class ContactsTest {
         assertEquals(params.email, contactCreated.email);
         assertEquals(params.metadata.get("deepestFear"), contactCreated.metadata.get("deepestFear"));
 
-        Contact contactGetted = lc.contacts.getContactById(params.id);
+        Contact contactGetted = lc.contacts.getContact(params.id);
         assertEquals(params.id, contactGetted.id);
         assertEquals(params.firstName, contactGetted.firstName);
         assertEquals(params.lastName, contactGetted.lastName);

@@ -31,7 +31,7 @@ public class Contacts {
         return lr.networkProvider.post("/contacts", params, Contact.class);
     }
 
-    public Contact getContactById(String contactId) throws IOException, LightrailRestException {
+    public Contact getContact(String contactId) throws IOException, LightrailRestException {
         NullArgumentException.check(contactId, "contactId");
 
         return lr.networkProvider.get(String.format("/contacts/%s", urlEncode(contactId)), Contact.class);
@@ -53,17 +53,17 @@ public class Contacts {
         return lr.networkProvider.getPaginatedList(String.format("/contacts%s", toQueryString(params)), Contact.class);
     }
 
-    public Contact updateContact(Contact contact, UpdateContactParams params) throws IOException, LightrailRestException {
-        NullArgumentException.check(contact, "contact");
-        NullArgumentException.check(params, "params");
-
-        return updateContact(contact.id, params);
-    }
-
     public Contact updateContact(String contactId, UpdateContactParams params) throws IOException, LightrailRestException {
         NullArgumentException.check(contactId, "contactId");
         NullArgumentException.check(params, "params");
 
         return lr.networkProvider.patch(String.format("/contacts/%s", urlEncode(contactId)), params, Contact.class);
+    }
+
+    public Contact updateContact(Contact contact, UpdateContactParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+        NullArgumentException.check(params, "params");
+
+        return updateContact(contact.id, params);
     }
 }

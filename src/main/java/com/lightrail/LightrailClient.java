@@ -25,6 +25,7 @@ public class LightrailClient {
     private String sharedSecret;
     protected NetworkProvider networkProvider = new DefaultNetworkProvider(this);
 
+    public final Currencies currencies = new Currencies(this);
     public final Contacts contacts = new Contacts(this);
 
     public LightrailClient() {
