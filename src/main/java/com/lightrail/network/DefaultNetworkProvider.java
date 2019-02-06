@@ -99,7 +99,7 @@ public class DefaultNetworkProvider implements NetworkProvider {
             handleError(method, requestURL.toString(), responseCode, responseString);
         }
 
-        return gson.fromJson(gson.toJson(responseString), responseType);
+        return gson.fromJson(responseString, responseType);
     }
 
     private void handleError(String method, String path, int responseCode, String responseString) throws LightrailRestException {
@@ -108,10 +108,10 @@ public class DefaultNetworkProvider implements NetworkProvider {
         JsonObject body = null;
 
         try {
-            LightrailErrorBody errorBody = gson.fromJson(gson.toJson(responseString), LightrailErrorBody.class);
+            LightrailErrorBody errorBody = gson.fromJson(responseString, LightrailErrorBody.class);
             message = errorBody.message;
             messageCode = errorBody.messageCode;
-            body = gson.fromJson(gson.toJson(responseString), JsonObject.class);
+            body = gson.fromJson(responseString, JsonObject.class);
         } catch (Error e) {
             message = responseString;
         }

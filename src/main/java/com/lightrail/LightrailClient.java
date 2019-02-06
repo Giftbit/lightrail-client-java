@@ -30,6 +30,10 @@ public class LightrailClient {
     public LightrailClient() {
     }
 
+    public LightrailClient(String apiKey) {
+        setApiKey(apiKey);
+    }
+
     public LightrailClient(String apiKey, String sharedSecret) {
         setApiKey(apiKey);
         setSharedSecret(sharedSecret);

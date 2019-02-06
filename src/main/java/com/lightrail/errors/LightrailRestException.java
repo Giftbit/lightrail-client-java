@@ -44,4 +44,15 @@ public class LightrailRestException extends Exception {
     public JsonObject getBody() {
         return body;
     }
+
+    @Override
+    public String toString() {
+        return "LightrailRestException{" +
+                "method='" + method + '\'' +
+                ", path='" + path + '\'' +
+                ", httpStatus=" + httpStatus +
+                ", message='" + message + '\'' +
+                ", messageCode='" + messageCode + '\'' +
+                '}';
+    }
 }

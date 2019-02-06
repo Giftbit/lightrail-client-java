@@ -31,4 +31,4 @@ log/
 target/
 
 # Environment variables
-.env
+src/test/resources/.env

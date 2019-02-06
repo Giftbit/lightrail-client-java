@@ -6,6 +6,8 @@ import com.lightrail.params.CreateContactParams;
 
 import java.io.IOException;
 
+import static com.lightrail.network.NetworkUtils.*;
+
 public class Contacts {
     private final LightrailClient lr;
 
@@ -18,10 +20,10 @@ public class Contacts {
     }
 
     public Contact create(CreateContactParams params) throws LightrailRestException, IOException {
-        return lr.networkProvider.post("/v2/contacts", params, Contact.class);
+        return lr.networkProvider.post("/contacts", params, Contact.class);
     }
 
     public Contact getById(String id) throws LightrailRestException, IOException {
-        return lr.networkProvider.get("/v2/contacts", Contact.class);
+        return lr.networkProvider.get(String.format("/contacts/%s", urlEncode(id)), Contact.class);
     }
 }
