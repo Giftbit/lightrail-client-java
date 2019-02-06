@@ -44,6 +44,8 @@ public class ContactsTest {
         assertEquals(params.lastName, contactCreated.lastName);
         assertEquals(params.email, contactCreated.email);
         assertEquals(params.metadata.get("deepestFear"), contactCreated.metadata.get("deepestFear"));
+        assertNotNull(contactCreated.createdDate);
+        assertNotNull(contactCreated.updatedDate);
 
         Contact contactGetted = lc.contacts.getContact(params.id);
         assertEquals(params.id, contactGetted.id);
@@ -51,6 +53,8 @@ public class ContactsTest {
         assertEquals(params.lastName, contactGetted.lastName);
         assertEquals(params.email, contactGetted.email);
         assertEquals(params.metadata.get("deepestFear"), contactGetted.metadata.get("deepestFear"));
+        assertNotNull(contactGetted.createdDate);
+        assertNotNull(contactGetted.updatedDate);
 
         ListContactsParams listContactsParams = new ListContactsParams();
         listContactsParams.id = params.id;
@@ -83,5 +87,6 @@ public class ContactsTest {
         assertEquals(contactCreated.lastName, contactUpdated.lastName);
         assertNull(contactUpdated.email);
         assertEquals(updateParams.metadata.get().get("deepestFear"), contactUpdated.metadata.get("deepestFear"));
+        assertNotEquals(contactCreated, contactUpdated);
     }
 }
