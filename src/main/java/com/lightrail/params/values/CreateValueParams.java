@@ -20,7 +20,7 @@ public class CreateValueParams {
     public Boolean active;
     public RedemptionRule redemptionRule;
     public Boolean discount;
-    public Float discountSellerLiability;
+    public Double discountSellerLiability;
     public Date startDate;
     public Date endDate;
     public Map<String, Object> metadata;

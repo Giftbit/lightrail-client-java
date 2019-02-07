@@ -1,6 +1,6 @@
 package com.lightrail.params.transactions;
 
-public class LightrailTransactionDestination {
+public class LightrailTransactionDestination implements CreditDestination, TransferDestination {
 
     public String rail;
     public String code;

@@ -5,7 +5,7 @@ import java.util.Map;
 public class CreditParams {
 
     public String id;
-    public LightrailTransactionDestination destination;
+    public CreditDestination destination;
     public String currency;
     public Integer amount;
     public Integer uses;

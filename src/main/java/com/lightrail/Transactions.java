@@ -54,6 +54,12 @@ public class Transactions {
         return lr.networkProvider.getPaginatedList(String.format("/transactions%s", toQueryString(params)), Transaction.class);
     }
 
+    public Transaction checkout(CheckoutParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.post("/transactions/checkout", params, Transaction.class);
+    }
+
     public Transaction debit(DebitParams params) throws IOException, LightrailRestException {
         NullArgumentException.check(params, "params");
 

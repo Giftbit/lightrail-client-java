@@ -6,7 +6,7 @@ public class TransferParams {
 
     public String id;
     public TransferSource source;
-    public LightrailTransactionDestination destination;
+    public TransferDestination destination;
     public String currency;
     public Integer amount;
     public Boolean simulate;

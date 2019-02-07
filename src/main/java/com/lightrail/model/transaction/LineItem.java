@@ -10,8 +10,8 @@ public class LineItem {
     public String variantId;
     public Integer unitPrice;
     public Integer quantity;
-    public Float taxRate;
-    public Float marketplaceRate;
+    public Double taxRate;
+    public Double marketplaceRate;
     public Map<String, Object> metadata;
     public LineTotal lineTotal;
 

@@ -16,7 +16,7 @@ public class UpdateValueParams {
     public Optional<RedemptionRule> redemptionRule;
     public Optional<BalanceRule> balanceRule;
     public Optional<Boolean> discount;
-    public Optional<Float> discountSellerLiability;
+    public Optional<Double> discountSellerLiability;
     public Optional<Date> startDate;
     public Optional<Date> endDate;
     public Optional<Map<String, JsonElement>> metadata;

@@ -21,7 +21,7 @@ public class Value {
     public Boolean canceled;
     public RedemptionRule redemptionRule;
     public Boolean discount;
-    public Float discountSellerLiability;
+    public Double discountSellerLiability;
     public Date startDate;
     public Date endDate;
     public Map<String, Object> metadata;

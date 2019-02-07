@@ -1,23 +1,25 @@
 package com.lightrail.params.transactions;
 
+import com.lightrail.model.transaction.LineItem;
+
+import java.util.List;
 import java.util.Map;
 
-public class DebitParams {
+public class CheckoutParams {
 
     public String id;
-    public DebitSource source;
     public String currency;
-    public Integer amount;
-    public Integer uses;
+    public List<LineItem> lineItems;
+    public List<CheckoutSource> sources;
     public Boolean simulate;
     public Boolean allowRemainder;
     public Boolean pending;
     public Map<String, Object> metadata;
 
-    public DebitParams() {
+    public CheckoutParams() {
     }
 
-    public DebitParams(String id) {
+    public CheckoutParams(String id) {
         this.id = id;
     }
 }

@@ -2,7 +2,9 @@ package com.lightrail;
 
 import com.lightrail.model.PaginatedList;
 import com.lightrail.model.Value;
+import com.lightrail.model.transaction.LineItem;
 import com.lightrail.model.transaction.Transaction;
+import com.lightrail.model.transaction.step.InternalTransactionStep;
 import com.lightrail.model.transaction.step.LightrailTransactionStep;
 import com.lightrail.model.transaction.step.StripeTransactionStep;
 import com.lightrail.params.transactions.*;
@@ -10,6 +12,9 @@ import com.lightrail.params.values.CreateValueParams;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import java.util.Arrays;
+import java.util.Collections;
 
 import static com.lightrail.TestUtils.generateId;
 import static com.lightrail.TestUtils.getLightrailClient;
@@ -30,6 +35,97 @@ public class TransactionsTest {
     }
 
     @Test
+    public void checkoutValue() throws Exception {
+        CreateValueParams createValueParams = new CreateValueParams(generateId());
+        createValueParams.currency = "USD";
+        createValueParams.balance = 400;
+        createValueParams.code = generateId();
+
+        Value value = lc.values.createValue(createValueParams);
+        assertEquals(createValueParams.id, value.id);
+
+        LightrailTransactionSource lightrailSource = new LightrailTransactionSource();
+        lightrailSource.code = createValueParams.code;
+
+        LineItem item0 = new LineItem();
+        item0.type = "product";
+        item0.productId = "burger";
+        item0.unitPrice = 299;
+        item0.taxRate = 0.05;
+
+        LineItem item1 = new LineItem();
+        item1.type = "product";
+        item1.productId = "fries";
+        item1.unitPrice = 199;
+        item1.taxRate = 0.05;
+
+        CheckoutParams checkoutParams = new CheckoutParams(generateId());
+        checkoutParams.currency = "USD";
+        checkoutParams.lineItems = Arrays.asList(item0, item1);
+        checkoutParams.sources = Collections.singletonList(lightrailSource);
+        checkoutParams.allowRemainder = true;
+
+        Transaction tx = lc.transactions.checkout(checkoutParams);
+        assertEquals(checkoutParams.id, tx.id);
+        assertEquals("checkout", tx.transactionType);
+        assertEquals(checkoutParams.currency, tx.currency);
+        assertEquals(1, tx.steps.size());
+        assertTrue(tx.steps.get(0) instanceof LightrailTransactionStep);
+
+        LightrailTransactionStep step = (LightrailTransactionStep) tx.steps.get(0);
+        assertEquals(value.id, step.valueId);
+        assertEquals(new Integer(400), step.balanceBefore);
+        assertEquals(new Integer(0), step.balanceAfter);
+        assertEquals(new Integer(-400), step.balanceChange);
+
+        Transaction txGet = lc.transactions.getTransaction(checkoutParams.id);
+        assertEquals(tx, txGet);
+    }
+
+    @Test
+    public void checkoutInternalAndStripe() throws Exception {
+        InternalTransactionSource internalSource = new InternalTransactionSource();
+        internalSource.internalId = "that'll help";
+        internalSource.balance = 399;
+
+        StripeTransactionSource stripeSource = new StripeTransactionSource();
+        stripeSource.source = "tok_visa";
+
+        LineItem item = new LineItem();
+        item.type = "product";
+        item.productId = "solid_gold_rocket_car";
+        item.unitPrice = 98700000;
+        item.taxRate = 0.05;
+
+        CheckoutParams checkoutParams = new CheckoutParams(generateId());
+        checkoutParams.currency = "USD";
+        checkoutParams.lineItems = Collections.singletonList(item);
+        checkoutParams.sources = Arrays.asList(internalSource, stripeSource);
+        checkoutParams.simulate = true;
+
+        Transaction tx = lc.transactions.checkout(checkoutParams);
+        assertEquals(checkoutParams.id, tx.id);
+        assertEquals("checkout", tx.transactionType);
+        assertEquals(checkoutParams.currency, tx.currency);
+        assertEquals(2, tx.steps.size());
+
+        InternalTransactionStep internalStep;
+        StripeTransactionStep stripeStep;
+
+        if (tx.steps.get(0) instanceof InternalTransactionStep) {
+            internalStep = (InternalTransactionStep) tx.steps.get(0);
+            stripeStep = (StripeTransactionStep) tx.steps.get(1);
+        } else {
+            internalStep = (InternalTransactionStep) tx.steps.get(1);
+            stripeStep = (StripeTransactionStep) tx.steps.get(0);
+        }
+
+        assertNotNull(internalStep);
+        assertEquals(internalSource.internalId, internalStep.internalId);
+        assertNotNull(stripeStep);
+    }
+
+    @Test
     public void debit() throws Exception {
         CreateValueParams createValueParams = new CreateValueParams(generateId());
         createValueParams.currency = "USD";
@@ -38,9 +134,11 @@ public class TransactionsTest {
         Value value = lc.values.createValue(createValueParams);
         assertEquals(createValueParams.id, value.id);
 
+        LightrailTransactionSource debitSource = new LightrailTransactionSource();
+        debitSource.valueId = value.id;
+
         DebitParams debitParams = new DebitParams(generateId());
-        debitParams.source = new LightrailTransactionSource();
-        debitParams.source.valueId = value.id;
+        debitParams.source = debitSource;
         debitParams.currency = "USD";
         debitParams.amount = 350;
 
@@ -70,9 +168,11 @@ public class TransactionsTest {
         Value value = lc.values.createValue(createValueParams);
         assertEquals(createValueParams.id, value.id);
 
+        LightrailTransactionDestination creditDestination = new LightrailTransactionDestination();
+        creditDestination.valueId = value.id;
+
         CreditParams creditParams = new CreditParams(generateId());
-        creditParams.destination = new LightrailTransactionDestination();
-        creditParams.destination.valueId = value.id;
+        creditParams.destination = creditDestination;
         creditParams.currency = "USD";
         creditParams.amount = 350;
 
@@ -182,9 +282,11 @@ public class TransactionsTest {
         Value value = lc.values.createValue(createValueParams);
         assertEquals(createValueParams.id, value.id);
 
+        LightrailTransactionSource debitSource = new LightrailTransactionSource();
+        debitSource.valueId = value.id;
+
         DebitParams debitParams = new DebitParams(generateId());
-        debitParams.source = new LightrailTransactionSource();
-        debitParams.source.valueId = value.id;
+        debitParams.source = debitSource;
         debitParams.currency = "USD";
         debitParams.amount = 3300;
 
@@ -217,9 +319,11 @@ public class TransactionsTest {
         Value value = lc.values.createValue(createValueParams);
         assertEquals(createValueParams.id, value.id);
 
+        LightrailTransactionSource debitSource = new LightrailTransactionSource();
+        debitSource.valueId = value.id;
+
         DebitParams debitParams = new DebitParams(generateId());
-        debitParams.source = new LightrailTransactionSource();
-        debitParams.source.valueId = value.id;
+        debitParams.source = debitSource;
         debitParams.currency = "USD";
         debitParams.amount = 6100;
         debitParams.pending = true;
@@ -252,9 +356,11 @@ public class TransactionsTest {
         Value value = lc.values.createValue(createValueParams);
         assertEquals(createValueParams.id, value.id);
 
+        LightrailTransactionSource debitSource = new LightrailTransactionSource();
+        debitSource.valueId = value.id;
+
         DebitParams debitParams = new DebitParams(generateId());
-        debitParams.source = new LightrailTransactionSource();
-        debitParams.source.valueId = value.id;
+        debitParams.source = debitSource;
         debitParams.currency = "USD";
         debitParams.amount = 6100;
         debitParams.pending = true;
