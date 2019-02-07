@@ -80,6 +80,10 @@ public class DefaultNetworkProvider implements NetworkProvider {
         return request("PUT", path, body, responseType);
     }
 
+    public <T> T delete(String path, Class<T> responseType) throws LightrailRestException, IOException {
+        return request("DELETE", path, null, responseType);
+    }
+
     public <T> T request(String method, String path, Object body, Class<T> responseType) throws LightrailRestException, IOException {
         HttpsURLConnection httpsURLConnection = getConnection(method, path, body);
         int responseCode = httpsURLConnection.getResponseCode();

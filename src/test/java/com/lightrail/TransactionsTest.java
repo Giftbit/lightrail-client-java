@@ -80,6 +80,9 @@ public class TransactionsTest {
 
         Transaction txGet = lc.transactions.getTransaction(checkoutParams.id);
         assertEquals(tx, txGet);
+
+        PaginatedList<Transaction> valueTxs = lc.values.listValuesTransactions(value);
+        assertEquals(2, valueTxs.size());
     }
 
     @Test
@@ -406,13 +409,13 @@ public class TransactionsTest {
 
         PaginatedList<Transaction> transactionsPrev = transactionsNext.getPrevious();
         assertEquals(1, transactionsPrev.size());
-        assertEquals(transactionsStart.get(0).id, transactionsPrev.get(0).id);
+        assertEquals(transactionsStart.get(0), transactionsPrev.get(0));
         assertTrue(transactionsPrev.hasNext());
         assertTrue(transactionsPrev.hasLast());
 
         PaginatedList<Transaction> transactionsFirst = transactionsNext.getFirst();
         assertEquals(1, transactionsFirst.size());
-        assertEquals(transactionsStart.get(0).id, transactionsFirst.get(0).id);
+        assertEquals(transactionsStart.get(0), transactionsFirst.get(0));
         assertFalse(transactionsFirst.hasFirst());
         assertFalse(transactionsFirst.hasPrevious());
         assertTrue(transactionsFirst.hasNext());

@@ -47,4 +47,16 @@ public class Currencies {
 
         return updateCurrency(currency.code, params);
     }
+
+    public void deleteCurrency(String code) throws IOException, LightrailRestException {
+        NullArgumentException.check(code, "code");
+
+        lr.networkProvider.delete(String.format("/currencies/%s", encodeUriComponent(code)), Object.class);
+    }
+
+    public void deleteCurrency(Currency currency) throws IOException, LightrailRestException {
+        NullArgumentException.check(currency, "currency");
+
+        deleteCurrency(currency.code);
+    }
 }

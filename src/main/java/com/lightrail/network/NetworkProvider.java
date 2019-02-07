@@ -16,6 +16,8 @@ public interface NetworkProvider {
 
     <T> T put(String path, Object body, Class<T> responseType) throws LightrailRestException, IOException;
 
+    <T> T delete(String path, Class<T> responseType) throws LightrailRestException, IOException;
+
     <T> T request(String method, String path, Object body, Class<T> responseType) throws LightrailRestException, IOException;
 
     <T> PaginatedList<T> requestPaginatedList(String method, String path, Object body, Class<T> responseType) throws LightrailRestException, IOException;

@@ -109,13 +109,13 @@ public class ContactsTest {
 
         PaginatedList<Contact> contactsPrev = contactsNext.getPrevious();
         assertEquals(1, contactsPrev.size());
-        assertEquals(contactsStart.get(0).id, contactsPrev.get(0).id);
+        assertEquals(contactsStart.get(0), contactsPrev.get(0));
         assertTrue(contactsPrev.hasNext());
         assertTrue(contactsPrev.hasLast());
 
         PaginatedList<Contact> contactsFirst = contactsNext.getFirst();
         assertEquals(1, contactsFirst.size());
-        assertEquals(contactsStart.get(0).id, contactsFirst.get(0).id);
+        assertEquals(contactsStart.get(0), contactsFirst.get(0));
         assertFalse(contactsFirst.hasFirst());
         assertFalse(contactsFirst.hasPrevious());
         assertTrue(contactsFirst.hasNext());
@@ -164,5 +164,9 @@ public class ContactsTest {
         PaginatedList<Value> contactValues = lc.contacts.listContactsValues(contactCreated);
         assertEquals(1, contactValues.size());
         assertEquals(valueCreated.id, contactValues.get(0).id);
+
+        PaginatedList<Contact> valueContacts = lc.values.listValuesAttachedContacts(valueCreated);
+        assertEquals(1, valueContacts.size());
+        assertEquals(contactCreated, valueContacts.get(0));
     }
 }
