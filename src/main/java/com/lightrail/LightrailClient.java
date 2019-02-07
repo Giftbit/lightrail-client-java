@@ -27,9 +27,9 @@ public class LightrailClient {
 
     public final Currencies currencies = new Currencies(this);
     public final Contacts contacts = new Contacts(this);
+    public final Programs programs = new Programs(this);
     public final Transactions transactions = new Transactions(this);
     public final Values values = new Values(this);
-    public final Programs programs = new Programs(this);
 
     public LightrailClient() {
     }

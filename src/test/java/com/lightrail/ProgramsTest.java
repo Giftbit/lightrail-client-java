@@ -13,7 +13,9 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.lightrail.TestUtils.*;
@@ -78,7 +80,8 @@ public class ProgramsTest {
         params.redemptionRule = new RedemptionRule("1 > 0", "Macchiato is better than nothing");
         params.minInitialBalance = 500;
         params.maxInitialBalance = 5000;
-        params.fixedInitialUsesRemaining = new Integer[]{2};
+        params.fixedInitialUsesRemaining = new ArrayList<>();
+        params.fixedInitialUsesRemaining.add(2);
         params.metadata = new HashMap<>();
         params.metadata.put("milk", "just a drop");
         params.metadata.put("foam", true);
@@ -97,10 +100,7 @@ public class ProgramsTest {
         assertEquals(params.metadata, programCreated.metadata);
         assertNotNull(programCreated.createdDate);
         assertNotNull(programCreated.updatedDate);
-
-        System.out.println(programCreated.active);
-        System.out.println(programCreated.toString());
-
+        // check defaults
         assertTrue(programCreated.active);
         assertNull(programCreated.balanceRule);
         assertNull(programCreated.fixedInitialBalances);
@@ -126,6 +126,11 @@ public class ProgramsTest {
         PaginatedList<Program> programList = lc.programs.listPrograms(listProgramsParams);
         assertEquals(1, programList.size());
         assertEquals(params.id, programList.get(0).id);
+
+        Map<String, String> listProgramParams2 = new HashMap<>();
+        listProgramParams2.put("id", params.id);
+        PaginatedList<Program> programList2 = lc.programs.listPrograms(listProgramParams2);
+        assertEquals(programList2, programList);
     }
 
     @Test
@@ -136,8 +141,12 @@ public class ProgramsTest {
         createParams.discount = true;
         createParams.pretax = true;
         createParams.active = true;
-        createParams.fixedInitialBalances = new Integer[]{4444, 5555, 6666};
-        createParams.fixedInitialUsesRemaining = new Integer[]{2};
+        createParams.fixedInitialBalances = new ArrayList<>();
+        createParams.fixedInitialBalances.add(4444);
+        createParams.fixedInitialBalances.add(5555);
+        createParams.fixedInitialBalances.add(6666);
+        createParams.fixedInitialUsesRemaining = new ArrayList<>();
+        createParams.fixedInitialUsesRemaining.add(2);
         createParams.metadata = new HashMap<>();
         createParams.metadata.put("milk", true);
 

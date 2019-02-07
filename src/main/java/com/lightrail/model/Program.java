@@ -1,7 +1,7 @@
 package com.lightrail.model;
 
-import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -16,8 +16,8 @@ public class Program {
     public Double discountSellerLiability;
     public Integer minInitialBalance;
     public Integer maxInitialBalance;
-    public Integer[] fixedInitialBalances;
-    public Integer[] fixedInitialUsesRemaining;
+    public List<Integer> fixedInitialBalances;
+    public List<Integer> fixedInitialUsesRemaining;
     public RedemptionRule redemptionRule;
     public BalanceRule balanceRule;
     public Date startDate;
@@ -32,19 +32,19 @@ public class Program {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Program program = (Program) o;
-        return discount == program.discount &&
-                pretax == program.pretax &&
-                active == program.active &&
-                Objects.equals(id, program.id) &&
+        return Objects.equals(id, program.id) &&
                 Objects.equals(name, program.name) &&
                 Objects.equals(currency, program.currency) &&
-                Objects.equals(redemptionRule, program.redemptionRule) &&
-                Objects.equals(balanceRule, program.balanceRule) &&
+                Objects.equals(discount, program.discount) &&
+                Objects.equals(pretax, program.pretax) &&
+                Objects.equals(active, program.active) &&
+                Objects.equals(discountSellerLiability, program.discountSellerLiability) &&
                 Objects.equals(minInitialBalance, program.minInitialBalance) &&
                 Objects.equals(maxInitialBalance, program.maxInitialBalance) &&
-                Arrays.equals(fixedInitialBalances, program.fixedInitialBalances) &&
-                Arrays.equals(fixedInitialUsesRemaining, program.fixedInitialUsesRemaining) &&
-                Objects.equals(discountSellerLiability, program.discountSellerLiability) &&
+                Objects.equals(fixedInitialBalances, program.fixedInitialBalances) &&
+                Objects.equals(fixedInitialUsesRemaining, program.fixedInitialUsesRemaining) &&
+                Objects.equals(redemptionRule, program.redemptionRule) &&
+                Objects.equals(balanceRule, program.balanceRule) &&
                 Objects.equals(startDate, program.startDate) &&
                 Objects.equals(endDate, program.endDate) &&
                 Objects.equals(metadata, program.metadata) &&
@@ -55,9 +55,6 @@ public class Program {
 
     @Override
     public int hashCode() {
-        int result = Objects.hash(id, name, currency, discount, pretax, active, redemptionRule, balanceRule, minInitialBalance, maxInitialBalance, discountSellerLiability, startDate, endDate, metadata, createdDate, updatedDate, createdBy);
-        result = 31 * result + Arrays.hashCode(fixedInitialBalances);
-        result = 31 * result + Arrays.hashCode(fixedInitialUsesRemaining);
-        return result;
+        return Objects.hash(id, name, currency, discount, pretax, active, discountSellerLiability, minInitialBalance, maxInitialBalance, fixedInitialBalances, fixedInitialUsesRemaining, redemptionRule, balanceRule, startDate, endDate, metadata, createdDate, updatedDate, createdBy);
     }
 }

@@ -4,6 +4,7 @@ import com.lightrail.model.BalanceRule;
 import com.lightrail.model.RedemptionRule;
 
 import java.util.Date;
+import java.util.List;
 import java.util.Map;
 
 public class CreateProgramParams {
@@ -17,8 +18,8 @@ public class CreateProgramParams {
     public BalanceRule balanceRule;
     public Integer minInitialBalance;
     public Integer maxInitialBalance;
-    public Integer[] fixedInitialBalances;
-    public Integer[] fixedInitialUsesRemaining;
+    public List<Integer> fixedInitialBalances;
+    public List<Integer> fixedInitialUsesRemaining;
     public Double discountSellerLiability;
     public Date startDate;
     public Date endDate;
