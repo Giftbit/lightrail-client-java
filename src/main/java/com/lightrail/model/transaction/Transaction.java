@@ -1,6 +1,5 @@
 package com.lightrail.model.transaction;
 
-import com.google.gson.JsonElement;
 import com.lightrail.model.transaction.party.TransactionParty;
 import com.lightrail.model.transaction.step.TransactionStep;
 
@@ -19,7 +18,7 @@ public class Transaction {
     public List<LineItem> lineItems;
     public List<TransactionStep> steps;
     public List<TransactionParty> paymentSources;
-    public Map<String, JsonElement> metadata;
+    public Map<String, Object> metadata;
     public Date createdDate;
     public String createdBy;
 

@@ -1,7 +1,5 @@
 package com.lightrail.params.contacts;
 
-import com.google.gson.JsonElement;
-
 import java.util.Map;
 
 public class CreateContactParams {
@@ -9,7 +7,7 @@ public class CreateContactParams {
     public String firstName;
     public String lastName;
     public String email;
-    public Map<String, JsonElement> metadata;
+    public Map<String, Object> metadata;
 
     public CreateContactParams() {
     }

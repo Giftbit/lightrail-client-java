@@ -1,7 +1,5 @@
 package com.lightrail.params.contacts;
 
-import com.google.gson.JsonElement;
-
 import java.util.Map;
 import java.util.Optional;
 
@@ -15,5 +13,5 @@ public class UpdateContactParams {
     public Optional<String> firstName;
     public Optional<String> lastName;
     public Optional<String> email;
-    public Optional<Map<String, JsonElement>> metadata;
+    public Optional<Map<String, Object>> metadata;
 }

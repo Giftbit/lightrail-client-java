@@ -1,7 +1,5 @@
 package com.lightrail.model;
 
-import com.google.gson.JsonElement;
-
 import java.util.Date;
 import java.util.Map;
 import java.util.Objects;
@@ -12,7 +10,7 @@ public class Contact {
     public String firstName;
     public String lastName;
     public String email;
-    public Map<String, JsonElement> metadata;
+    public Map<String, Object> metadata;
     public Date createdDate;
     public Date updatedDate;
     public String createdBy;

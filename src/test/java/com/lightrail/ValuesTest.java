@@ -44,7 +44,7 @@ public class ValuesTest {
         params.startDate = new Date(33450364800000L);
         params.endDate = new Date(65322892800000L);
         params.metadata = new HashMap<>();
-        params.metadata.put("hip", new JsonPrimitive("to be square"));
+        params.metadata.put("hip", "to be square");
 
         Value createdValue = lc.values.createValue(params);
         assertEquals(params.id, createdValue.id);
@@ -58,7 +58,7 @@ public class ValuesTest {
         assertEquals(params.startDate, createdValue.startDate);
         assertEquals(params.endDate, createdValue.endDate);
         assertNotNull(createdValue.metadata);
-        assertEquals(params.metadata.get("hip"), createdValue.metadata.get("hip"));
+        assertEquals(params.metadata, createdValue.metadata);
         assertNotNull(createdValue.createdDate);
         assertNotNull(createdValue.updatedDate);
         assertNotNull(createdValue.createdBy);

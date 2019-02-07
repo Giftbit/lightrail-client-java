@@ -1,7 +1,5 @@
 package com.lightrail.params.transactions;
 
-import com.google.gson.JsonElement;
-
 import java.util.Map;
 
 public class CreditParams {
@@ -12,7 +10,7 @@ public class CreditParams {
     public Integer amount;
     public Integer uses;
     public Boolean simulate;
-    public Map<String, JsonElement> metadata;
+    public Map<String, Object> metadata;
 
     public CreditParams() {
     }

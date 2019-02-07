@@ -1,6 +1,5 @@
 package com.lightrail;
 
-import com.google.gson.JsonPrimitive;
 import com.lightrail.model.Contact;
 import com.lightrail.model.PaginatedList;
 import com.lightrail.model.Value;
@@ -39,31 +38,25 @@ public class ContactsTest {
         params.lastName = "Mctesty Face";
         params.email = "tester@face.com";
         params.metadata = new HashMap<>();
-        params.metadata.put("deepestFear", new JsonPrimitive("spiders"));
+        params.metadata.put("deepestFear", "spiders");
 
         Contact contactCreated = lc.contacts.createContact(params);
         assertEquals(params.id, contactCreated.id);
         assertEquals(params.firstName, contactCreated.firstName);
         assertEquals(params.lastName, contactCreated.lastName);
         assertEquals(params.email, contactCreated.email);
-        assertEquals(params.metadata.get("deepestFear"), contactCreated.metadata.get("deepestFear"));
+        assertEquals(params.metadata, contactCreated.metadata);
         assertNotNull(contactCreated.createdDate);
         assertNotNull(contactCreated.updatedDate);
 
         Contact contactGetted = lc.contacts.getContact(params.id);
-        assertEquals(params.id, contactGetted.id);
-        assertEquals(params.firstName, contactGetted.firstName);
-        assertEquals(params.lastName, contactGetted.lastName);
-        assertEquals(params.email, contactGetted.email);
-        assertEquals(params.metadata.get("deepestFear"), contactGetted.metadata.get("deepestFear"));
-        assertNotNull(contactGetted.createdDate);
-        assertNotNull(contactGetted.updatedDate);
+        assertEquals(contactCreated, contactGetted);
 
         ListContactsParams listContactsParams = new ListContactsParams();
         listContactsParams.id = params.id;
         PaginatedList<Contact> contactList = lc.contacts.listContacts(listContactsParams);
         assertEquals(1, contactList.size());
-        assertEquals(params.id, contactList.get(0).id);
+        assertEquals(contactGetted, contactList.get(0));
     }
 
     @Test
@@ -73,7 +66,7 @@ public class ContactsTest {
         createParams.lastName = "Mctesty Face";
         createParams.email = "tester@face.com";
         createParams.metadata = new HashMap<>();
-        createParams.metadata.put("deepestFear", new JsonPrimitive("spiders"));
+        createParams.metadata.put("deepestFear", "spiders");
 
         Contact contactCreated = lc.contacts.createContact(createParams);
         assertEquals(createParams.id, contactCreated.id);
@@ -82,14 +75,16 @@ public class ContactsTest {
         updateParams.firstName = Optional.of("Johnny");
         updateParams.email = Optional.empty();
         updateParams.metadata = Optional.of(new HashMap<>());
-        updateParams.metadata.get().put("deepestFear", new JsonPrimitive("sharks"));
+        updateParams.metadata.get().put("deepestFear", "sharks");
+        updateParams.metadata.get().put("kittensOwned", 5.0);
+        updateParams.metadata.get().put("moreStuff", new HashMap<String, Object>());
 
         Contact contactUpdated = lc.contacts.updateContact(contactCreated, updateParams);
         assertEquals(contactCreated.id, contactUpdated.id);
         assertEquals(updateParams.firstName.get(), contactUpdated.firstName);
         assertEquals(contactCreated.lastName, contactUpdated.lastName);
         assertNull(contactUpdated.email);
-        assertEquals(updateParams.metadata.get().get("deepestFear"), contactUpdated.metadata.get("deepestFear"));
+        assertEquals(updateParams.metadata.get(), contactUpdated.metadata);
         assertNotEquals(contactCreated, contactUpdated);
     }
 

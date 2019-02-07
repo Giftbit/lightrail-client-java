@@ -1,7 +1,5 @@
 package com.lightrail.params.transactions;
 
-import com.google.gson.JsonElement;
-
 import java.util.Map;
 
 public class DebitParams {
@@ -14,7 +12,7 @@ public class DebitParams {
     public Boolean simulate;
     public Boolean allowRemainder;
     public Boolean pending;
-    public Map<String, JsonElement> metadata;
+    public Map<String, Object> metadata;
 
     public DebitParams() {
     }

@@ -1,6 +1,5 @@
 package com.lightrail.params.values;
 
-import com.google.gson.JsonElement;
 import com.lightrail.model.BalanceRule;
 import com.lightrail.model.RedemptionRule;
 
@@ -24,7 +23,7 @@ public class CreateValueParams {
     public Float discountSellerLiability;
     public Date startDate;
     public Date endDate;
-    public Map<String, JsonElement> metadata;
+    public Map<String, Object> metadata;
 
     public CreateValueParams() {
     }

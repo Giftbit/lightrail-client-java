@@ -1,7 +1,5 @@
 package com.lightrail.model.transaction;
 
-import com.google.gson.JsonElement;
-
 import java.util.Map;
 import java.util.Objects;
 
@@ -14,7 +12,7 @@ public class LineItem {
     public Integer quantity;
     public Float taxRate;
     public Float marketplaceRate;
-    public Map<String, JsonElement> metadata;
+    public Map<String, Object> metadata;
     public LineTotal lineTotal;
 
     @Override
