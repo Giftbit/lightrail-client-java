@@ -1,5 +1,6 @@
 package com.lightrail;
 
+import com.lightrail.model.PaginatedList;
 import com.lightrail.model.Value;
 import com.lightrail.model.transaction.Transaction;
 import com.lightrail.model.transaction.step.LightrailTransactionStep;
@@ -202,6 +203,9 @@ public class TransactionsTest {
         assertEquals(debitParams.currency, reverse.currency);
         assertEquals(1, reverse.steps.size());
         assertTrue(reverse.steps.get(0) instanceof LightrailTransactionStep);
+
+        PaginatedList<Transaction> txChain = lc.transactions.getTransactionChain(debit);
+        assertEquals(2, txChain.size());
     }
 
     @Test
@@ -229,11 +233,14 @@ public class TransactionsTest {
 
         CapturePendingParams capturePendingParams = new CapturePendingParams(generateId());
 
-        Transaction reverse = lc.transactions.capturePending(debit, capturePendingParams);
-        assertEquals(capturePendingParams.id, reverse.id);
-        assertEquals("capture", reverse.transactionType);
-        assertEquals(debitParams.currency, reverse.currency);
-        assertEquals(0, reverse.steps.size());
+        Transaction capture = lc.transactions.capturePending(debit, capturePendingParams);
+        assertEquals(capturePendingParams.id, capture.id);
+        assertEquals("capture", capture.transactionType);
+        assertEquals(debitParams.currency, capture.currency);
+        assertEquals(0, capture.steps.size());
+
+        PaginatedList<Transaction> txChain = lc.transactions.getTransactionChain(capture);
+        assertEquals(2, txChain.size());
     }
 
     @Test
@@ -261,11 +268,55 @@ public class TransactionsTest {
 
         VoidPendingParams voidPendingParams = new VoidPendingParams(generateId());
 
-        Transaction reverse = lc.transactions.voidPending(debit, voidPendingParams);
-        assertEquals(voidPendingParams.id, reverse.id);
-        assertEquals("void", reverse.transactionType);
-        assertEquals(debitParams.currency, reverse.currency);
-        assertEquals(1, reverse.steps.size());
-        assertTrue(reverse.steps.get(0) instanceof LightrailTransactionStep);
+        Transaction voidTx = lc.transactions.voidPending(debit, voidPendingParams);
+        assertEquals(voidPendingParams.id, voidTx.id);
+        assertEquals("void", voidTx.transactionType);
+        assertEquals(debitParams.currency, voidTx.currency);
+        assertEquals(1, voidTx.steps.size());
+        assertTrue(voidTx.steps.get(0) instanceof LightrailTransactionStep);
+
+        PaginatedList<Transaction> txChain = lc.transactions.getTransactionChain(voidTx);
+        assertEquals(2, txChain.size());
+    }
+
+    @Test
+    public void paginateTransactions() throws Exception {
+        ListTransactionsParams params = new ListTransactionsParams();
+        params.limit = 1;
+
+        PaginatedList<Transaction> transactionsStart = lc.transactions.listTransactions(params);
+        assertEquals(1, transactionsStart.size());
+        assertFalse(transactionsStart.hasFirst());
+        assertFalse(transactionsStart.hasPrevious());
+        assertTrue(transactionsStart.hasNext());
+        assertTrue(transactionsStart.hasLast());
+
+        PaginatedList<Transaction> transactionsNext = transactionsStart.getNext();
+        assertEquals(1, transactionsNext.size());
+        assertTrue(transactionsNext.hasFirst());
+        assertTrue(transactionsNext.hasPrevious());
+        assertTrue(transactionsNext.hasNext());
+        assertTrue(transactionsNext.hasLast());
+
+        PaginatedList<Transaction> transactionsPrev = transactionsNext.getPrevious();
+        assertEquals(1, transactionsPrev.size());
+        assertEquals(transactionsStart.get(0).id, transactionsPrev.get(0).id);
+        assertTrue(transactionsPrev.hasNext());
+        assertTrue(transactionsPrev.hasLast());
+
+        PaginatedList<Transaction> transactionsFirst = transactionsNext.getFirst();
+        assertEquals(1, transactionsFirst.size());
+        assertEquals(transactionsStart.get(0).id, transactionsFirst.get(0).id);
+        assertFalse(transactionsFirst.hasFirst());
+        assertFalse(transactionsFirst.hasPrevious());
+        assertTrue(transactionsFirst.hasNext());
+        assertTrue(transactionsFirst.hasLast());
+
+        PaginatedList<Transaction> transactionsLast = transactionsNext.getLast();
+        assertEquals(1, transactionsLast.size());
+        assertTrue(transactionsLast.hasFirst());
+        assertTrue(transactionsLast.hasPrevious());
+        assertFalse(transactionsLast.hasNext());
+        assertFalse(transactionsLast.hasLast());
     }
 }

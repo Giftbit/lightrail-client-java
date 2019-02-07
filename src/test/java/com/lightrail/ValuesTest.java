@@ -1,6 +1,5 @@
 package com.lightrail;
 
-import com.google.gson.JsonPrimitive;
 import com.lightrail.errors.LightrailRestException;
 import com.lightrail.model.BalanceRule;
 import com.lightrail.model.PaginatedList;

@@ -7,6 +7,7 @@ import com.lightrail.model.Value;
 import com.lightrail.params.values.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static com.lightrail.network.NetworkUtils.encodeUriComponent;
 import static com.lightrail.network.NetworkUtils.toQueryString;
@@ -49,6 +50,12 @@ public class Values {
     }
 
     public PaginatedList<Value> listValues(ListValuesParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/values%s", toQueryString(params)), Value.class);
+    }
+
+    public PaginatedList<Value> listValues(Map<String, String> params) throws IOException, LightrailRestException {
         NullArgumentException.check(params, "params");
 
         return lr.networkProvider.getPaginatedList(String.format("/values%s", toQueryString(params)), Value.class);

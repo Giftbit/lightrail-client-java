@@ -2,12 +2,15 @@ package com.lightrail;
 
 import com.lightrail.errors.LightrailRestException;
 import com.lightrail.errors.NullArgumentException;
+import com.lightrail.model.PaginatedList;
 import com.lightrail.model.transaction.Transaction;
 import com.lightrail.params.transactions.*;
 
 import java.io.IOException;
+import java.util.Map;
 
 import static com.lightrail.network.NetworkUtils.encodeUriComponent;
+import static com.lightrail.network.NetworkUtils.toQueryString;
 
 public class Transactions {
 
@@ -21,6 +24,34 @@ public class Transactions {
         NullArgumentException.check(transactionId, "transactionId");
 
         return lr.networkProvider.get(String.format("/transactions/%s", encodeUriComponent(transactionId)), Transaction.class);
+    }
+
+    public PaginatedList<Transaction> getTransactionChain(String transactionId) throws IOException, LightrailRestException {
+        NullArgumentException.check(transactionId, "transactionId");
+
+        return lr.networkProvider.getPaginatedList(String.format("/transactions/%s/chain", encodeUriComponent(transactionId)), Transaction.class);
+    }
+
+    public PaginatedList<Transaction> getTransactionChain(Transaction transaction) throws IOException, LightrailRestException {
+        NullArgumentException.check(transaction, "transaction");
+
+        return getTransactionChain(transaction.id);
+    }
+
+    public PaginatedList<Transaction> listTransactions() throws IOException, LightrailRestException {
+        return lr.networkProvider.getPaginatedList("/transactions", Transaction.class);
+    }
+
+    public PaginatedList<Transaction> listTransactions(ListTransactionsParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/transactions%s", toQueryString(params)), Transaction.class);
+    }
+
+    public PaginatedList<Transaction> listTransactions(Map<String, String> params) throws IOException, LightrailRestException {
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/transactions%s", toQueryString(params)), Transaction.class);
     }
 
     public Transaction debit(DebitParams params) throws IOException, LightrailRestException {
