@@ -1,6 +1,6 @@
 package com.lightrail.errors;
 
-import com.google.gson.JsonObject;
+import java.util.Map;
 
 public class LightrailRestException extends Exception {
 
@@ -9,9 +9,9 @@ public class LightrailRestException extends Exception {
     private int httpStatus;
     private String message;
     private String messageCode;
-    private JsonObject body;
+    private Map<String, Object> body;
 
-    public LightrailRestException(String method, String path, int httpStatus, String message, String messageCode, JsonObject body) {
+    public LightrailRestException(String method, String path, int httpStatus, String message, String messageCode, Map<String, Object> body) {
         this.method = method;
         this.path = path;
         this.httpStatus = httpStatus;
@@ -41,7 +41,7 @@ public class LightrailRestException extends Exception {
         return messageCode;
     }
 
-    public JsonObject getBody() {
+    public Map<String, Object> getBody() {
         return body;
     }
 

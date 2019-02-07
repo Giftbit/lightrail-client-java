@@ -2,7 +2,6 @@ package com.lightrail.network;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 import com.google.gson.reflect.TypeToken;
 import com.lightrail.LightrailClient;
 import com.lightrail.errors.LightrailRestException;
@@ -179,13 +178,13 @@ public class DefaultNetworkProvider implements NetworkProvider {
 
         String message = "";
         String messageCode = "";
-        JsonObject body = null;
+        Map<String, Object> body = null;
 
         try {
             LightrailErrorBody errorBody = gson.fromJson(responseString, LightrailErrorBody.class);
             message = errorBody.message;
             messageCode = errorBody.messageCode;
-            body = gson.fromJson(responseString, JsonObject.class);
+            body = gson.fromJson(responseString, TypeToken.getParameterized(Map.class, String.class, Object.class).getType());
         } catch (Error e) {
             message = responseString;
         }
