@@ -108,6 +108,18 @@ public class Contacts {
         return updateContact(contact.id, params);
     }
 
+    public void deleteContact(String contactId) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+
+        lr.networkProvider.delete(String.format("/contacts/%s", encodeUriComponent(contactId)), Object.class);
+    }
+
+    public void deleteContact(Contact contact) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+
+        deleteContact(contact.id);
+    }
+
     public Value attachContactToValue(String contactId, AttachContactToValueParams params) throws IOException, LightrailRestException {
         NullArgumentException.check(contactId, "contactId");
         NullArgumentException.check(params, "params");
