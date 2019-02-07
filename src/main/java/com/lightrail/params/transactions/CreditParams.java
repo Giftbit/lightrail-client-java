@@ -10,7 +10,6 @@ public class CreditParams {
     public Integer amount;
     public Integer uses;
     public Boolean simulate;
-    public Boolean pending;
     public Map<String, Object> metadata;
 
     public CreditParams() {

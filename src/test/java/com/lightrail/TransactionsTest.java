@@ -3,6 +3,7 @@ package com.lightrail;
 import com.lightrail.model.Value;
 import com.lightrail.model.transaction.Transaction;
 import com.lightrail.model.transaction.step.LightrailTransactionStep;
+import com.lightrail.model.transaction.step.StripeTransactionStep;
 import com.lightrail.params.transactions.*;
 import com.lightrail.params.values.CreateValueParams;
 import org.junit.After;
@@ -127,5 +128,144 @@ public class TransactionsTest {
 
         Transaction txGet = lc.transactions.getTransaction(tx.id);
         assertEquals(tx, txGet);
+    }
+
+    @Test
+    public void transferFromStripeToLightrail() throws Exception {
+        CreateValueParams createValueDestParams = new CreateValueParams(generateId());
+        createValueDestParams.currency = "USD";
+        createValueDestParams.balance = 0;
+        Value valueDest = lc.values.createValue(createValueDestParams);
+        assertEquals(createValueDestParams.id, valueDest.id);
+
+        StripeTransactionSource txSource = new StripeTransactionSource();
+        txSource.source = "tok_visa";
+
+        LightrailTransactionDestination txDest = new LightrailTransactionDestination();
+        txDest.valueId = valueDest.id;
+
+        TransferParams txParams = new TransferParams(generateId());
+        txParams.source = txSource;
+        txParams.destination = txDest;
+        txParams.currency = "USD";
+        txParams.amount = 5000;
+        txParams.simulate = true;
+
+        Transaction tx = lc.transactions.transfer(txParams);
+        assertEquals(txParams.id, tx.id);
+        assertEquals("transfer", tx.transactionType);
+        assertEquals(txParams.currency, tx.currency);
+        assertEquals(2, tx.steps.size());
+
+        LightrailTransactionStep destStep;
+        StripeTransactionStep stripeStep;
+
+        if (tx.steps.get(0) instanceof LightrailTransactionStep) {
+            destStep = (LightrailTransactionStep) tx.steps.get(0);
+            stripeStep = (StripeTransactionStep) tx.steps.get(1);
+        } else {
+            destStep = (LightrailTransactionStep) tx.steps.get(1);
+            stripeStep = (StripeTransactionStep) tx.steps.get(0);
+        }
+
+        assertNotNull(destStep);
+        assertNotNull(stripeStep);
+    }
+
+    @Test
+    public void reverse() throws Exception {
+        CreateValueParams createValueParams = new CreateValueParams(generateId());
+        createValueParams.currency = "USD";
+        createValueParams.balance = 5600;
+
+        Value value = lc.values.createValue(createValueParams);
+        assertEquals(createValueParams.id, value.id);
+
+        DebitParams debitParams = new DebitParams(generateId());
+        debitParams.source = new LightrailTransactionSource();
+        debitParams.source.valueId = value.id;
+        debitParams.currency = "USD";
+        debitParams.amount = 3300;
+
+        Transaction debit = lc.transactions.debit(debitParams);
+        assertEquals(debitParams.id, debit.id);
+        assertEquals("debit", debit.transactionType);
+        assertEquals(debitParams.currency, debit.currency);
+        assertEquals(1, debit.steps.size());
+        assertTrue(debit.steps.get(0) instanceof LightrailTransactionStep);
+
+        ReverseParams reverseParams = new ReverseParams(generateId());
+
+        Transaction reverse = lc.transactions.reverse(debit, reverseParams);
+        assertEquals(reverseParams.id, reverse.id);
+        assertEquals("reverse", reverse.transactionType);
+        assertEquals(debitParams.currency, reverse.currency);
+        assertEquals(1, reverse.steps.size());
+        assertTrue(reverse.steps.get(0) instanceof LightrailTransactionStep);
+    }
+
+    @Test
+    public void capturePending() throws Exception {
+        CreateValueParams createValueParams = new CreateValueParams(generateId());
+        createValueParams.currency = "USD";
+        createValueParams.balance = 9400;
+
+        Value value = lc.values.createValue(createValueParams);
+        assertEquals(createValueParams.id, value.id);
+
+        DebitParams debitParams = new DebitParams(generateId());
+        debitParams.source = new LightrailTransactionSource();
+        debitParams.source.valueId = value.id;
+        debitParams.currency = "USD";
+        debitParams.amount = 6100;
+        debitParams.pending = true;
+
+        Transaction debit = lc.transactions.debit(debitParams);
+        assertEquals(debitParams.id, debit.id);
+        assertEquals("debit", debit.transactionType);
+        assertEquals(debitParams.currency, debit.currency);
+        assertEquals(1, debit.steps.size());
+        assertTrue(debit.steps.get(0) instanceof LightrailTransactionStep);
+
+        CapturePendingParams capturePendingParams = new CapturePendingParams(generateId());
+
+        Transaction reverse = lc.transactions.capturePending(debit, capturePendingParams);
+        assertEquals(capturePendingParams.id, reverse.id);
+        assertEquals("capture", reverse.transactionType);
+        assertEquals(debitParams.currency, reverse.currency);
+        assertEquals(0, reverse.steps.size());
+    }
+
+    @Test
+    public void voidPending() throws Exception {
+        CreateValueParams createValueParams = new CreateValueParams(generateId());
+        createValueParams.currency = "USD";
+        createValueParams.balance = 9400;
+
+        Value value = lc.values.createValue(createValueParams);
+        assertEquals(createValueParams.id, value.id);
+
+        DebitParams debitParams = new DebitParams(generateId());
+        debitParams.source = new LightrailTransactionSource();
+        debitParams.source.valueId = value.id;
+        debitParams.currency = "USD";
+        debitParams.amount = 6100;
+        debitParams.pending = true;
+
+        Transaction debit = lc.transactions.debit(debitParams);
+        assertEquals(debitParams.id, debit.id);
+        assertEquals("debit", debit.transactionType);
+        assertEquals(debitParams.currency, debit.currency);
+        assertEquals(1, debit.steps.size());
+        assertTrue(debit.steps.get(0) instanceof LightrailTransactionStep);
+
+        VoidPendingParams voidPendingParams = new VoidPendingParams(generateId());
+
+        Transaction reverse = lc.transactions.voidPending(debit, voidPendingParams);
+        assertEquals(voidPendingParams.id, reverse.id);
+        assertEquals("void", reverse.transactionType);
+        assertEquals(debitParams.currency, reverse.currency);
+        assertEquals(1, reverse.steps.size());
+        assertTrue(reverse.steps.get(0) instanceof LightrailTransactionStep);
     }
 }

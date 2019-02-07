@@ -11,7 +11,6 @@ public class TransferParams {
     public Integer amount;
     public Boolean simulate;
     public Boolean allowRemainder;
-    public Boolean pending;
     public Map<String, Object> metadata;
 
     public TransferParams() {
