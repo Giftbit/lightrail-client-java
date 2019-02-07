@@ -4,22 +4,20 @@ import com.google.gson.JsonElement;
 
 import java.util.Map;
 
-public class DebitParams {
+public class CreditParams {
 
     public String id;
-    public LightrailTransactionSource source;
+    public LightrailTransactionDestination destination;
     public String currency;
     public Integer amount;
     public Integer uses;
     public Boolean simulate;
-    public Boolean allowRemainder;
-    public Boolean pending;
     public Map<String, JsonElement> metadata;
 
-    public DebitParams() {
+    public CreditParams() {
     }
 
-    public DebitParams(String id) {
+    public CreditParams(String id) {
         this.id = id;
     }
 }

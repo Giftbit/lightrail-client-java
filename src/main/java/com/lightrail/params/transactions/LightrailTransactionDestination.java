@@ -1,13 +1,13 @@
 package com.lightrail.params.transactions;
 
-public class DebitSource {
+public class LightrailTransactionDestination {
 
     public String rail;
     public String code;
-    public String contactId;
     public String valueId;
 
-    public DebitSource() {
+    public LightrailTransactionDestination() {
         rail = "lightrail";
     }
+
 }
