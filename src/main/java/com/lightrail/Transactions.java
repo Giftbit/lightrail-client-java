@@ -1,0 +1,26 @@
+package com.lightrail;
+
+import com.lightrail.errors.LightrailRestException;
+import com.lightrail.model.transaction.Transaction;
+import com.lightrail.params.transactions.DebitParams;
+
+import java.io.IOException;
+
+import static com.lightrail.network.NetworkUtils.encodeUriComponent;
+
+public class Transactions {
+
+    private final LightrailClient lr;
+
+    public Transactions(LightrailClient lr) {
+        this.lr = lr;
+    }
+
+    public Transaction getTransaction(String transactionId) throws IOException, LightrailRestException {
+        return lr.networkProvider.get(String.format("/transactions/%s", encodeUriComponent(transactionId)), Transaction.class);
+    }
+
+    public Transaction debit(DebitParams params) throws IOException, LightrailRestException {
+        return lr.networkProvider.post("/transactions/debit", params, Transaction.class);
+    }
+}

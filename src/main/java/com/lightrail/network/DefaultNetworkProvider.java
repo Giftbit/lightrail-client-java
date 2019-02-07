@@ -9,6 +9,8 @@ import com.lightrail.errors.LightrailRestException;
 import com.lightrail.errors.NullArgumentException;
 import com.lightrail.model.LightrailErrorBody;
 import com.lightrail.model.PaginatedList;
+import com.lightrail.model.transaction.party.*;
+import com.lightrail.model.transaction.step.*;
 
 import javax.net.ssl.HttpsURLConnection;
 import java.io.*;
@@ -22,16 +24,28 @@ import java.util.Map;
 public class DefaultNetworkProvider implements NetworkProvider {
 
     private final LightrailClient lr;
+    private final Gson gson;
     private final Map<String, String> additionalHeaders = new HashMap<>();
-    private final Gson gson = new GsonBuilder()
-            .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
-            .registerTypeAdapter(Date.class, new UtcDateSerializer())
-            .create();
     private final Map<Type, Type> listTypeMap = new HashMap<>();
     private String restRoot = "https://api.lightrail.com/v2";
 
     public DefaultNetworkProvider(LightrailClient lr) {
         this.lr = lr;
+
+        gson = new GsonBuilder()
+                .registerTypeAdapter(Date.class, new UtcDateSerializer())
+                .registerTypeAdapterFactory(new OptionalTypeAdapterFactory())
+                .registerTypeAdapter(TransactionStep.class, new UnionTypeSerializer<TransactionStep>("rail")
+                    .addConcreteClass("lightrail", LightrailTransactionStep.class)
+                    .addConcreteClass("stripe", StripeTransactionStep.class)
+                    .addConcreteClass("internal", InternalTransactionStep.class)
+                )
+                .registerTypeAdapter(TransactionParty.class, new UnionTypeSerializer<TransactionParty>("rail")
+                    .addConcreteClass("lightrail", LightrailTransactionParty.class)
+                    .addConcreteClass("stripe", StripeTransactionParty.class)
+                    .addConcreteClass("internal", InternalTransactionParty.class)
+                )
+                .create();
     }
 
     public String getRestRoot() {
