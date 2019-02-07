@@ -3,10 +3,7 @@ package com.lightrail;
 import com.lightrail.model.Value;
 import com.lightrail.model.transaction.Transaction;
 import com.lightrail.model.transaction.step.LightrailTransactionStep;
-import com.lightrail.params.transactions.CreditParams;
-import com.lightrail.params.transactions.DebitParams;
-import com.lightrail.params.transactions.LightrailTransactionDestination;
-import com.lightrail.params.transactions.LightrailTransactionSource;
+import com.lightrail.params.transactions.*;
 import com.lightrail.params.values.CreateValueParams;
 import org.junit.After;
 import org.junit.Before;
@@ -92,5 +89,43 @@ public class TransactionsTest {
 
         Transaction tx = lc.transactions.getTransaction(creditParams.id);
         assertEquals(credit, tx);
+    }
+
+    @Test
+    public void transferBetweenLightrailValues() throws Exception {
+        CreateValueParams createValueSourceParams = new CreateValueParams(generateId());
+        createValueSourceParams.currency = "USD";
+        createValueSourceParams.balance = 100;
+        Value valueSource = lc.values.createValue(createValueSourceParams);
+        assertEquals(createValueSourceParams.id, valueSource.id);
+
+        CreateValueParams createValueDestParams = new CreateValueParams(generateId());
+        createValueDestParams.currency = "USD";
+        createValueDestParams.balance = 100;
+        Value valueDest = lc.values.createValue(createValueDestParams);
+        assertEquals(createValueDestParams.id, valueDest.id);
+
+        LightrailTransactionSource txSource = new LightrailTransactionSource();
+        txSource.valueId = valueSource.id;
+
+        LightrailTransactionDestination txDest = new LightrailTransactionDestination();
+        txDest.valueId = valueDest.id;
+
+        TransferParams txParams = new TransferParams(generateId());
+        txParams.source = txSource;
+        txParams.destination = txDest;
+        txParams.currency = "USD";
+        txParams.amount = 70;
+
+        Transaction tx = lc.transactions.transfer(txParams);
+        assertEquals(txParams.id, tx.id);
+        assertEquals("transfer", tx.transactionType);
+        assertEquals(txParams.currency, tx.currency);
+        assertEquals(2, tx.steps.size());
+        assertTrue(tx.steps.get(0) instanceof LightrailTransactionStep);
+        assertTrue(tx.steps.get(1) instanceof LightrailTransactionStep);
+
+        Transaction txGet = lc.transactions.getTransaction(tx.id);
+        assertEquals(tx, txGet);
     }
 }

@@ -1,12 +1,13 @@
 package com.lightrail.model.transaction.step;
 
+import java.util.Map;
 import java.util.Objects;
 
 public class StripeTransactionStep extends TransactionStep {
 
     public Integer amount;
     public String chargeId;
-    public Object charge;   // TODO make a stripe charge
+    public Map<String, Object> charge;
 
     @Override
     public boolean equals(Object o) {

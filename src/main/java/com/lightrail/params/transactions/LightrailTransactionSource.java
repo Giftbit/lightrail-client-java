@@ -1,6 +1,6 @@
 package com.lightrail.params.transactions;
 
-public class LightrailTransactionSource {
+public class LightrailTransactionSource implements TransferSource {
 
     public String rail;
     public String code;
