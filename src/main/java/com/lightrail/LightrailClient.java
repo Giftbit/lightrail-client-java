@@ -3,9 +3,10 @@ package com.lightrail;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
-import com.lightrail.model.LightrailException;
+import com.lightrail.errors.LightrailConfigurationException;
+import com.lightrail.errors.LightrailRestException;
+import com.lightrail.errors.NullArgumentException;
 import com.lightrail.network.DefaultNetworkProvider;
-import com.lightrail.network.EndpointBuilder;
 import com.lightrail.network.NetworkProvider;
 import com.lightrail.params.GenerateShopperTokenParams;
 import io.jsonwebtoken.JwtBuilder;
@@ -14,127 +15,135 @@ import io.jsonwebtoken.SignatureAlgorithm;
 
 import javax.xml.bind.DatatypeConverter;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
 public class LightrailClient {
-    public String apiKey;
-    public String sharedSecret;
 
-    protected final Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+    private String apiKey;
+    private String sharedSecret;
+    protected NetworkProvider networkProvider = new DefaultNetworkProvider(this);
 
-    public NetworkProvider networkProvider;
-    public final EndpointBuilder endpointBuilder;
-    public final Accounts accounts;
-    public final Contacts contacts;
-    public final Cards cards;
-    public final Programs programs;
+    public final Currencies currencies = new Currencies(this);
+    public final Contacts contacts = new Contacts(this);
+    public final Programs programs = new Programs(this);
+    public final Transactions transactions = new Transactions(this);
+    public final Values values = new Values(this);
 
-    public LightrailClient(String apiKey, String sharedSecret, NetworkProvider np) throws LightrailException {
+    public LightrailClient() {
+    }
+
+    public LightrailClient(String apiKey) {
+        setApiKey(apiKey);
+    }
+
+    public LightrailClient(String apiKey, String sharedSecret) {
+        setApiKey(apiKey);
+        setSharedSecret(sharedSecret);
+    }
+
+    public String getApiKey() {
+        return apiKey;
+    }
+
+    public LightrailClient setApiKey(String apiKey) {
+        NullArgumentException.check(apiKey, "apiKey");
+        if (apiKey.isEmpty()) {
+            throw new LightrailConfigurationException("API key is empty");
+        }
         this.apiKey = apiKey;
-        this.sharedSecret = sharedSecret;
-        verifyApiKey();
-        verifySharedSecret();
-
-        this.networkProvider = np;
-        this.endpointBuilder = new EndpointBuilder(this);
-        this.accounts = new Accounts(this);
-        this.contacts = new Contacts(this);
-        this.cards = new Cards(this);
-        this.programs = new Programs(this);
+        return this;
     }
 
-    public LightrailClient(String apiKey, String sharedSecret) throws LightrailException {
-        this(apiKey, sharedSecret, null);
-        this.networkProvider = new DefaultNetworkProvider(this);
-    }
-
-    protected void verifyApiKey() throws LightrailException {
+    protected void verifyApiKey() throws LightrailRestException {
         if (apiKey == null) {
-            throw new LightrailException("API key is not set");
+            throw new LightrailConfigurationException("API key is not set");
         }
         if (apiKey.isEmpty()) {
-            throw new LightrailException("API key is empty");
+            throw new LightrailConfigurationException("API key is empty");
         }
     }
 
-    protected void verifySharedSecret() throws LightrailException {
+    public String getSharedSecret() {
+        return sharedSecret;
+    }
+
+    public LightrailClient setSharedSecret(String sharedSecret) {
+        NullArgumentException.check(sharedSecret, "sharedSecret");
+        if (sharedSecret.isEmpty()) {
+            throw new LightrailConfigurationException("Shared secret is empty");
+        }
+        this.sharedSecret = sharedSecret;
+        return this;
+    }
+
+    protected void verifySharedSecret() throws LightrailRestException {
         if (sharedSecret == null) {
-            throw new LightrailException("Shared secret is not set");
+            throw new LightrailConfigurationException("Shared secret is not set");
         }
         if ("".equals(sharedSecret)) {
-            throw new LightrailException("Shared secret is empty");
+            throw new LightrailConfigurationException("Shared secret is empty");
         }
     }
 
-    public String generateShopperToken(GenerateShopperTokenParams params) throws LightrailException, UnsupportedEncodingException {
+    public NetworkProvider getNetworkProvider() {
+        return networkProvider;
+    }
+
+    public LightrailClient setNetworkProvider(NetworkProvider networkProvider) {
+        NullArgumentException.check(networkProvider, "networkProvider");
+        this.networkProvider = networkProvider;
+        return this;
+    }
+
+    public String generateShopperToken(GenerateShopperTokenParams params) throws LightrailRestException, UnsupportedEncodingException {
         verifyApiKey();
         verifySharedSecret();
-        if (params.contactId == null || params.shopperId == null || params.contactUserSuppliedId == null) {
-            throw new LightrailException("Must set one of contactId, shopperId, or contactUserSuppliedId");
-        }
 
+        NullArgumentException.check(params, "params");
+        NullArgumentException.check(params.contactId, "params.contactId");
         if (params.validityInSeconds <= 0) {
-            throw new LightrailException("validityInSeconds must be greater than 0");
+            throw new LightrailConfigurationException("validityInSeconds must be greater than 0");
         }
 
-        JwtBuilder builder = Jwts.builder();
+        String apiKeySegment = apiKey.substring(apiKey.indexOf(".") + 1);
+        apiKeySegment = apiKeySegment.substring(0, apiKeySegment.indexOf("."));
+        apiKeySegment = new String(DatatypeConverter.parseBase64Binary(apiKeySegment), StandardCharsets.UTF_8);
 
+        Gson gson = new GsonBuilder().setDateFormat("yyyy-MM-dd'T'HH:mm:ss").create();
+        JsonObject merchantJwtPayload = gson.fromJson(apiKeySegment, JsonObject.class);
 
-        String payload = apiKey.substring(apiKey.indexOf(".") + 1);
-        payload = payload.substring(0, payload.indexOf("."));
-
-        payload = new String(DatatypeConverter.parseBase64Binary(payload), "UTF-8");
-        JsonObject jsonPayload = gson.fromJson(payload, JsonObject.class);
-
-        if (jsonPayload.get("g") == null || jsonPayload.get("g").getAsJsonObject().get("gui") == null) {
-            throw new LightrailException("Lightrail API key is invalid");
+        if (merchantJwtPayload.get("g") == null || merchantJwtPayload.get("g").getAsJsonObject().get("gui") == null) {
+            throw new LightrailConfigurationException("Lightrail API key is invalid");
         }
 
         Map<String, Object> g = new HashMap<>();
-        g.put("gui", jsonPayload.get("g").getAsJsonObject().get("gui").getAsString());
-        g.put("gmi", jsonPayload.get("g").getAsJsonObject().get("gmi").getAsString());
-
-
-        if (params.contactId != null) {
-            g.put("coi", params.contactId);
-        }
-        if (params.shopperId != null) {
-            g.put("shi", params.shopperId);
-        }
-        if (params.contactUserSuppliedId != null) {
-            g.put("cui", params.contactUserSuppliedId);
-        }
+        g.put("gui", merchantJwtPayload.get("g").getAsJsonObject().get("gui").getAsString());
+        g.put("gmi", merchantJwtPayload.get("g").getAsJsonObject().get("gmi").getAsString());
+        g.put("tmi", merchantJwtPayload.get("g").getAsJsonObject().get("tmi").getAsString());
+        g.put("coi", params.contactId);
 
         int iat = (int) (System.currentTimeMillis() / 1000);
         int exp = iat + params.validityInSeconds;
-
-        if (params.metadata != null) {
-            g.put("metadata", params.metadata);
-        }
 
         String[] roles = {"shopper"};
 
         Map<String, Object> claims = new HashMap<>();
         claims.put("g", g);
+        claims.put("iss", "MERCHANT");
         claims.put("iat", iat);
         claims.put("exp", exp);
-        claims.put("iss", "MERCHANT");
         claims.put("roles", roles);
 
+        if (params.metadata != null) {
+            claims.put("metadata", params.metadata);
+        }
+
+        JwtBuilder builder = Jwts.builder();
         return builder.setClaims(claims)
                 .setHeaderParam("typ", "JWT")
-                .signWith(SignatureAlgorithm.HS256, sharedSecret.getBytes("UTF-8"))
+                .signWith(SignatureAlgorithm.HS256, sharedSecret.getBytes(StandardCharsets.UTF_8))
                 .compact();
     }
-
-    public String urlEncode(String string) throws LightrailException {
-        try {
-            return URLEncoder.encode(string, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            throw new LightrailException("Could not URL-encode the parameter " + string);
-        }
-    }
-
 }

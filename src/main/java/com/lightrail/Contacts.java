@@ -1,63 +1,136 @@
 package com.lightrail;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
+import com.lightrail.errors.LightrailRestException;
+import com.lightrail.errors.NullArgumentException;
 import com.lightrail.model.Contact;
-import com.lightrail.model.LightrailException;
-import com.lightrail.params.CreateContactParams;
+import com.lightrail.model.PaginatedList;
+import com.lightrail.model.Value;
+import com.lightrail.params.contacts.*;
+
+import java.io.IOException;
+import java.util.Map;
+
+import static com.lightrail.network.NetworkUtils.*;
 
 public class Contacts {
+
     private final LightrailClient lr;
 
     public Contacts(LightrailClient lr) {
         this.lr = lr;
     }
 
-    public Contact create(String shopperId) throws LightrailException {
-        CreateContactParams params = new CreateContactParams();
-        params.userSuppliedId = shopperId;
-        String jsonParams = lr.gson.toJson(params);
-        String response = lr.networkProvider.post(lr.endpointBuilder.createContact(), jsonParams);
-        return getSingleContactFromJson(response);
+    public Contact createContact(String contactId) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+
+        return createContact(new CreateContactParams(contactId));
     }
 
-    public Contact create(CreateContactParams params) throws LightrailException {
-        String jsonParams = lr.gson.toJson(params);
-        String response = lr.networkProvider.post(lr.endpointBuilder.createContact(), jsonParams);
-        return getSingleContactFromJson(response);
+    public Contact createContact(CreateContactParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.post("/contacts", params, Contact.class);
     }
 
-    public Contact retrieve(String contactId) throws LightrailException {
-        String jsonResponse = lr.networkProvider.get(lr.endpointBuilder.retrieveContactById(contactId));
-        return getSingleContactFromJson(jsonResponse);
+    public Contact getContact(String contactId) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+
+        return lr.networkProvider.get(String.format("/contacts/%s", encodeUriComponent(contactId)), Contact.class);
     }
 
-    public Contact retrieveByShopperId(String shopperId) throws LightrailException {
-        return retrieveByUserSuppliedId(shopperId);
+    public PaginatedList<Contact> listContacts() throws IOException, LightrailRestException {
+        return lr.networkProvider.getPaginatedList("/contacts", Contact.class);
     }
 
-    public Contact retrieveByUserSuppliedId(String userSuppliedId) throws LightrailException {
-        String jsonResponse = lr.networkProvider.get(lr.endpointBuilder.searchContactByUserSuppliedId(userSuppliedId));
-        return getFirstContactResultFromJson(jsonResponse);
+    public PaginatedList<Contact> listContacts(ListContactsParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts%s", toQueryString(params)), Contact.class);
     }
 
-    private Contact getSingleContactFromJson(String jsonResponse) {
-        try {
-            JsonElement jsonContact = lr.gson.fromJson(jsonResponse, JsonObject.class).get("contact");
-            return lr.gson.fromJson(lr.gson.toJson(jsonContact), Contact.class);
-        } catch (NullPointerException e) {
-            return null;
-        }
+    public PaginatedList<Contact> listContacts(Map<String, String> params) throws IOException, LightrailRestException {
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts%s", toQueryString(params)), Contact.class);
     }
 
-    private Contact getFirstContactResultFromJson(String jsonResponse) {
-        JsonArray jsonContactResults = lr.gson.fromJson(jsonResponse, JsonObject.class).getAsJsonArray("contacts");
-        if (jsonContactResults.size() > 0) {
-            JsonElement jsonContact = jsonContactResults.get(0);
-            return lr.gson.fromJson(jsonContact, Contact.class);
-        } else {
-            return null;
-        }
+    public PaginatedList<Value> listContactsValues(String contactId) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values", encodeUriComponent(contactId)), Value.class);
+    }
+
+    public PaginatedList<Value> listContactsValues(String contactId, ListContactsValuesParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values%s", encodeUriComponent(contactId), toQueryString(params)), Value.class);
+    }
+
+    public PaginatedList<Value> listContactsValues(String contactId, Map<String, String> params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.getPaginatedList(String.format("/contacts/%s/values%s", encodeUriComponent(contactId), toQueryString(params)), Value.class);
+    }
+
+    public PaginatedList<Value> listContactsValues(Contact contact) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+
+        return listContactsValues(contact.id);
+    }
+
+    public PaginatedList<Value> listContactsValues(Contact contact, ListContactsValuesParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+        NullArgumentException.check(params, "params");
+
+        return listContactsValues(contact.id, params);
+    }
+
+    public PaginatedList<Value> listContactsValues(Contact contact, Map<String, String> params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+        NullArgumentException.check(params, "params");
+
+        return listContactsValues(contact.id, params);
+    }
+
+    public Contact updateContact(String contactId, UpdateContactParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.patch(String.format("/contacts/%s", encodeUriComponent(contactId)), params, Contact.class);
+    }
+
+    public Contact updateContact(Contact contact, UpdateContactParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+        NullArgumentException.check(params, "params");
+
+        return updateContact(contact.id, params);
+    }
+
+    public void deleteContact(String contactId) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+
+        lr.networkProvider.delete(String.format("/contacts/%s", encodeUriComponent(contactId)), Object.class);
+    }
+
+    public void deleteContact(Contact contact) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+
+        deleteContact(contact.id);
+    }
+
+    public Value attachContactToValue(String contactId, AttachContactToValueParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contactId, "contactId");
+        NullArgumentException.check(params, "params");
+
+        return lr.networkProvider.post(String.format("/contacts/%s/values/attach", encodeUriComponent(contactId)), params, Value.class);
+    }
+
+    public Value attachContactToValue(Contact contact, AttachContactToValueParams params) throws IOException, LightrailRestException {
+        NullArgumentException.check(contact, "contact");
+        NullArgumentException.check(params, "params");
+
+        return attachContactToValue(contact.id, params);
     }
 }

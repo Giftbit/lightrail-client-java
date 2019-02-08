@@ -1,13 +1,24 @@
 package com.lightrail.network;
 
-import com.lightrail.model.LightrailException;
+import com.lightrail.errors.LightrailRestException;
+import com.lightrail.model.PaginatedList;
+
+import java.io.IOException;
 
 public interface NetworkProvider {
-    String makeAPIRequest(String urlSuffix, String requestMethod, String body) throws LightrailException;
+    <T> T get(String path, Class<T> responseType) throws LightrailRestException, IOException;
 
-    void handleErrors(int i, String s) throws LightrailException;
+    <T> PaginatedList<T> getPaginatedList(String path, Class<T> responseElementType) throws LightrailRestException, IOException;
 
-    String get(String urlQuery) throws LightrailException;
+    <T> T post(String path, Object body, Class<T> responseType) throws LightrailRestException, IOException;
 
-    String post(String urlQuery, String body) throws LightrailException;
+    <T> T patch(String path, Object body, Class<T> responseType) throws LightrailRestException, IOException;
+
+    <T> T put(String path, Object body, Class<T> responseType) throws LightrailRestException, IOException;
+
+    <T> T delete(String path, Class<T> responseType) throws LightrailRestException, IOException;
+
+    <T> T request(String method, String path, Object body, Class<T> responseType) throws LightrailRestException, IOException;
+
+    <T> PaginatedList<T> requestPaginatedList(String method, String path, Object body, Class<T> responseType) throws LightrailRestException, IOException;
 }
