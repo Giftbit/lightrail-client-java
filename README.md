@@ -61,6 +61,10 @@ LightrailClient lr = new LightrailClient({API_KEY}, {SHARED_SECRET});
 
 Testing requires a Lightrail account.  Copy `src/test/resources/.env.example` to `src/test/resources/.env` and set your account's test API key which is available in the Lightrail web app.
 
+### Releasing (Lightrail team only)
+
+Instructions coming soon.
+
 ### Contributing
 
 Bug reports and pull requests are welcome on GitHub at <https://github.com/Giftbit/lightrail-client-java>.
@@ -68,42 +72,3 @@ Bug reports and pull requests are welcome on GitHub at <https://github.com/Giftb
 ## License
 
 This library is available as open source under the terms of the [MIT License](http://opensource.org/licenses/MIT).
-
-## Changelog
-
-### 4.0.0
-
-- Rewritten to support Lightrail API v2.
-
-### 3.0.0
-
-- Complete overhaul: see readme for details.
-
-### 2.0.1
-
-- Supporting `shopperId` for an easier checkout process for Account Cards. 
-- Client Token Factory for issuing JWTs for certain endpoints.
-
-### 2.0.0
-
-- Supporting simulated Transactions and metadata.
-
-### 1.2.0
-
-- Gift cards: create, retrieve, and freeze/unfreeze.
-
-### 1.1.1
-- Refund transactions.
-
-### 1.1.0
-
-- Customer account credits: create, charge, fund, and balance-check.
-
-### 1.0.2
-
-- Minor improvements to the interface for creating gift transactions.
-
-### 1.0.1
-
-- Basic API functions: gift code balance check, transacting against a gift code and gift card.
-
