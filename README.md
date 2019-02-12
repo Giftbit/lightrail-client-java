@@ -61,13 +61,62 @@ LightrailClient lr = new LightrailClient({API_KEY}, {SHARED_SECRET});
 
 Testing requires a Lightrail account.  Copy `src/test/resources/.env.example` to `src/test/resources/.env` and set your account's test API key which is available in the Lightrail web app.
 
-### Releasing (Lightrail team only)
-
-Instructions coming soon.
+Test with the command `mvn test`.
 
 ### Contributing
 
 Bug reports and pull requests are welcome on GitHub at <https://github.com/Giftbit/lightrail-client-java>.
+
+### Releasing (Lightrail team only)
+
+#### One time setup
+
+##### GPG keys
+
+Install `gpg` if you don't have it already.
+
+Copy PGP private key from the password manager into a new `.asc` file (eg `lightrail.asc`), then run `gpg --import lightrail.asc`.  There's a passphrase associated with the key you will use later.
+
+##### Nexus plugin settings
+
+Copy Maven `settings.xml` to `~/.m2/settings.xml`.  The result should look something like the following:
+
+```
+<settings>
+    <servers>
+        <server>
+            <id>ossrh</id>
+            <username>{{username}}</username>
+            <password>{{password}}</password>
+        </server>
+        <server>
+            <id>sonatype-nexus-staging</id>
+            <username>{{username}}</username>
+            <password>{{password}}</password>
+        </server>
+    </servers>
+</settings>
+```
+
+#### Versioning
+
+The version should be bumped following semver.  It can be found at the top of `pom.xml` under `<version>` and referenced in the installation section of this readme.
+
+`-SNAPSHOT` can be added to the end of the version number to indicate a pre-release build.  This version can be under heavy development, can be overwritten and need not obey semver.  Remove `-SNAPSHOT` for official releases.
+
+#### Deployment
+
+The first command builds, tests and then uploads the build to https://oss.sonatype.org/ .  You will be prompted for the signing password that goes with the signing key configured above.
+
+`mvn deploy`
+
+The next command marks the build as acceptable for wide release and makes it available on the main repo https://search.maven.org/search?q=a:lightrail-client .
+
+`mvn nexus-staging:release`
+
+Alternately you could mark the build as unacceptable (because it was a testing SNAPSHOT release for example).
+
+`mvn nexus-staging:drop`
 
 ## License
 
