@@ -4,7 +4,7 @@
 
     <groupId>com.lightrail</groupId>
     <artifactId>lightrail-client</artifactId>
-    <version>4.0.0</version>
+    <version>4.1.0</version>
     <packaging>jar</packaging>
     <name>lightrail-client</name>
     <description>A java client for the Lightrail API</description>

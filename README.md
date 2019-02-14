@@ -35,14 +35,14 @@ You can add this library as a dependency in your `pom.xml` file:
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-client</artifactId>
-  <version>4.0.0</version>
+  <version>4.1.0</version>
 </dependency>
 ```
 
 ### Gradle
 
 ```text
-compile 'com.lightrail:lightrail-client:4.0.0'
+compile 'com.lightrail:lightrail-client:4.1.0'
 ```
 
 ## Usage
@@ -106,11 +106,15 @@ The version should be bumped following semver.  It can be found at the top of `p
 
 #### Deployment
 
-The first command builds, tests and then uploads the build to https://oss.sonatype.org/ .  You will be prompted for the signing password that goes with the signing key configured above.
+The first command cleans old builds.  Deploy will upload old builds found there if we don't do this.
+
+`mvn clean`
+
+The next command builds, tests and then uploads the build to https://oss.sonatype.org/ .  You will be prompted for the signing password that goes with the signing key configured above.
 
 `mvn deploy`
 
-The next command marks the build as acceptable for wide release and makes it available on the main repo https://search.maven.org/search?q=a:lightrail-client .
+The next command marks the build as acceptable for wide release and makes it available on the main repo https://search.maven.org/search?q=a%3Alightrail-client .
 
 `mvn nexus-staging:release`
 
