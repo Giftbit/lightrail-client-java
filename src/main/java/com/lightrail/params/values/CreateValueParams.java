@@ -1,6 +1,7 @@
 package com.lightrail.params.values;
 
 import com.lightrail.model.BalanceRule;
+import com.lightrail.model.GenericCodeOptions;
 import com.lightrail.model.RedemptionRule;
 
 import java.util.Date;
@@ -15,6 +16,7 @@ public class CreateValueParams {
     public String programId;
     public String code;
     public Boolean isGenericCode;
+    public GenericCodeOptions genericCodeOptions;
     public String contactId;
     public Boolean pretax;
     public Boolean active;

@@ -13,6 +13,8 @@ public class ListValuesParams {
     public String contactId;
     public Integer balance;
     public Integer usesRemaining;
+    public Boolean isGenericCode;
+    public String attachedFromValueId;
     public Boolean discount;
     public Boolean pretax;
     public Boolean active;
