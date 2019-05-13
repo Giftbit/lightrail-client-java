@@ -14,6 +14,8 @@ public class Value {
     public String programId;
     public String code;
     public Boolean isGenericCode;
+    public String attachedFromValueId;
+    public GenericCodeOptions genericCodeOptions;
     public String contactId;
     public Boolean pretax;
     public Boolean active;
@@ -42,6 +44,8 @@ public class Value {
                 Objects.equals(programId, value.programId) &&
                 Objects.equals(code, value.code) &&
                 Objects.equals(isGenericCode, value.isGenericCode) &&
+                Objects.equals(attachedFromValueId, value.attachedFromValueId) &&
+                Objects.equals(genericCodeOptions, value.genericCodeOptions) &&
                 Objects.equals(contactId, value.contactId) &&
                 Objects.equals(pretax, value.pretax) &&
                 Objects.equals(active, value.active) &&

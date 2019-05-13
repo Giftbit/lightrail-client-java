@@ -1,10 +1,9 @@
 package com.lightrail;
 
 import com.lightrail.errors.LightrailRestException;
-import com.lightrail.model.BalanceRule;
-import com.lightrail.model.PaginatedList;
-import com.lightrail.model.RedemptionRule;
-import com.lightrail.model.Value;
+import com.lightrail.model.*;
+import com.lightrail.params.contacts.AttachContactToValueParams;
+import com.lightrail.params.contacts.CreateContactParams;
 import com.lightrail.params.values.*;
 import org.junit.After;
 import org.junit.Before;
@@ -85,6 +84,49 @@ public class ValuesTest {
         PaginatedList<Value> valueList = lc.values.listValues(listParams);
         assertEquals(1, valueList.size());
         assertEquals(createdValue.id, valueList.get(0).id);
+    }
+
+    @Test
+    public void createAndAttachGenericValue() throws IOException, LightrailRestException {
+        CreateContactParams contactParams = new CreateContactParams(generateId());
+        Contact contactCreated = lc.contacts.createContact(contactParams);
+        assertEquals(contactParams.id, contactCreated.id);
+
+        GenericCodeOptions genericCodeOptions = new GenericCodeOptions(new PerContactGenericCodeOptions(null, 5));
+        CreateValueParams genericValueParams = new CreateValueParams(generateId());
+        genericValueParams.currency = "USD";
+        genericValueParams.balanceRule = new BalanceRule("500", "$5 the hard way");
+        genericValueParams.isGenericCode = true;
+        genericValueParams.genericCodeOptions = genericCodeOptions;
+
+        Value genericValue = lc.values.createValue(genericValueParams);
+        assertEquals(genericValueParams.id, genericValue.id);
+        assertEquals(genericValueParams.currency, genericValue.currency);
+        assertNull(genericValueParams.balance);
+        assertNotNull(genericValue.genericCodeOptions);
+        assertNotNull(genericValueParams.genericCodeOptions.perContact);
+        assertNull(genericValue.genericCodeOptions.perContact.balance);
+        assertEquals(genericValueParams.genericCodeOptions.perContact.usesRemaining, genericValue.genericCodeOptions.perContact.usesRemaining);
+        assertNotNull(genericValue.balanceRule);
+        assertEquals(genericValueParams.balanceRule.rule, genericValue.balanceRule.rule);
+        assertEquals(genericValueParams.balanceRule.explanation, genericValue.balanceRule.explanation);
+        assertNull(genericValue.usesRemaining);
+        assertNotNull(genericValue.createdDate);
+        assertNotNull(genericValue.updatedDate);
+        assertNotNull(genericValue.createdBy);
+
+        AttachContactToValueParams attachParams = new AttachContactToValueParams();
+        attachParams.valueId = genericValue.id;
+        Value attachedValue = lc.contacts.attachContactToValue(contactCreated.id, attachParams);
+        assertEquals(genericValue.id, attachedValue.attachedFromValueId);
+        assertNotNull(attachedValue.balanceRule);
+        assertEquals(genericValue.balanceRule.rule, attachedValue.balanceRule.rule);
+        assertEquals(genericValue.balanceRule.explanation, attachedValue.balanceRule.explanation);
+        assertNull(attachedValue.balance);
+        assertEquals(genericValue.genericCodeOptions.perContact.usesRemaining, attachedValue.usesRemaining);
+        assertNotNull(genericValue.createdDate);
+        assertNotNull(genericValue.updatedDate);
+        assertNotNull(genericValue.createdBy);
     }
 
     @Test
