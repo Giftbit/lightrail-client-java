@@ -35,7 +35,7 @@ You can add this library as a dependency in your `pom.xml` file:
 <dependency>
   <groupId>com.lightrail</groupId>
   <artifactId>lightrail-client</artifactId>
-  <version>4.1.0</version>
+  <version>4.3.0</version>
 </dependency>
 ```
 
