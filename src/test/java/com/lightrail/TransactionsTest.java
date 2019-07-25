@@ -64,11 +64,26 @@ public class TransactionsTest {
         checkoutParams.lineItems = Arrays.asList(item0, item1);
         checkoutParams.sources = Collections.singletonList(lightrailSource);
         checkoutParams.allowRemainder = true;
+        checkoutParams.simulate = true;
+
+        Transaction txSimulated = lc.transactions.checkout(checkoutParams);
+        assertEquals(true, txSimulated.simulated);
+        assertEquals(checkoutParams.id, txSimulated.id);
+        assertEquals("checkout", txSimulated.transactionType);
+        assertEquals(checkoutParams.currency, txSimulated.currency);
+        assertEquals(false, txSimulated.pending);
+        assertNull(txSimulated.pendingVoidDate);
+        assertEquals(1, txSimulated.steps.size());
+        assertTrue(txSimulated.steps.get(0) instanceof LightrailTransactionStep);
+
+        checkoutParams.simulate = false;
 
         Transaction tx = lc.transactions.checkout(checkoutParams);
         assertEquals(checkoutParams.id, tx.id);
         assertEquals("checkout", tx.transactionType);
         assertEquals(checkoutParams.currency, tx.currency);
+        assertEquals(false, tx.pending);
+        assertNull(tx.pendingVoidDate);
         assertEquals(1, tx.steps.size());
         assertTrue(tx.steps.get(0) instanceof LightrailTransactionStep);
 
@@ -110,6 +125,8 @@ public class TransactionsTest {
         assertEquals(checkoutParams.id, tx.id);
         assertEquals("checkout", tx.transactionType);
         assertEquals(checkoutParams.currency, tx.currency);
+        assertEquals(false, tx.pending);
+        assertNull(tx.pendingVoidDate);
         assertEquals(2, tx.steps.size());
 
         InternalTransactionStep internalStep;

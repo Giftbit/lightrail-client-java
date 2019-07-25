@@ -18,6 +18,9 @@ public class Transaction {
     public List<LineItem> lineItems;
     public List<TransactionStep> steps;
     public List<TransactionParty> paymentSources;
+    public Boolean simulated;
+    public Boolean pending;
+    public Date pendingVoidDate;
     public Map<String, Object> metadata;
     public Date createdDate;
     public String createdBy;
@@ -35,6 +38,9 @@ public class Transaction {
                 Objects.equals(lineItems, that.lineItems) &&
                 Objects.equals(steps, that.steps) &&
                 Objects.equals(paymentSources, that.paymentSources) &&
+                Objects.equals(simulated, that.simulated) &&
+                Objects.equals(pending, that.pending) &&
+                Objects.equals(pendingVoidDate, that.pendingVoidDate) &&
                 Objects.equals(metadata, that.metadata) &&
                 Objects.equals(createdDate, that.createdDate) &&
                 Objects.equals(createdBy, that.createdBy);
@@ -42,6 +48,6 @@ public class Transaction {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, tax, transactionType, currency, totals, lineItems, steps, paymentSources, metadata, createdDate, createdBy);
+        return Objects.hash(id, tax, transactionType, currency, totals, lineItems, steps, paymentSources, simulated, pending, pendingVoidDate, metadata, createdDate, createdBy);
     }
 }
