@@ -101,6 +101,55 @@ public class TransactionsTest {
     }
 
     @Test
+    public void checkoutMarketplace() throws Exception {
+        CreateValueParams createValueParams = new CreateValueParams(generateId());
+        createValueParams.currency = "USD";
+        createValueParams.balance = 5000;
+        createValueParams.code = generateId();
+
+        Value value = lc.values.createValue(createValueParams);
+        assertEquals(createValueParams.id, value.id);
+
+        LightrailTransactionSource lightrailSource = new LightrailTransactionSource();
+        lightrailSource.code = createValueParams.code;
+
+        LineItem item0 = new LineItem();
+        item0.type = "product";
+        item0.productId = "magic carpet ride";
+        item0.unitPrice = 2900;
+        item0.taxRate = 0.15;
+        item0.marketplaceRate = 0.3;
+
+        CheckoutParams checkoutParams = new CheckoutParams(generateId());
+        checkoutParams.currency = "USD";
+        checkoutParams.lineItems = Collections.singletonList(item0);
+        checkoutParams.sources = Collections.singletonList(lightrailSource);
+        checkoutParams.allowRemainder = false;
+
+        Transaction tx = lc.transactions.checkout(checkoutParams);
+        assertEquals(checkoutParams.id, tx.id);
+        assertEquals("checkout", tx.transactionType);
+        assertEquals(checkoutParams.currency, tx.currency);
+        assertEquals(false, tx.pending);
+        assertNull(tx.pendingVoidDate);
+        assertNotNull(tx.totals);
+        assertNotNull(tx.totals.marketplace);
+        assertEquals(new Integer(2030), tx.totals.marketplace.sellerGross);
+        assertEquals(new Integer(2030), tx.totals.marketplace.sellerNet);
+        assertEquals(1, tx.steps.size());
+        assertTrue(tx.steps.get(0) instanceof LightrailTransactionStep);
+
+        LightrailTransactionStep step = (LightrailTransactionStep) tx.steps.get(0);
+        assertEquals(value.id, step.valueId);
+        assertEquals(new Integer(5000), step.balanceBefore);
+        assertEquals(new Integer(1665), step.balanceAfter);
+        assertEquals(new Integer(-3335), step.balanceChange);
+
+        Transaction txGet = lc.transactions.getTransaction(checkoutParams.id);
+        assertEquals(tx, txGet);
+    }
+
+    @Test
     public void checkoutInternalAndStripe() throws Exception {
         InternalTransactionSource internalSource = new InternalTransactionSource();
         internalSource.internalId = "that'll help";
