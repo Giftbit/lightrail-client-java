@@ -64,11 +64,26 @@ public class TransactionsTest {
         checkoutParams.lineItems = Arrays.asList(item0, item1);
         checkoutParams.sources = Collections.singletonList(lightrailSource);
         checkoutParams.allowRemainder = true;
+        checkoutParams.simulate = true;
+
+        Transaction txSimulated = lc.transactions.checkout(checkoutParams);
+        assertEquals(true, txSimulated.simulated);
+        assertEquals(checkoutParams.id, txSimulated.id);
+        assertEquals("checkout", txSimulated.transactionType);
+        assertEquals(checkoutParams.currency, txSimulated.currency);
+        assertEquals(false, txSimulated.pending);
+        assertNull(txSimulated.pendingVoidDate);
+        assertEquals(1, txSimulated.steps.size());
+        assertTrue(txSimulated.steps.get(0) instanceof LightrailTransactionStep);
+
+        checkoutParams.simulate = false;
 
         Transaction tx = lc.transactions.checkout(checkoutParams);
         assertEquals(checkoutParams.id, tx.id);
         assertEquals("checkout", tx.transactionType);
         assertEquals(checkoutParams.currency, tx.currency);
+        assertEquals(false, tx.pending);
+        assertNull(tx.pendingVoidDate);
         assertEquals(1, tx.steps.size());
         assertTrue(tx.steps.get(0) instanceof LightrailTransactionStep);
 
@@ -83,6 +98,55 @@ public class TransactionsTest {
 
         PaginatedList<Transaction> valueTxs = lc.values.listValuesTransactions(value);
         assertEquals(2, valueTxs.size());
+    }
+
+    @Test
+    public void checkoutMarketplace() throws Exception {
+        CreateValueParams createValueParams = new CreateValueParams(generateId());
+        createValueParams.currency = "USD";
+        createValueParams.balance = 5000;
+        createValueParams.code = generateId();
+
+        Value value = lc.values.createValue(createValueParams);
+        assertEquals(createValueParams.id, value.id);
+
+        LightrailTransactionSource lightrailSource = new LightrailTransactionSource();
+        lightrailSource.code = createValueParams.code;
+
+        LineItem item0 = new LineItem();
+        item0.type = "product";
+        item0.productId = "magic carpet ride";
+        item0.unitPrice = 2900;
+        item0.taxRate = 0.15;
+        item0.marketplaceRate = 0.3;
+
+        CheckoutParams checkoutParams = new CheckoutParams(generateId());
+        checkoutParams.currency = "USD";
+        checkoutParams.lineItems = Collections.singletonList(item0);
+        checkoutParams.sources = Collections.singletonList(lightrailSource);
+        checkoutParams.allowRemainder = false;
+
+        Transaction tx = lc.transactions.checkout(checkoutParams);
+        assertEquals(checkoutParams.id, tx.id);
+        assertEquals("checkout", tx.transactionType);
+        assertEquals(checkoutParams.currency, tx.currency);
+        assertEquals(false, tx.pending);
+        assertNull(tx.pendingVoidDate);
+        assertNotNull(tx.totals);
+        assertNotNull(tx.totals.marketplace);
+        assertEquals(new Integer(2030), tx.totals.marketplace.sellerGross);
+        assertEquals(new Integer(2030), tx.totals.marketplace.sellerNet);
+        assertEquals(1, tx.steps.size());
+        assertTrue(tx.steps.get(0) instanceof LightrailTransactionStep);
+
+        LightrailTransactionStep step = (LightrailTransactionStep) tx.steps.get(0);
+        assertEquals(value.id, step.valueId);
+        assertEquals(new Integer(5000), step.balanceBefore);
+        assertEquals(new Integer(1665), step.balanceAfter);
+        assertEquals(new Integer(-3335), step.balanceChange);
+
+        Transaction txGet = lc.transactions.getTransaction(checkoutParams.id);
+        assertEquals(tx, txGet);
     }
 
     @Test
@@ -110,6 +174,8 @@ public class TransactionsTest {
         assertEquals(checkoutParams.id, tx.id);
         assertEquals("checkout", tx.transactionType);
         assertEquals(checkoutParams.currency, tx.currency);
+        assertEquals(false, tx.pending);
+        assertNull(tx.pendingVoidDate);
         assertEquals(2, tx.steps.size());
 
         InternalTransactionStep internalStep;

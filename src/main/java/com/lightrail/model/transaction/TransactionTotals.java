@@ -13,6 +13,7 @@ public class TransactionTotals {
     public Integer paidInternal;
     public Integer payable;
     public Integer remainder;
+    public TransactionTotalsMarketplace marketplace;
 
     @Override
     public boolean equals(Object o) {
@@ -27,11 +28,12 @@ public class TransactionTotals {
                 Objects.equals(paidStripe, that.paidStripe) &&
                 Objects.equals(paidInternal, that.paidInternal) &&
                 Objects.equals(payable, that.payable) &&
-                Objects.equals(remainder, that.remainder);
+                Objects.equals(remainder, that.remainder) &&
+                Objects.equals(marketplace, that.marketplace);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(subtotal, tax, discount, discountLightrail, paidLightrail, paidStripe, paidInternal, payable, remainder);
+        return Objects.hash(subtotal, tax, discount, discountLightrail, paidLightrail, paidStripe, paidInternal, payable, remainder, marketplace);
     }
 }
