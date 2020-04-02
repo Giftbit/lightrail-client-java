@@ -29,7 +29,6 @@ public class Webhooks {
             String[] signatureHeaders = signatureHeader.split(",");
             Boolean validSignature = false;
             for (int i = 0; i < signatureHeaders.length; i++ ) {
-                System.out.println("checking signature " + signatureHeaders[i]);
                 validSignature |= MessageDigest.isEqual(signatureHeaders[i].getBytes(), hash.getBytes());
             }
 
