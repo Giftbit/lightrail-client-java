@@ -26,7 +26,6 @@ public class Webhooks {
             sha256_HMAC.init(secret_key);
 
             String hash = Hex.encodeHexString(sha256_HMAC.doFinal(payload.getBytes()));
-            System.out.println(hash);
             String[] signatureHeaders = signatureHeader.split(",");
             Boolean validSignature = false;
             for (int i = 0; i < signatureHeaders.length; i++ ) {
@@ -37,7 +36,7 @@ public class Webhooks {
             return validSignature;
         }
         catch (Exception e){
-            System.out.println("Error");
+            System.out.println("Error occurred validating signature." + e.getMessage());
         }
 
         return false;
