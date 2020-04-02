@@ -30,6 +30,7 @@ public class LightrailClient {
     public final Programs programs = new Programs(this);
     public final Transactions transactions = new Transactions(this);
     public final Values values = new Values(this);
+    public final Webhooks webhooks = new Webhooks();
 
     public LightrailClient() {
     }
