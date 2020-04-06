@@ -9,7 +9,7 @@ import java.security.MessageDigest;
 
 
 public class Webhooks {
-    public Boolean verifySignature(String signatureHeader, String secret, String payload) {
+    public boolean verifySignature(String signatureHeader, String secret, String payload) {
         if (signatureHeader == null) {
             throw new NullArgumentException("The signatureHeader cannot be null");
         }
@@ -27,7 +27,7 @@ public class Webhooks {
 
             String hash = Hex.encodeHexString(sha256_HMAC.doFinal(payload.getBytes()));
             String[] signatureHeaders = signatureHeader.split(",");
-            Boolean validSignature = false;
+            boolean validSignature = false;
             for (int i = 0; i < signatureHeaders.length; i++ ) {
                 validSignature |= MessageDigest.isEqual(signatureHeaders[i].getBytes(), hash.getBytes());
             }
