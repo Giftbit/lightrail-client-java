@@ -9,12 +9,27 @@ import java.security.MessageDigest;
 
 
 public class Webhooks {
-    public boolean verifySignature(String signatureHeader, String secret, String payload) {
+
+    private final LightrailClient lr;
+
+    public Webhooks(LightrailClient lr) {
+        this.lr = lr;
+    }
+
+    public boolean verifySignature(String signatureHeader, String payload) {
+        String webhookSecret = lr.getWebhookSecret();
+        if (webhookSecret == null) {
+            throw new NullArgumentException("The LightrailClient's webhook secret must be set.");
+        }
+        return verifySignature(signatureHeader, payload, webhookSecret);
+    }
+
+    public boolean verifySignature(String signatureHeader, String payload, String webhookSecret) {
         if (signatureHeader == null) {
             throw new NullArgumentException("The signatureHeader cannot be null");
         }
-        if (secret == null) {
-            throw new NullArgumentException("The secret cannot be null");
+        if (webhookSecret == null) {
+            throw new NullArgumentException("The webhookSecret cannot be null");
         }
         if (payload == null) {
             throw new NullArgumentException("The payload cannot be null");
@@ -22,7 +37,7 @@ public class Webhooks {
 
         try {
             Mac sha256_HMAC = Mac.getInstance("HmacSHA256");
-            SecretKeySpec secret_key = new SecretKeySpec(secret.getBytes(), "HmacSHA256");
+            SecretKeySpec secret_key = new SecretKeySpec(webhookSecret.getBytes(), "HmacSHA256");
             sha256_HMAC.init(secret_key);
 
             String hash = Hex.encodeHexString(sha256_HMAC.doFinal(payload.getBytes()));

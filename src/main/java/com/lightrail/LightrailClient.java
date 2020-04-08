@@ -23,6 +23,7 @@ public class LightrailClient {
 
     private String apiKey;
     private String sharedSecret;
+    private String webhookSecret;
     protected NetworkProvider networkProvider = new DefaultNetworkProvider(this);
 
     public final Currencies currencies = new Currencies(this);
@@ -30,7 +31,7 @@ public class LightrailClient {
     public final Programs programs = new Programs(this);
     public final Transactions transactions = new Transactions(this);
     public final Values values = new Values(this);
-    public final Webhooks webhooks = new Webhooks();
+    public final Webhooks webhooks = new Webhooks(this);
 
     public LightrailClient() {
     }
@@ -86,6 +87,19 @@ public class LightrailClient {
         if ("".equals(sharedSecret)) {
             throw new LightrailConfigurationException("Shared secret is empty");
         }
+    }
+
+    public String getWebhookSecret() {
+        return webhookSecret;
+    }
+
+    public LightrailClient setWebhookSecret(String webhookSecret) {
+        NullArgumentException.check(webhookSecret, "webhookSecret");
+        if (webhookSecret.isEmpty()) {
+            throw new LightrailConfigurationException("Webhook secret is empty");
+        }
+        this.webhookSecret = webhookSecret;
+        return this;
     }
 
     public NetworkProvider getNetworkProvider() {

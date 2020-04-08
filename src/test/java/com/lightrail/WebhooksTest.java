@@ -32,23 +32,23 @@ public class WebhooksTest {
     @Test
     public void verifySignature() throws IOException, LightrailRestException {
         // can validate a good signature
-        assertEquals( true, lc.webhooks.verifySignature(goodSignature, secret, payload));
+        assertEquals( true, lc.webhooks.verifySignature(goodSignature, payload, secret));
 
         // can validate a good and bad signature
-        assertEquals(true, lc.webhooks.verifySignature(goodSignature.concat(",bad"), secret, payload));
+        assertEquals(true, lc.webhooks.verifySignature(goodSignature.concat(",bad"), payload, secret));
 
         // can validate a bad and good signature
-        assertEquals(true, lc.webhooks.verifySignature("bad,".concat(goodSignature), secret, payload));
+        assertEquals(true, lc.webhooks.verifySignature("bad,".concat(goodSignature), payload, secret));
 
         // can invalidate a bad signature
-        assertEquals(false, lc.webhooks.verifySignature("bad", secret, payload));
+        assertEquals(false, lc.webhooks.verifySignature("bad", payload, secret));
 
         // can invalidate two bad signatures
-        assertEquals(false, lc.webhooks.verifySignature("bad,alsoBad", secret, payload));
+        assertEquals(false, lc.webhooks.verifySignature("bad,alsoBad", payload, secret));
 
         // can't validate without providing signatureHeader
         try {
-            lc.webhooks.verifySignature(null, secret, payload);
+            lc.webhooks.verifySignature(null, payload, secret);
             fail();
         } catch (Exception e) {
             // do nothing
@@ -56,7 +56,7 @@ public class WebhooksTest {
 
         // can't validate without providing secret
         try {
-            lc.webhooks.verifySignature(goodSignature, null, payload);
+            lc.webhooks.verifySignature(goodSignature, payload, null);
             fail();
         } catch (Exception e) {
             // do nothing
@@ -64,10 +64,19 @@ public class WebhooksTest {
 
         // can't validate without providing payload
         try {
-            lc.webhooks.verifySignature(goodSignature, secret, null);
+            lc.webhooks.verifySignature(goodSignature, null, secret);
             fail();
         } catch (Exception e) {
             // do nothing
         }
+
+        // can validate by setting configuration webhookSecret
+        lc.setWebhookSecret(secret);
+        assertEquals(true, lc.webhooks.verifySignature(goodSignature, payload));
+
+        // can override configuration webhookSecret by passing secret into method
+        lc.setWebhookSecret("bad");
+        assertEquals(false, lc.webhooks.verifySignature(goodSignature, payload)); // this should fail because configuration webhookSecret is bad
+        assertEquals(true, lc.webhooks.verifySignature(goodSignature, payload, secret)); // configuration secret is ignored if a secret is passed in.
     }
 }
