@@ -52,7 +52,7 @@ public class LightrailClient {
     public LightrailClient setApiKey(String apiKey) {
         NullArgumentException.check(apiKey, "apiKey");
         if (apiKey.isEmpty()) {
-            throw new LightrailConfigurationException("API key is empty");
+            throw new IllegalArgumentException("API key is empty");
         }
         this.apiKey = apiKey;
         return this;
@@ -74,7 +74,7 @@ public class LightrailClient {
     public LightrailClient setSharedSecret(String sharedSecret) {
         NullArgumentException.check(sharedSecret, "sharedSecret");
         if (sharedSecret.isEmpty()) {
-            throw new LightrailConfigurationException("Shared secret is empty");
+            throw new IllegalArgumentException("Shared secret is empty");
         }
         this.sharedSecret = sharedSecret;
         return this;
@@ -96,7 +96,7 @@ public class LightrailClient {
     public LightrailClient setWebhookSecret(String webhookSecret) {
         NullArgumentException.check(webhookSecret, "webhookSecret");
         if (webhookSecret.isEmpty()) {
-            throw new LightrailConfigurationException("Webhook secret is empty");
+            throw new IllegalArgumentException("Webhook secret is empty");
         }
         this.webhookSecret = webhookSecret;
         return this;

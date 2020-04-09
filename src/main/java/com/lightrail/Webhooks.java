@@ -1,7 +1,8 @@
 package com.lightrail;
 
+import com.lightrail.errors.LightrailConfigurationException;
 import com.lightrail.errors.NullArgumentException;
-import org.apache.commons.codec.binary.Hex;
+import com.lightrail.utils.HexUtil;
 
 import javax.crypto.Mac;
 import javax.crypto.spec.SecretKeySpec;
@@ -19,7 +20,7 @@ public class Webhooks {
     public boolean verifySignature(String signatureHeader, String payload) {
         String webhookSecret = lr.getWebhookSecret();
         if (webhookSecret == null) {
-            throw new NullArgumentException("The LightrailClient's webhook secret must be set.");
+            throw new LightrailConfigurationException("Webhook secret is empty");
         }
         return verifySignature(signatureHeader, payload, webhookSecret);
     }
@@ -40,7 +41,7 @@ public class Webhooks {
             SecretKeySpec secret_key = new SecretKeySpec(webhookSecret.getBytes(), "HmacSHA256");
             sha256_HMAC.init(secret_key);
 
-            String hash = Hex.encodeHexString(sha256_HMAC.doFinal(payload.getBytes()));
+            String hash = HexUtil.convertBytesToHex(sha256_HMAC.doFinal(payload.getBytes()));
             String[] signatureHeaders = signatureHeader.split(",");
             boolean validSignature = false;
             for (int i = 0; i < signatureHeaders.length; i++ ) {
