@@ -98,11 +98,11 @@ Bug reports and pull requests are welcome on GitHub at <https://github.com/Giftb
 
 #### One time setup
 
-##### GPG keys
+##### PGP keys
 
 Install `gpg` if you don't have it already.
 
-Copy GPG private key from the password manager into a new `.asc` file (eg `lightrail.asc`), then run `gpg --import lightrail.asc`.  There's a passphrase associated with the key you will use later.
+Copy PGP private key from the password manager into a new `.asc` file (eg `lightrail.asc`), then run `gpg --import lightrail.asc`.  There's a passphrase associated with the key you will use later.
 
 ##### Nexus plugin settings
 
