@@ -57,6 +57,33 @@ LightrailClient lr = new LightrailClient({API_KEY}, {SHARED_SECRET});
 
 ## Development
 
+### Development Environment
+You need to have java and maven installed to test and release this client.
+
+Use sdkman.
+- curl -s "https://get.sdkman.io" | bash
+- sdk install java
+- sdk install maven
+
+Test your java install by `java --version`
+Test your maven install by `mvn -v`
+
+Note, if you're getting the following error:
+```
+mvn -v
+The JAVA_HOME environment variable is not defined correctly
+This environment variable is needed to run this program
+NB: JAVA_HOME should point to a JDK not a JRE
+```
+
+If your JAVA_HOME is set correctly double check that there isn't a JAVA_HOME defined in `~.mavenrc`. `vi ~.mavenrc`. Otherwise, verify your JAVA_HOME settings. Useful commands to not forget:
+```
+which java
+echo $JAVA_HOME
+which mvn
+/usr/libexec/java_home
+```
+
 ### Testing
 
 Testing requires a Lightrail account.  Copy `src/test/resources/.env.example` to `src/test/resources/.env` and set your account's test API key which is available in the Lightrail web app.
@@ -71,7 +98,7 @@ Bug reports and pull requests are welcome on GitHub at <https://github.com/Giftb
 
 #### One time setup
 
-##### GPG keys
+##### PGP keys
 
 Install `gpg` if you don't have it already.
 

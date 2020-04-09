@@ -126,6 +126,7 @@ public class DefaultNetworkProvider implements NetworkProvider {
         URL requestURL = new URL(restRoot + (path.startsWith("/") ? "" : "/") + path);
         HttpsURLConnection httpsURLConnection = (HttpsURLConnection) requestURL.openConnection();
         httpsURLConnection.setRequestProperty("Authorization", "Bearer " + lr.getApiKey());
+        httpsURLConnection.setRequestProperty("Lightrail-Client", "Lightrail-Java/4.4.0");
         if (method.equals("PATCH")) {
             // Throws `java.net.ProtocolException: Invalid HTTP method: PATCH` if we use PATCH.
             // PATCH is a perfectly valid method.  Fortunately the web is familiar with
