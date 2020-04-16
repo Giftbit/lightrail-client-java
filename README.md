@@ -100,13 +100,13 @@ Bug reports and pull requests are welcome on GitHub at <https://github.com/Giftb
 
 ##### PGP keys
 
-Install `gpg` if you don't have it already.
+Install `gpg` using homebrew if you don't have it already. 
 
 Copy PGP private key from the password manager into a new `.asc` file (eg `lightrail.asc`), then run `gpg --import lightrail.asc`.  There's a passphrase associated with the key you will use later.
 
 ##### Nexus plugin settings
 
-Copy Maven `settings.xml` to `~/.m2/settings.xml`.  The result should look something like the following:
+Copy Maven `settings.xml` from password manager to `~/.m2/settings.xml`.  The result should look something like the following:
 
 ```
 <settings>
@@ -137,7 +137,8 @@ The first command cleans old builds.  Deploy will upload old builds found there 
 
 `mvn clean`
 
-The next command builds, tests and then uploads the build to https://oss.sonatype.org/ .  You will be prompted for the signing password that goes with the signing key configured above.
+The next command builds, tests and then uploads the build to https://oss.sonatype.org/. You will be prompted for the signing password that goes with the signing key configured above. 
+Certain versions of java may run into problems regarding `maven-javadoc-plugin`. `sdk install java 8.0.242.hs-adpt` worked. 
 
 `mvn deploy`
 
